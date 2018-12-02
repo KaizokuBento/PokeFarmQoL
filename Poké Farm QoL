@@ -1,0 +1,115 @@
+// ==UserScript==
+// @name         Poké Farm QoL
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Quality of Life chan
+// @author       Bentomon
+// @match        https://pokefarm.com/shelter
+// @require      http://code.jquery.com/jquery-3.3.1.js
+// @grant        GM_addStyle
+// ==/UserScript==
+
+(function($) {
+    'use strict';
+
+        /////////////////////////////////////
+        // Here starts the script code!    //
+        // Let's setup the Settings first. //
+        /////////////////////////////////////
+
+    //const DEFAULT_USER_SETTINGS = {
+    //        noIdea: false,
+    //        doYouHaveAnIdea: true,
+    //    };
+
+    //    const SETTINGS_KEY = 'UserSettings';
+
+        /////////////////////////////////////
+        // Changes to CSS                  //
+        /////////////////////////////////////
+
+    //const PFQOL_STYLES = `
+    //#shelterpage #shelter #sheltercommands {
+    //position:absolute;
+    //left: 50%;
+    //transform:translate(-50%)
+    //}
+    //`;
+
+        /////////////////////////////////////
+        // Shelter QoL                     //
+        /////////////////////////////////////
+
+    //Shelter Search and Success Variables/constants or whatever they are called
+    const shelterDivCreate = document.getElementById("sheltercommands");
+    const shelterSearch = document.getElementById("shelterarea").getElementsByClassName("tooltip_content");
+
+    //Creating shelter Success Div and then we need to be able to find that div and adding some CSS that's not yet visible if you don't find a new Pokémon
+    shelterDivCreate.insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
+    const shelterSuccess = document.getElementById("sheltersuccess");
+    shelterSuccess.style.textAlign = "center";
+    shelterSuccess.style.background = "#e2ffcd";
+
+    //Shelter User Settings start settings
+    var newEgg = true;
+    var newPokemon = true;
+    var newShiny = false;
+    var newAlbino = false;
+    var newMelanistic = false;
+    var newPrehistoric = false;
+    var newDelta = false;
+    var newMega = false;
+    var newStarter = false;
+
+    //Shelter Option menu Variable/constants or whatever they are called
+    const shelterOptionHeader = document.getElementById("shelterupgrades");
+    const shelterOptionMenu = document.getElementById("shelterupgrades");
+    //Shelter Option menu
+    shelterOptionMenu.insertAdjacentHTML('afterend', "<input type =checkbox id = chknewEgg value = New Egg/><label for = chknewEgg>New Egg</label>");
+    //Shelter Option Header
+    shelterOptionHeader.insertAdjacentHTML('afterend', "<h3>QoL Settings</h3>");
+
+    //Creating Shelter Settings menu layouy
+
+
+    //Looking for changes in the DOM if the buttons change on click.
+    const target = document.getElementById('sheltercommands');
+    const config = {
+        attributes: true,
+        attributeOldValue: true,
+        characterData: true,
+        characterDataOldValue: true,
+        childList: true,
+        subtree: true
+    };
+
+    function subscriber(mutations) {
+        mutations.forEach((mutation) => {
+            // makes sure that the shelterSuccess div is empty when you reload the shelter.
+            if (mutation.type == 'attributes') {
+                shelterSuccess.innerHTML="";
+                shelterSuccess.style.padding = "";
+            }
+            // Searches for results and displays if result is successfull
+            if (mutation.type == 'attributes') {
+                for (var i = 0; i < shelterSearch.length; i++) {
+                    if(shelterSearch[i].innerHTML.includes("shiny.png")||shelterSearch[i].innerHTML.includes("albino.png")||shelterSearch[i].innerHTML.startsWith("Pokémon")||shelterSearch[i].innerHTML.startsWith("Egg")||shelterSearch[i].innerHTML.includes("melanistic.png")||shelterSearch[i].innerHTML.includes("/_delta/")||shelterSearch[i].innerHTML.includes("prehistoric.png")||shelterSearch[i].innerHTML.includes("mega.png")||shelterSearch[i].innerHTML.includes("starter.png")) {
+                        shelterSuccess.style.padding = "36px 4px 4px";
+                        shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Pokémon on page</div>");
+                    }
+                }
+            }
+        })
+    }
+
+    const observer = new MutationObserver(subscriber);
+    observer.observe(target, config);
+
+        //////////////////////////////////////
+        // Start the process of changing CSS//
+        //////////////////////////////////////
+
+    //function addGlobalStyle(css) {
+     //   GM_addStyle(PFQOL_STYLES);
+    //}
+})();
