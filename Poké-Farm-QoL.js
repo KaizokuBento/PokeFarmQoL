@@ -4,6 +4,7 @@
 // @version      0.1
 // @description  Quality of Life chan
 // @author       Bentomon
+// @downloadURL  https://raw.githubusercontent.com/KaizokuBento/PokeFarmShelter/master/Pok%C3%A9-Farm-QoL.js
 // @match        https://pokefarm.com/shelter
 // @require      http://code.jquery.com/jquery-3.3.1.js
 // @grant        GM_addStyle
@@ -125,6 +126,7 @@ insertCss(PFQOL_STYLES);
     var allGender = localStorage.getItem("newAllGenderSetting", allGender);
     var customSearch = localStorage.getItem("newCustomSearchSetting", customSearch);
     var customSearchInput = localStorage.getItem("newCustomSearchInput", customSearchInput);
+    var customInputTextField = localStorage.getItem("newCustomTextField", customInputTextField);
 
     //Shelter Option menu Variable/constants or whatever they are called
     const shelterOptionHeader = document.getElementById("shelterupgrades");
@@ -304,15 +306,17 @@ More information that probably helps more then my explanation:<br>
             customSearch = true;
             if (customSearchInput = document.getElementById("chkcustominput").value == ""){
                 customSearchInput = "Ha you can't find this!"
+                customInputTextField = false;
             } else {
                 customSearchInput = document.getElementById("chkcustominput").value;
+                customInputTextField = true;
             }
         } else {
             customSearch = false;
-            customSearchInput = null;
         }
         localStorage.setItem("newCustomSearchSetting", JSON.stringify(customSearch));
         localStorage.setItem("newCustomSearchInput", JSON.stringify(customSearchInput));
+        localStorage.setItem("newCustomTextField", JSON.stringify(customInputTextField));
     }
 
 
@@ -331,7 +335,6 @@ More information that probably helps more then my explanation:<br>
     var chknone = document.getElementById("chknone");
     var chkCustom = document.getElementById("chkcustom");
     var chkCustomInput = document.getElementById("chkcustominput");
-
 
     var newEggLoad = localStorage.getItem('newEggSetting');
     var newPokemonLoad = localStorage.getItem('newPokemonSetting');
@@ -387,7 +390,7 @@ More information that probably helps more then my explanation:<br>
     if ((/true/i).test(newCustomSearchSettingLoad) == true){
         chkCustom.checked = true;
     }
-    if (newCustomSearchInputLoad == "Ha you can't find this!"){
+    if ((/true/i).test(customInputTextField) == false){
         chkCustomInput.value = null;
     } else {
         chkCustomInput.value = localStorage.getItem("newCustomSearchInput", customSearchInput);
