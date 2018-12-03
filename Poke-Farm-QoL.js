@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Quality of Life chan
 // @author       Bentomon
-// @downloadURL  https://raw.githubusercontent.com/KaizokuBento/PokeFarmShelter/master/Pok%C3%A9-Farm-QoL.js
+// @downloadURL  https://raw.githubusercontent.com/KaizokuBento/PokeFarmShelter/master/Poke-Farm-QoL.js
 // @match        https://pokefarm.com/shelter
 // @require      http://code.jquery.com/jquery-3.3.1.js
 // @grant        GM_addStyle
