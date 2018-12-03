@@ -2,10 +2,9 @@
 // @name         Poké Farm QoL
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Quality of Life changes for Poké Farm!
+// @description  Quality of Life chan
 // @author       Bentomon
 // @match        https://pokefarm.com/shelter
-// @downloadurl  https://github.com/KaizokuBento/PokeFarmShelter/edit/master/Poke-Farm-QoL.user.js
 // @require      http://code.jquery.com/jquery-3.3.1.js
 // @grant        GM_addStyle
 // ==/UserScript==
@@ -111,12 +110,12 @@ insertCss(PFQOL_STYLES);
     shelterSuccess.style.background = "#e2ffcd";
 
     //Shelter User Settings start settings
-    var newEgg = localStorage.getItem('newEggSetting');
-    var newPokemon = localStorage.getItem('newPokemonSetting');
-    var newShiny = localStorage.getItem('newShinySetting');
-    var newAlbino = localStorage.getItem('newAlbinoSetting');
-    var newMelanistic = localStorage.getItem('newMelanisticSetting');
-    var newPrehistoric = localStorage.getItem('newPrehistoricSetting');
+    var newEgg = localStorage.getItem('newEggSetting', newEgg);
+    var newPokemon = localStorage.getItem('newPokemonSetting', newPokemon);
+    var newShiny = localStorage.getItem('newShinySetting', newShiny);
+    var newAlbino = localStorage.getItem('newAlbinoSetting', newAlbino);
+    var newMelanistic = localStorage.getItem('newMelanisticSetting', newMelanistic);
+    var newPrehistoric = localStorage.getItem('newPrehistoricSetting', newPrehistoric);
     var newDelta = localStorage.getItem("newDeltaSetting", newDelta);
     var newMega = localStorage.getItem("newMegaSetting", newMega);
     var newStarter = localStorage.getItem("newStarterSetting", newStarter);
@@ -313,6 +312,8 @@ More information that probably helps more then my explanation:<br>
                 customInputTextField = true;
                 if (customSearchInput = document.getElementById("chkcustominput").value == ""){
                     customSearchInput = "Ha you can't find this!";
+                } else if (customSearchInput == document.getElementById("chkcustominput").value){
+                    customSearchInput = document.getElementById("chkcustominput").value;
                 } else {
                     customSearchInput = document.getElementById("chkcustominput").value;
                 }
@@ -321,7 +322,7 @@ More information that probably helps more then my explanation:<br>
             customSearch = false;
         }
         localStorage.setItem("newCustomSearchSetting", JSON.stringify(customSearch));
-        localStorage.setItem("newCustomSearchInput", JSON.stringify(customSearchInput));
+        localStorage.setItem("newCustomSearchInput", customSearchInput);
         localStorage.setItem("newCustomTextField", JSON.stringify(customInputTextField));
     }
 
@@ -396,7 +397,7 @@ More information that probably helps more then my explanation:<br>
     if ((/true/i).test(newCustomSearchSettingLoad) == true){
         chkCustom.checked = true;
     }
-    if ((/true/i).test(customInputTextField) == false){
+    if ((/true/i).test(customInputTextField) == false || customInputTextField == "false"){
         chkCustomInput.value = null;
     } else {
         chkCustomInput.value = localStorage.getItem("newCustomSearchInput", customSearchInput);
@@ -431,225 +432,225 @@ More information that probably helps more then my explanation:<br>
                         }
                     }
                     //newPokemon search
-                    if(newPokemon == true && allGender == true){
+                    if(newPokemon == true && allGender == true || newPokemon == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("Pokémon")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Pokémon found!</div>");
                         }
                     }
-                    if(newPokemon == true && female == true && allGender == false){
+                    if(newPokemon == true && female == true && allGender == false || newPokemon == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Female Pokémon found!</div>");
                         }
                     }
-                    if(newPokemon == true && male == true && allGender == false){
+                    if(newPokemon == true && male == true && allGender == false || newPokemon == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Male Pokémon found!</div>");
                         }
                     }
-                    if(newPokemon == true && none == true && allGender == false){
+                    if(newPokemon == true && none == true && allGender == false || newPokemon == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>New no gender Pokémon found!</div>");
                         }
                     }
                     //newShiny search
-                    if(newShiny == true && allGender == true){
+                    if(newShiny == true && allGender == true || newShiny == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("shiny.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Shiny Pokémon found!</div>");
                         }
                     }
-                    if(newShiny == true && female == true && allGender == false){
+                    if(newShiny == true && female == true && allGender == false || newShiny == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Shiny Pokémon found!</div>");
                         }
                     }
-                    if(newShiny == true && male == true && allGender == false){
+                    if(newShiny == true && male == true && allGender == false || newShiny == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Shiny Pokémon found!</div>");
                         }
                     }
-                    if(newShiny == true && none == true && allGender == false){
+                    if(newShiny == true && none == true && allGender == false || newShiny == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Shiny Pokémon found!</div>");
                         }
                     }
                     //newAlbino search
-                    if(newAlbino == true && allGender == true){
+                    if(newAlbino == true && allGender == true || newAlbino == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("albino.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Albino Pokémon found!</div>");
                         }
                     }
-                    if(newAlbino == true && female == true && allGender == false){
+                    if(newAlbino == true && female == true && allGender == false || newAlbino == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Albino Pokémon found!</div>");
                         }
                     }
-                    if(newAlbino == true && male == true && allGender == false){
+                    if(newAlbino == true && male == true && allGender == false || newAlbino == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Albino Pokémon found!</div>");
                         }
                     }
-                    if(newAlbino == true && none == true && allGender == false){
+                    if(newAlbino == true && none == true && allGender == false || newAlbino == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Albino Pokémon found!</div>");
                         }
                     }
                     //newMelanistic search
-                    if(newMelanistic == true && allGender == true){
+                    if(newMelanistic == true && allGender == true || newMelanistic == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("melanistic.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Melanistic Pokémon found!</div>");
                         }
                     }
-                    if(newMelanistic == true && female == true && allGender == false){
+                    if(newMelanistic == true && female == true && allGender == false || newMelanistic == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Melanistic Pokémon found!</div>");
                         }
                     }
-                    if(newMelanistic == true && male == true && allGender == false){
+                    if(newMelanistic == true && male == true && allGender == false || newMelanistic == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Melanistic Pokémon found!</div>");
                         }
                     }
-                    if(newMelanistic == true && none == true && allGender == false){
+                    if(newMelanistic == true && none == true && allGender == false || newMelanistic == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Melanistic Pokémon found!</div>");
                         }
                     }
                     //newDelta search
-                    if(newDelta == true && allGender == true){
+                    if(newDelta == true && allGender == true || newDelta == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("/_delta/")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Delta Pokémon found!</div>");
                         }
                     }
-                    if(newDelta == true && female == true && allGender == false){
+                    if(newDelta == true && female == true && allGender == false || newDelta == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Delta Pokémon found!</div>");
                         }
                     }
-                    if(newDelta == true && male == true && allGender == false){
+                    if(newDelta == true && male == true && allGender == false || newDelta == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Delta Pokémon found!</div>");
                         }
                     }
-                    if(newDelta == true && none == true && allGender == false){
+                    if(newDelta == true && none == true && allGender == false || newDelta == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Delta Pokémon found!</div>");
                         }
                     }
                     //newPrehistoric search
-                    if(newPrehistoric == true && allGender == true){
+                    if(newPrehistoric == true && allGender == true || newPrehistoric == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("prehistoric.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Prehistoric Pokémon found!</div>");
                         }
                     }
-                    if(newPrehistoric == true && female == true && allGender == false){
+                    if(newPrehistoric == true && female == true && allGender == false || newPrehistoric == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Prehistoric Pokémon found!</div>");
                         }
                     }
-                    if(newPrehistoric == true && male == true && allGender == false){
+                    if(newPrehistoric == true && male == true && allGender == false || newPrehistoric == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Prehistoric Pokémon found!</div>");
                         }
                     }
-                    if(newPrehistoric == true && none == true && allGender == false){
+                    if(newPrehistoric == true && none == true && allGender == false || newPrehistoric == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Prehistoric Pokémon found!</div>");
                         }
                     }
                     //newMega search
-                    if(newMega == true && allGender == true){
+                    if(newMega == true && allGender == true || newMega == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("mega.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Mega Pokémon found!</div>");
                         }
                     }
-                    if(newMega == true && female == true && allGender == false){
+                    if(newMega == true && female == true && allGender == false || newMega == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Mega Pokémon found!</div>");
                         }
                     }
-                    if(newMega == true && male == true && allGender == false){
+                    if(newMega == true && male == true && allGender == false || newMega == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Mega Pokémon found!</div>");
                         }
                     }
-                    if(newMega == true && none == true && allGender == false){
+                    if(newMega == true && none == true && allGender == false || newMega == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Mega Pokémon found!</div>");
                         }
                     }
                     //newStarter search
-                    if(newStarter == true && allGender == true){
+                    if(newStarter == true && allGender == true || newStarter == "true" && allGender == "true"){
                         if(shelterSearch[i].innerHTML.includes("starter.png")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Starter Pokémon found!</div>");
                         }
                     }
-                    if(newStarter == true && female == true && allGender == false){
+                    if(newStarter == true && female == true && allGender == false || newStarter == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Starter Pokémon found!</div>");
                         }
                     }
-                    if(newStarter == true && male == true && allGender == false){
+                    if(newStarter == true && male == true && allGender == false || newStarter == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Starter Pokémon found!</div>");
                         }
                     }
-                    if(newStarter == true && none == true && allGender == false){
+                    if(newStarter == true && none == true && allGender == false || newStarter == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Starter Pokémon found!</div>");
                         }
                     }
                     //newCustom search
-                    if(customSearch == true && allGender == true){
+                    if(customSearch == true && allGender == true || customSearch == "true" && allGender == "true"){
                         if(shelterSearchCustom[i].innerHTML.includes(customSearchInput)){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Custom Search Pokémon/Egg found!</div>");
                         }
                     }
-                    if(customSearch == true && female == true && allGender == false){
+                    if(customSearch == true && female == true && allGender == false || customSearch == "true" && female == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[F]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Custom Search Pokémon/Egg found!</div>");
                         }
                     }
-                    if(customSearch == true && male == true && allGender == false){
+                    if(customSearch == true && male == true && allGender == false || customSearch == "true" && male == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[M]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Custom Search Pokémon/Egg found!!</div>");
                         }
                     }
-                    if(customSearch == true && none == true && allGender == false){
+                    if(customSearch == true && none == true && allGender == false || customSearch == "true" && none == "true" && allGender == "false"){
                         if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[N]")){
                             shelterSuccess.style.padding = "36px 4px 4px";
                             shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Custom Search Pokémon/Egg found!</div>");
