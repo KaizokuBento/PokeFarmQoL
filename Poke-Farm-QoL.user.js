@@ -8,6 +8,7 @@
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://cdn.jsdelivr.net/npm/vue
+// @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
@@ -45,9 +46,9 @@
 			noGender: true,
 			},
 		};
-		
+
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
-	
+
 		var userSettings = null;
 
 		const TEMPLATES = {
@@ -71,7 +72,11 @@
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-				
+				setupVue () {
+					new Vue({
+						el	: 
+					
+
                 loadSettings() {
                     let loadedSettings = localStorage.getItem(SETTINGS_SAVE_KEY);
 					userSettings = _.defaultsDeep(loadedSettings, DEFAULT_USER_SETTINGS);
@@ -81,13 +86,12 @@
 				saveSettings() {
 					localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(userSettings));
                 },
-				
+
 				startup() {
 					return {
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
 						'Loading settings'	: fn.backwork.loadSettings,
-						'Setting up Vue'	: fn.backwork.setupVue,
 					}
 				},
 				init() {
