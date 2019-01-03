@@ -9,8 +9,12 @@
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
-// @version      0.0.1
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
+// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
+// @version      0.0.2
 // @grant        GM_getResourceText
+// @grant        GM_addStyle
+// @grant        GM_info
 // ==/UserScript==
 
 
@@ -42,6 +46,8 @@
 			},
 		};
 
+		const INTERNAL_UPDATE_URL	= 'https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js'
+		
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
 		
 		const VARIABLES = {
@@ -57,16 +63,32 @@
 		const fn = {
 			/** background stuff */
 			backwork : {
+				checkForUpdate: function () {
+                var version = "";
+                $.get(INTERNAL_UPDATE_URL).done(function (res) {
+                    var match = atob(res.content).match(/\/\/\s+@version\s+([^\n]+)/);
+                    version = match[1];
+
+                    if (fn.versionCompare(GM_info.script.version, version) < 0) {
+                        var updateMessage = "<li class=\"chat_notification\">Notifications Of Avabur has been updated to version " + version + "! <a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\">Update</a>";
+                        document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", updateMessage);
+                    } else {
+                        checkForUpdateTimer = setTimeout(fn.checkForUpdate, 24 * 60 * 60 * 1000);
+                    }
+                });
+            },
+				
 				setupHTML(){
 					// Header link to Userscript settings
-					let headerHTML = document.getElementById("head-right");
-					headerHTML.insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
+					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
 
 					// QoL userscript Settings Menu in farmnews
 					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
-						let qolSettingsHTML = document.getElementById("farmnews");
-						qolSettingsHTML.insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
+						document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
 					}
+				},
+				setupCSS() {
+					GM_addstyle(GM_getResourceText('QoLCSS'));
 				},
 				
 				saveSettings() {
@@ -80,13 +102,14 @@
 
                         VARIABLES.settings = _.defaultsDeep(settings, DEFAULT_USER_SETTINGS);
                     } catch (e) {
-                        log('Failed to parse settings ..');
+                        console.log('Failed to parse settings ..');
                     }
                     fn.backwork.saveSettings();
                 },
 				
 				startup() {
 					return {
+						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
 						'Loading settings'	: fn.backwork.loadSettings,
 					}
