@@ -14,7 +14,7 @@
     'use strict';
     /////////////////////////////////////
     // Welcome to my first ever script!//
-    // Let's setup the Settings first. //
+    // Let's setup the Settings first. //s
     /////////////////////////////////////
 		
 	let PFQoL = (function PFQoL() {
