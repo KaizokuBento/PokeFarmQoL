@@ -11,10 +11,9 @@
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
-// @version      0.0.2
+// @version      0.0.1
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
-// @grant        GM_info
 // ==/UserScript==
 
 
@@ -45,8 +44,6 @@
 			noGender: true,
 			},
 		};
-
-		const INTERNAL_UPDATE_URL	= 'https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js'
 		
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
 		
@@ -63,21 +60,6 @@
 		const fn = {
 			/** background stuff */
 			backwork : {
-				checkForUpdate: function () {
-                var version = "";
-                $.get(INTERNAL_UPDATE_URL).done(function (res) {
-                    var match = atob(res.content).match(/\/\/\s+@version\s+([^\n]+)/);
-                    version = match[1];
-
-                    if (fn.versionCompare(GM_info.script.version, version) < 0) {
-                        var updateMessage = "<li class=\"chat_notification\">Notifications Of Avabur has been updated to version " + version + "! <a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\">Update</a>";
-                        document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", updateMessage);
-                    } else {
-                        checkForUpdateTimer = setTimeout(fn.checkForUpdate, 24 * 60 * 60 * 1000);
-                    }
-                });
-            },
-				
 				setupHTML(){
 					// Header link to Userscript settings
 					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
@@ -88,7 +70,7 @@
 					}
 				},
 				setupCSS() {
-					GM_addstyle(GM_getResourceText('QoLCSS'));
+					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
 				
 				saveSettings() {
