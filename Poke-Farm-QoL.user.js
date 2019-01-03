@@ -7,7 +7,6 @@
 // @description  Quality of Life changes to Pokéfarm!
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
-// @require      https://cdn.jsdelivr.net/npm/vue
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
@@ -54,7 +53,7 @@
 		const TEMPLATES = {
 			headerSettingsLinkHTML	: `<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
-			shelterSettingsHTML		: GM_getResourceText('shelterOptionsHTML'),
+			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 		};
 
 		const fn = {
@@ -67,6 +66,12 @@
 					// QoL userscript Settings Menu in farmnews
 					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
 						document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
+					}
+					
+					// shelter Settings Menu
+					if (window.location.href.indexOf("shelter") != -1){
+						
+						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
 					}
 				},
 				setupCSS() {
@@ -105,6 +110,7 @@
 
 			/** public stuff */
 			API : {
+				
 			},
 		};
 
