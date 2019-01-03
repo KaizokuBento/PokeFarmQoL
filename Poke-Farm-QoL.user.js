@@ -7,7 +7,7 @@
 // @description  Quality of Life changes to Pokéfarm!
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
-// @require        https://cdn.jsdelivr.net/npm/vue
+// @require      https://cdn.jsdelivr.net/npm/vue
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
@@ -71,100 +71,7 @@
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-				setupVue() {
-                    new Vue({
-                        debug  : true,
-                        el     : '#rq-dt-table',
-                        data   : VARIABLES,
-                        methods: {
-                            getTotal(section, item) {
-                                if (!this.drop_tracker.hasOwnProperty(section)) {
-                                    return 0;
-                                }
-                                if (!this.drop_tracker[section].hasOwnProperty(item)) {
-                                    return 0;
-                                }
-                                let values = Object.values(this.drop_tracker[section][item]);
-
-                                return values.reduce((carry, value) => carry + value.t, 0);
-                            },
-                            // getPerHour(section, item) {
-                            //     let total = this.getTotal(section, item);
-                            //     let diff = moment.tz(GAME_TIME_ZONE) - this.drop_tracker.trackerStart;
-                            //     return values.reduce((carry, value) => carry + value.t, 0);
-                            // },
-                            colorClassFor(item) {
-                                return {
-                                    'crystals'          : item === 'crystals',
-                                    'platinum'          : item === 'platinum coins',
-                                    'gold'              : item === 'gold coins',
-                                    'crafting_materials': item === 'crafting materials',
-                                    'gem_fragments'     : item === 'gem fragments',
-                                    'ruby'              : item === 'strength',
-                                    'opal'              : item === 'health',
-                                    'sapphire'          : item === 'coordination',
-                                    'emerald'           : item === 'agility',
-                                };
-                            },
-                            resetCategory(category) {
-                                if (this.drop_tracker.actions.hasOwnProperty(category)) {
-                                    this.drop_tracker.actions[category] = 0;
-                                }
-                                for (let section of ['random_drops', 'stats_drops']) {
-                                    if (!this.drop_tracker.hasOwnProperty(section)) {
-                                        continue;
-                                    }
-                                    for (let item in this.drop_tracker[section]) {
-                                        if (!this.drop_tracker[section].hasOwnProperty(item)) {
-                                            continue;
-                                        }
-                                        if (!this.drop_tracker[section][item].hasOwnProperty(category)) {
-                                            continue;
-                                        }
-                                        if (null !== this.drop_tracker[section][item][category].a) {
-                                            this.drop_tracker[section][item][category] = {t: 0, a: 0};
-                                        } else {
-                                            this.drop_tracker[section][item][category].t = 0;
-                                        }
-                                    }
-                                }
-                            },
-                            resetDropTracker() {
-                                for (let category in this.drop_tracker.actions) {
-                                    if (!this.drop_tracker.actions.hasOwnProperty(category)) {
-                                        continue;
-                                    }
-                                    this.resetCategory(category);
-                                }
-                                this.drop_tracker.trackerStart = moment.tz(GAME_TIME_ZONE).format('Do MMM Y HH:mm:ss');
-                            },
-                            dropRate(section, item, type) {
-                                if (!this.drop_tracker.hasOwnProperty(section)) {
-                                    return '';
-                                }
-                                if (!this.drop_tracker[section].hasOwnProperty(item)) {
-                                    return '';
-                                }
-                                if (!this.drop_tracker[section][item].hasOwnProperty(type)) {
-                                    return '';
-                                }
-                                let data        = this.drop_tracker[section][item][type];
-                                let lookAtTotal = ['plundering', 'multi_drop', 'items', 'growth', 'multistat_chance'];
-                                let base        = data.a ? data.a : data.t;
-                                if (lookAtTotal.indexOf(item) !== -1 || section === 'stats_drops') {
-                                    base = data.t;
-                                }
-
-                                let dropRate = ((base / this.drop_tracker.actions[type]) * 100);
-                                if (isNaN(dropRate)) {
-                                    return '-';
-                                }
-
-                                return dropRate.format(2) + '%';
-                            },
-                        }
-                    });
-                },
+				
                 loadSettings() {
                     let loadedSettings = localStorage.getItem(SETTINGS_SAVE_KEY);
 					userSettings = _.defaultsDeep(loadedSettings, DEFAULT_USER_SETTINGS);
