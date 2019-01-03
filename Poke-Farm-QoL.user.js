@@ -72,9 +72,6 @@
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-				setupVue () {
-					new Vue({
-						el	: 
 					
 
                 loadSettings() {
