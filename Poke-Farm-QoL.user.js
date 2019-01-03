@@ -72,7 +72,6 @@
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-					
 
                 loadSettings() {
                     let loadedSettings = localStorage.getItem(SETTINGS_SAVE_KEY);
