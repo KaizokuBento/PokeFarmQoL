@@ -70,8 +70,8 @@
 					
 					// shelter Settings Menu
 					if (window.location.href.indexOf("shelter") != -1){
-						
 						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
+						document.querySelecter("#shelterupgrades").insertAdjacentHTML("afterend", "<h3>QoL Settings</h3>");
 					}
 				},
 				setupCSS() {
