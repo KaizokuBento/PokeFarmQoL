@@ -93,7 +93,7 @@
                     try {
                         settings = JSON.parse(settings);
 
-                        VARIABLES.settings = JSON(settings, DEFAULT__USER_SETTINGS);
+                        VARIABLES.settings = JSON(settings, DEFAULT_USER_SETTINGS);
                     } catch (e) {
                         console.log('Failed to parse settings ..');
                     }
