@@ -93,7 +93,7 @@
                     try {
                         settings = JSON.parse(settings);
 
-                        VARIABLES.settings = _.defaultsDeep(settings, DEFAULT__USER_SETTINGS);
+                        VARIABLES.settings = JSON(settings, DEFAULT__USER_SETTINGS);
                     } catch (e) {
                         console.log('Failed to parse settings ..');
                     }
@@ -126,18 +126,16 @@
 			API : {
 				changeQolSetting() {
 					if (window.location.href.indexOf("shelter") != -1) {
-						document.querySelector("saveusersetting").addEventListener("click", saveUserSettings);
-						function saveUserSettings(){
-							//get variables
-							//searches for the checkboxes
+						$('.required-option').on('click', function() {
+						var favs = $('.required-option:checked').map(function() {
+						return this.id;
+						}).get();
+						localStorage.setItem("checkbox", JSON.stringify(favs));
+					})
 
-							//checks which checkboxes are checked when the settings are saved
-							if (document.querySelector("#shelterOption").checked == true){
-								DEFAULT_USER_SETTINGS.shelterEnable = true;
-							} else {
-								DEFAULT_USER_SETTINGS.shelterEnable = false;
-							}
-						}
+					JSON.parse(localStorage.getItem("checkbox") || '[]').forEach(function(id) {
+					$('#' + id).prop('checked', true);
+					})
 					}
 				},
 			},
