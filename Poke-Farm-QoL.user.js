@@ -29,7 +29,7 @@
 	let PFQoL = (function PFQoL() {
 
 		const DEFAULT_USER_SETTINGS = {
-		shelterEnable: false,
+		shelterEnable: true,
 		shelterSettings: {
 			newEgg: true,
 			newPokemon: true,
@@ -50,7 +50,7 @@
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
 		
 		const VARIABLES = {
-			settings: DEFAULT_USER_SETTINGS,
+			settings : DEFAULT_USER_SETTINGS,
 		}
 
 		const TEMPLATES = {
@@ -83,30 +83,16 @@
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-
-				saveSettings() {
-                    localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.settings));
-                },
-                loadSettings() {
-                    let settings = localStorage.getItem(SETTINGS_SAVE_KEY);
-
-                    try {
-                        settings = JSON.parse(settings);
-
-                        VARIABLES.settings = JSON(settings, DEFAULT_USER_SETTINGS);
-                    } catch (e) {
-                        console.log('Failed to parse settings ..');
-                    }
-                    //fn.helpers.populateToSettingsTemplate();
-                    fn.backwork.saveSettings();
-                    //fn.__.applySettings(true);
-                },
-
+				setupSettings() {
+					if (localStorage.getItem("SETTINGS_SAVE_KEY") === null) {
+						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.settings));
+					}
+				},
 				startup() {
 					return {
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
-						'Loading settings'	: fn.backwork.loadSettings,
+						'setting settings'	: fn.backwork.setupSettings,
 					}
 				},
 				init() {
@@ -124,20 +110,7 @@
 
 			/** public stuff */
 			API : {
-				changeQolSetting() {
-					if (window.location.href.indexOf("shelter") != -1) {
-						$('.required-option').on('click', function() {
-						var favs = $('.required-option:checked').map(function() {
-						return this.id;
-						}).get();
-						localStorage.setItem("checkbox", JSON.stringify(favs));
-					})
-
-					JSON.parse(localStorage.getItem("checkbox") || '[]').forEach(function(id) {
-					$('#' + id).prop('checked', true);
-					})
-					}
-				},
+				
 			},
 		};
 
