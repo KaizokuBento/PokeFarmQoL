@@ -7,9 +7,9 @@
 // @description  Quality of Life changes to Pokéfarm!
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
-// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/templates/qolSettingsMenuHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/css/pfqol.css
+// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/qolSettingsMenuHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @version      0.0.2
 // @grant        GM_getResourceText
@@ -83,9 +83,9 @@
 				},
 				setupInitialSettings() { // Makes the local storage save key QoLSettings with default user settings on first start
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
-						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.settings));
+						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
 					} else {
-						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.settings));
+						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
 					}
 				},
 				startup() { // All the functions that are run to start the script on Pokéfarm
@@ -93,6 +93,7 @@
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
 						'setting settings'	: fn.backwork.setupInitialSettings,
+						'will this work?'	: fn.API.userscriptSettings,
 					}
 				},
 				init() { // Starts all the functions.
