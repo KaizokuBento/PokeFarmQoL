@@ -10,7 +10,7 @@
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/css/pfqol.css
-// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
+// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/Test/Poke-Farm-QoL.user.js
 // @version      0.0.2
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -114,7 +114,7 @@
 				userscriptSettings () {
 					if(window.location.href.indexOf("farm#tab=1") != -1){
 						if($('#shelterOn').prop('checked')) {
-							alert("It's checked");
+							alert("It's checked!");
 						} else {
 							alert("you unchecked");
 						}
