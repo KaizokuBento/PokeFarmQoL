@@ -7,6 +7,7 @@
 // @description  Quality of Life changes to Pokéfarm!
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
+// @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/css/pfqol.css
@@ -57,7 +58,10 @@
 			headerSettingsLinkHTML	: `<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
-		};
+		}
+		
+		const OBSERVERS = {					
+		}
 
 		const fn = { // all the functions for the script
 			/** background stuff */
@@ -81,19 +85,20 @@
 				setupCSS() { // All the CSS changes are added here
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
-				setupInitialSettings() { // Makes the local storage save key QoLSettings with default user settings on first start
-					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
-						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
-					} else {
-						localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
-					}
+				
+				saveSettings() {
+					localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
 				},
+				loadSettings() {
+					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
+						fn.backwork.saveSettings();
+					}
+                },
 				startup() { // All the functions that are run to start the script on Pokéfarm
 					return {
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
-						'setting settings'	: fn.backwork.setupInitialSettings,
-						'will this work?'	: fn.API.userscriptSettings,
+						'loading Settings'	: fn.backwork.loadSettings,
 					}
 				},
 				init() { // Starts all the functions.
@@ -111,14 +116,13 @@
 
 			/** public stuff */
 			API : { // the actual seeable and interactable part of the userscript
-				userscriptSettings () {
-					if(window.location.href.indexOf("farm#tab=1") != -1){
-						if($('#shelterOn').prop('checked')) {
-							alert("It's checked!");
-						} else {
-							alert("you unchecked");
-						}
+				userSettingsChange () {
+					if ($('#shelterOn').prop("checked")) {
+						VARIABLES.userSettings.shelterEnable = true;
+					} else {
+						VARIABLES.userSettings.shelterEnable = false;
 					}
+					fn.backwork.saveSettings();
 				},
 			}, // end of API
 		}; // end of fn
@@ -126,5 +130,10 @@
 		fn.backwork.init();
 
 		return fn.API;
-	})(); // end of PFQoL function
+	})(); // end of PFQoL function	
+	
+	$(document).on('click', '#QoLSettings', (function() { // save userscript settings
+		PFQoL.userSettingsChange ();
+	}));
+	
 })(jQuery); //end of userscript
