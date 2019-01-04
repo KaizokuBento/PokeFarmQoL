@@ -28,10 +28,9 @@
 	let PFQoL = (function PFQoL() {
 
 		const DEFAULT_USER_SETTINGS = { // default settings when the script gets loaded the first time
-		//userscript settings
-		shelterEnable: true,
 		//shelter settings
 		shelterSettings: {
+			shelterEnable: true,
 			findNewEgg: true,
 			findNewPokemon: true,
 			findShiny: true,
@@ -67,6 +66,12 @@
 		const fn = { // all the functions for the script
 			/** background stuff */
 			backwork : { // background, stuff the user won't interact with but is needed for the userscript to work
+				loadSettings() { // load Settings on first run
+					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
+						fn.backwork.saveSettings();
+					}
+                },
+			
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
 					
 					// Header link to Userscript settings
@@ -87,23 +92,15 @@
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
 				
-				saveSettings() {
+				saveSettings() { // Save changed settings
 					localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
 				},
-				loadSettings() {
-					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
-						fn.backwork.saveSettings();
-					}
-                },
-				testSetting() {
-					console.log(VARIABLES.loadedSettings);
-				},
+				
 				startup() { // All the functions that are run to start the script on Pokéfarm
 					return {
+						'loading Settings'	: fn.backwork.loadSettings,
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
-						'loading Settings'	: fn.backwork.loadSettings,
-						'prrr'              : fn.backwork.testSetting,
 					}
 				},
 				init() { // Starts all the functions.
@@ -208,5 +205,8 @@
 	$(document).on('click', '#shelteroptionsqol', (function() { // save shelter settings
 		PFQoL.shelterSettingsChange ();
 	}));
+	
+	$(document).on('change', '.qolsetting', (function() {
+		PFQoL.changeSetting(this.getAttribute(
 	
 })(jQuery); //end of userscript
