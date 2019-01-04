@@ -7,9 +7,9 @@
 // @description  Quality of Life changes to Pokéfarm!
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
-// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
+// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/templates/qolSettingsMenuHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/test/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @version      0.0.2
 // @grant        GM_getResourceText
