@@ -8,6 +8,7 @@
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
+// @require      https://cdn.jsdelivr.net/npm/vue
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
@@ -28,7 +29,7 @@
 	let PFQoL = (function PFQoL() {
 
 		const DEFAULT_USER_SETTINGS = {
-		shelterEnable: true,
+		shelterEnable: false,
 		shelterSettings: {
 			newEgg: true,
 			newPokemon: true,
@@ -47,8 +48,10 @@
 		};
 
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
-
-		var userSettings = null;
+		
+		const VARIABLES = {
+			settings: DEFAULT_USER_SETTINGS,
+		}
 
 		const TEMPLATES = {
 			headerSettingsLinkHTML	: `<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>`,
@@ -59,7 +62,10 @@
 		const fn = {
 			/** background stuff */
 			backwork : {
-				setupHTML(){
+				setupHTML() {
+					//No clue yet
+					
+					
 					// Header link to Userscript settings
 					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
 
@@ -69,23 +75,31 @@
 					}
 					
 					// shelter Settings Menu
-					if (window.location.href.indexOf("shelter") != -1){
+					if (window.location.href.indexOf("shelter") != -1) {
 						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
-						document.querySelecter("#shelterupgrades").insertAdjacentHTML("afterend", "<h3>QoL Settings</h3>");
+						document.querySelector("#shelteroptionsqol").insertAdjacentHTML("beforebegin", "<h3>QoL Settings</h3>");
 					}
 				},
 				setupCSS() {
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
 
-                loadSettings() {
-                    let loadedSettings = localStorage.getItem(SETTINGS_SAVE_KEY);
-					userSettings = _.defaultsDeep(loadedSettings, DEFAULT_USER_SETTINGS);
-
-                    fn.backwork.saveSettings();
-                },
 				saveSettings() {
-					localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(userSettings));
+                    localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.settings));
+                },
+                loadSettings() {
+                    let settings = localStorage.getItem(SETTINGS_SAVE_KEY);
+
+                    try {
+                        settings = JSON.parse(settings);
+
+                        VARIABLES.settings = _.defaultsDeep(settings, DEFAULT__USER_SETTINGS);
+                    } catch (e) {
+                        console.log('Failed to parse settings ..');
+                    }
+                    //fn.helpers.populateToSettingsTemplate();
+                    fn.backwork.saveSettings();
+                    //fn.__.applySettings(true);
                 },
 
 				startup() {
@@ -110,7 +124,22 @@
 
 			/** public stuff */
 			API : {
-				
+				changeQolSetting() {
+					if (window.location.href.indexOf("shelter") != -1) {
+						document.querySelector("saveusersetting").addEventListener("click", saveUserSettings);
+						function saveUserSettings(){
+							//get variables
+							//searches for the checkboxes
+
+							//checks which checkboxes are checked when the settings are saved
+							if (document.querySelector("#shelterOption").checked == true){
+								DEFAULT_USER_SETTINGS.shelterEnable = true;
+							} else {
+								DEFAULT_USER_SETTINGS.shelterEnable = false;
+							}
+						}
+					}
+				},
 			},
 		};
 
