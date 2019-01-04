@@ -32,19 +32,19 @@
 		shelterEnable: true,
 		//shelter settings
 		shelterSettings: {
-			newEgg: true,
-			newPokemon: true,
-			newShiny: true,
-			newAlbino: true,
-			newMelanistic: true,
-			newPrehistoric: true,
-			newDelta: true,
-			newMega: true,
-			newStarter: true,
-			newCustomSprite: true,
-			male: true,
-			female: true,
-			noGender: true,
+			findNewEgg: true,
+			findNewPokemon: true,
+			findShiny: true,
+			findAlbino: true,
+			findMelanistic: true,
+			findPrehistoric: true,
+			findDelta: true,
+			findMega: true,
+			findStarter: true,
+			findCustomSprite: true,
+			findMale: true,
+			findFemale: true,
+			findNoGender: true,
 			},
 		};
 
@@ -52,6 +52,7 @@
 		
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
+			loadedSettings : JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY)),
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -67,17 +68,17 @@
 			/** background stuff */
 			backwork : { // background, stuff the user won't interact with but is needed for the userscript to work
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
+					
 					// Header link to Userscript settings
 					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
 
 					// QoL userscript Settings Menu in farmnews
 					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
 						document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
-						
 					}
 					
 					// shelter Settings Menu
-					if (window.location.href.indexOf("shelter") != -1) {
+					if (VARIABLES.loadedSettings.shelterEnable == true && window.location.href.indexOf("shelter") != -1) {
 						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
 						document.querySelector("#shelteroptionsqol").insertAdjacentHTML("beforebegin", "<h3>QoL Settings</h3>");
 					}
@@ -94,11 +95,15 @@
 						fn.backwork.saveSettings();
 					}
                 },
+				testSetting() {
+					console.log(VARIABLES.loadedSettings);
+				},
 				startup() { // All the functions that are run to start the script on Pokéfarm
 					return {
 						'setting up CSS'	: fn.backwork.setupCSS,
 						'setting up HTML' 	: fn.backwork.setupHTML,
 						'loading Settings'	: fn.backwork.loadSettings,
+						'prrr'              : fn.backwork.testSetting,
 					}
 				},
 				init() { // Starts all the functions.
@@ -116,12 +121,76 @@
 
 			/** public stuff */
 			API : { // the actual seeable and interactable part of the userscript
-				userSettingsChange () {
+				userSettingsChange () { // change the usersettings
 					if ($('#shelterOn').prop("checked")) {
 						VARIABLES.userSettings.shelterEnable = true;
 					} else {
 						VARIABLES.userSettings.shelterEnable = false;
 					}
+					fn.backwork.saveSettings();
+				},
+				
+				shelterSettingsChange () { // change the shelter settings
+					if ($('#chkNewEgg').prop("checked")) {
+						VARIABLES.userSettings.findNewEgg = true;
+					} else {
+						VARIABLES.userSettings.findNewEgg = false;
+					}
+					
+					if ($('#chkNewPokemon').prop("checked")) {
+						VARIABLES.userSettings.findNewPokemon = true;
+					} else {
+						VARIABLES.userSettings.findNewPokemon = false;
+					}
+					
+					if ($('#chkShiny').prop("checked")) {
+						VARIABLES.userSettings.findShiny = true;
+					} else {
+						VARIABLES.userSettings.findShiny = false;
+					}
+					
+					if ($('#chkAlbino').prop("checked")) {
+						VARIABLES.userSettings.findAlbino = true;
+					} else {
+						VARIABLES.userSettings.findAlbino = false;
+					}
+					
+					if ($('#chkMelanistic').prop("checked")) {
+						VARIABLES.userSettings.findMelanistic = true;
+					} else {
+						VARIABLES.userSettings.findMelanistic = false;
+					}
+					
+					if ($('#chkPrehistoric').prop("checked")) {
+						VARIABLES.userSettings.findPrehistoric = true;
+					} else {
+						VARIABLES.userSettings.findPrehistoric = false;
+					}
+					
+					if ($('#chkDelta').prop("checked")) {
+						VARIABLES.userSettings.findDelta = true;
+					} else {
+						VARIABLES.userSettings.findDelta = false;
+					}
+					
+					if ($('#chkMega').prop("checked")) {
+						VARIABLES.userSettings.findMega = true;
+					} else {
+						VARIABLES.userSettings.findMega = false;
+					}
+					
+					if ($('#chkStarter').prop("checked")) {
+						VARIABLES.userSettings.findStarter = true;
+					} else {
+						VARIABLES.userSettings.findStarter = false;
+					}
+					
+					if ($('#chkCustomSprite').prop("checked")) {
+						VARIABLES.userSettings.findCustomSprite = true;
+					} else {
+						VARIABLES.userSettings.findCustomSprite = false;
+					}
+					
 					fn.backwork.saveSettings();
 				},
 			}, // end of API
@@ -134,6 +203,10 @@
 	
 	$(document).on('click', '#QoLSettings', (function() { // save userscript settings
 		PFQoL.userSettingsChange ();
+	}));
+	
+	$(document).on('click', '#shelteroptionsqol', (function() { // save shelter settings
+		PFQoL.shelterSettingsChange ();
 	}));
 	
 })(jQuery); //end of userscript
