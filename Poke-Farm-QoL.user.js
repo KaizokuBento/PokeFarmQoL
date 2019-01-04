@@ -113,7 +113,7 @@
 			API : { // the actual seeable and interactable part of the userscript
 				userscriptSettings () {
 					if(window.location.href.indexOf("farm#tab=1") != -1){
-						if($('#shelterEnable').prop('checked')) {
+						if($('#shelterOn').prop('checked')) {
 							alert("It's checked");
 						} else {
 							alert("you unchecked");
