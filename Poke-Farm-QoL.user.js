@@ -28,22 +28,25 @@
 	let PFQoL = (function PFQoL() {
 
 		const DEFAULT_USER_SETTINGS = { // default settings when the script gets loaded the first time
-		//shelter settings
-		shelterEnable: true,
-		findNewEgg: true,
-		findNewPokemon: true,
-		findShiny: true,
-		findAlbino: true,
-		findMelanistic: true,
-		findPrehistoric: true,
-		findDelta: true,
-		findMega: true,
-		findStarter: true,
-		findCustomSprite: true,
-		findMale: true,
-		findFemale: true,
-		findNoGender: true,
-		findCustom: "",
+			//userscript settings
+			shelterEnable: true,
+			//shelter settings
+			shelterSettings : {
+				findNewEgg: true,
+				findNewPokemon: true,
+				findShiny: true,
+				findAlbino: true,
+				findMelanistic: true,
+				findPrehistoric: true,
+				findDelta: true,
+				findMega: true,
+				findStarter: true,
+				findCustomSprite: true,
+				findMale: true,
+				findFemale: true,
+				findNoGender: true,
+				findCustom: "",
+			}
 		};
 
 		const SETTINGS_SAVE_KEY = 'QoLSettings'; // the name of the local storage
@@ -51,22 +54,24 @@
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
 			
-			shelterSearch : {
-		searchEgg: "egg",
-		searchPokemon: "Pokémon",
-		searchShiny: "shiny.png",
-		searchAlbino: "albino.png",
-		searchMelanistic: "melanistic.png",
-		searchPrehistoric: "prehistoric.png",
-		searchDelta: "/_delta/",
-		searchMega: "mega.png",
-		searchStarter: "starter.png",
-		searchCustomSprite: "[CUSTOM SPRITE]",
-		searchMale: "[M]",
-		searchFemale: "[F]",
-		searchNoGender: "[N]",
-		searchCustom: "",
-			}
+			i : 0,
+			
+			shelterSearch : [
+				"findNewEgg", "egg",
+				"findNewPokemon", "Pokémon",
+				"findShiny", "shiny.png",
+				"findAlbino","albino.png",
+				"findMelanistic", "melanistic.png",
+				"findPrehistoric", "prehistoric.png",
+				"findDelta", "/_delta/",
+				"findMega", "mega.png",
+				"findStarter", "starter.png",
+				"findCustomSprite", "[CUSTOM SPRITE]",
+				"findMale", "[M]",
+				"findFemale", "[F]",
+				"findNoGender", "[N]",
+				"findCustom", "VARIABLES.userSettings.shelterSettings.findCustom",
+			],
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -95,6 +100,7 @@
                     }
 					
                 },
+				
 			},
 			/** background stuff */
 			backwork : { // backgrounds tuff
@@ -122,7 +128,22 @@
                        if (typeof value === 'string') {
                             fn.helpers.toggleSetting(key, value, false);
                             continue;
+					   }
+                    }
+					for (let key in VARIABLES.userSettings.shelterSettings) {
+                        if (!VARIABLES.userSettings.shelterSettings.hasOwnProperty(key)) {
+                            continue;
                         }
+                        let value = VARIABLES.userSettings.shelterSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
                     }
                 },
 				
@@ -172,7 +193,7 @@
 			/** public stuff */
 			API : { // the actual seeable and interactable part of the userscript
 				settingsChange(element, textElement) {
-					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) {
+					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
 							VARIABLES.userSettings[element] = true;
 						} else if (VARIABLES.userSettings[element] === true ) {
@@ -180,12 +201,36 @@
 						} else if (typeof VARIABLES.userSettings[element] === 'string') {
 							VARIABLES.userSettings[element] = textElement;
 						}
+					} 
+					if (JSON.stringify(VARIABLES.userSettings.shelterSettings).indexOf(element) >= 0) { // shelter settings
+						if (VARIABLES.userSettings.shelterSettings[element] === false ) {
+							VARIABLES.userSettings.shelterSettings[element] = true;
+						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
+							VARIABLES.userSettings.shelterSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
+							VARIABLES.userSettings.shelterSettings[element] = textElement;
+						}
 					}
 					fn.backwork.saveSettings();
 				},
 				
 				shelterCustomSearch() {
-
+					console.log("shelterarea search starts");
+					for (let shelterKey in VARIABLES.userSettings.shelterSettings) {
+						let shelterValue = VARIABLES.userSettings.shelterSettings[shelterKey];
+						if (shelterValue === true) {
+							if (VARIABLES.shelterSearch.indexOf(shelterKey) >=0) {
+								var nextValue = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(shelterKey) + 1];
+								console.log(nextValue)	
+							}
+							if ($('#shelterarea > .tooltip_content:contains(JSON.stringify(nextValue))')) { // doesn't find exact!!!
+								console.log("FOUND!");
+							} else {
+								console.log("not found..");
+							}
+						continue;
+						}
+					}
 				},
 			}, // end of API
 		}; // end of fn
@@ -197,6 +242,10 @@
 
 	$(document).on('input', '.qolsetting', (function() {
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
+	}));
+	
+	$(document).on('click', '#sheltercommands ,#shelterarea ,input', (function() {
+		PFQoL.shelterCustomSearch();
 	}));
 
 })(jQuery); //end of userscript
