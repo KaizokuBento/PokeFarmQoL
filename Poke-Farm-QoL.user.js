@@ -43,13 +43,30 @@
 		findMale: true,
 		findFemale: true,
 		findNoGender: true,
-		findCustom: null,
+		findCustom: "",
 		};
 
 		const SETTINGS_SAVE_KEY = 'QoLSettings'; // the name of the local storage
 
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
+			
+			shelterSearch : {
+		searchEgg: "egg",
+		searchPokemon: "Pokémon",
+		searchShiny: "shiny.png",
+		searchAlbino: "albino.png",
+		searchMelanistic: "melanistic.png",
+		searchPrehistoric: "prehistoric.png",
+		searchDelta: "/_delta/",
+		searchMega: "mega.png",
+		searchStarter: "starter.png",
+		searchCustomSprite: "[CUSTOM SPRITE]",
+		searchMale: "[M]",
+		searchFemale: "[F]",
+		searchNoGender: "[N]",
+		searchCustom: "",
+			}
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -70,6 +87,13 @@
                             element.checked = set;
                         }
                     }
+					if (typeof set === 'string') {
+                        let element = document.querySelector(`.qolsetting[data-key="${key}"]`);
+                        if (element && element.type === 'text') {
+                            element.value = set;
+                        }
+                    }
+					
                 },
 			},
 			/** background stuff */
@@ -95,16 +119,9 @@
                             continue;
                         }
 
-                        if (true === _.isPlainObject(value)) {
-                            for (let key2 in value) {
-                                if (!value.hasOwnProperty(key2)) {
-                                    continue;
-                                }
-                                let value2 = value[key2];
-                                if (typeof value2 === 'boolean') {
-                                    fn.helpers.toggleSetting(`${key}-${key2}`, value2, false);
-                                }
-                            }
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
                         }
                     }
                 },
@@ -124,6 +141,7 @@
 					if (VARIABLES.userSettings.shelterEnable === true && window.location.href.indexOf("shelter") != -1) {
 						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
 						document.querySelector("#shelteroptionsqol").insertAdjacentHTML("beforebegin", "<h3>QoL Settings</h3>");
+						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
 						fn.backwork.populateSettingsPage();
 					}
 				},
@@ -153,19 +171,21 @@
 
 			/** public stuff */
 			API : { // the actual seeable and interactable part of the userscript
-				settingsChange (element) {
+				settingsChange(element, textElement) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) {
-						console.log("this is "+element);
-						console.log("is this working?"+VARIABLES.userSettings[element]);
 						if (VARIABLES.userSettings[element] === false ) {
-							console.log("was false now true and a boolean");
 							VARIABLES.userSettings[element] = true;
 						} else if (VARIABLES.userSettings[element] === true ) {
-							console.log("was true now false and a boolean");
 							VARIABLES.userSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings[element] === 'string') {
+							VARIABLES.userSettings[element] = textElement;
 						}
 					}
 					fn.backwork.saveSettings();
+				},
+				
+				shelterCustomSearch() {
+
 				},
 			}, // end of API
 		}; // end of fn
@@ -175,8 +195,8 @@
 		return fn.API;
 	})(); // end of PFQoL function
 
-	$(document).on('change', '.qolsetting', (function() {
-		PFQoL.settingsChange(this.getAttribute('data-key'));
+	$(document).on('input', '.qolsetting', (function() {
+		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
 	}));
 
 })(jQuery); //end of userscript
