@@ -213,9 +213,9 @@
 		return fn.API;
 	})(); // end of PFQoL function
 
-	$(document).on('click', '#QoLSettings', (function() { // save userscript settings
-		PFQoL.userSettingsChange ();
-	}));
+	//$(document).on('click', '#QoLSettings', (function() { // save userscript settings
+	//	PFQoL.userSettingsChange ();
+	//}));
 
 	//$(document).on('click', '#shelteroptionsqol', (function() { // save shelter settings
 	//	PFQoL.shelterSettingsChange ();
