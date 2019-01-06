@@ -49,30 +49,28 @@
 			}
 		};
 
-		const SETTINGS_SAVE_KEY = 'QoLSettings'; // the name of the local storage
+		const SETTINGS_SAVE_KEY = 'QoLSettings';
 
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
-			
-			i : 0,
-			
-			shelterSearch : [ //div class forme (alolan || totem) || Apocalyptic  pokemon || species? ||
-				"findCustom", "",
-				"findNewEgg", "egg",
-				"findNewPokemon", "Pokémon",
-				"findShiny", "[SHINY]",
-				"findAlbino","[ALBINO]",
-				"findMelanistic", "[MELANISTIC]",
-				"findPrehistoric", "[PREHISTORIC]",
-				"findDelta", "/_delta/", //[DELTA-FIRE] [DELTA-GHOST]
-				"findMega", "[MEGA]",
-				"findStarter", "[STARTER]",
-				"findCustomSprite", "[CUSTOM SPRITE]",
-				"findMale", "[M]",
-				"findFemale", "[F]",
-				"findNoGender", "[N]", 
+
+			shelterSearch : [
+				"findCustom", "", "custom Pokémon",
+				"findNewEgg", "Egg", "new egg",
+				"findNewPokemon", "Pokémon", "new Pokémon",
+				"findShiny", "[SHINY]", "Shiny",
+				"findAlbino","[ALBINO]", "Albino",
+				"findMelanistic", "[MELANISTIC]", "Melanistic",
+				"findPrehistoric", "[PREHISTORIC]", "Prehistoric",
+				"findDelta", "/_delta/", "Delta", //[DELTA-FIRE] [DELTA-GHOST]
+				"findMega", "[MEGA]", "Mega",
+				"findStarter", "[STARTER]", "Starter",
+				"findCustomSprite", "[CUSTOM SPRITE]", "Custom Sprite",
+				"findMale", "[M]", "Male",
+				"findFemale", "[F]", "Female",
+				"findNoGender", "[N]", "No Gender",
 			],
-			
+
 			shelterSearchSucces : [
 			],
 		}
@@ -84,9 +82,11 @@
 		}
 
 		const OBSERVERS = {
-			shelterObserver() {
-				//observe change in shelterarea, function goes to fast to search for pokemon.
-			}
+			shelterObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.shelterCustomSearch();
+				});
+			})
 		}
 
 		const fn = { // all the functions for the script
@@ -104,9 +104,9 @@
                             element.value = set;
                         }
                     }
-					
+
                 },
-				
+
 			},
 			/** background stuff */
 			backwork : { // backgrounds tuff
@@ -152,7 +152,7 @@
 					   }
                     }
                 },
-				
+
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
 
 					// Header link to Userscript settings
@@ -176,11 +176,20 @@
 					GM_addStyle(GM_getResourceText('QoLCSS'));
 				},
 
+				setupObservers() {
+					if (window.location.href.indexOf("shelter") != -1) {
+						OBSERVERS.shelterObserver.observe(document.querySelector('#shelterarea'), {
+							childList: true,
+						});
+					}
+				},
+
 				startup() { // All the functions that are run to start the script on Pokéfarm
 					return {
-						'loading Settings'	: fn.backwork.loadSettings,
-						'setting up CSS'	: fn.backwork.setupCSS,
-						'setting up HTML' 	: fn.backwork.setupHTML,
+						'loading Settings'		: fn.backwork.loadSettings,
+						'setting up CSS'		: fn.backwork.setupCSS,
+						'setting up HTML' 		: fn.backwork.setupHTML,
+						'setting up Observers'	: fn.backwork.setupObservers,
 					}
 				},
 				init() { // Starts all the functions.
@@ -207,7 +216,7 @@
 						} else if (typeof VARIABLES.userSettings[element] === 'string') {
 							VARIABLES.userSettings[element] = textElement;
 						}
-					} 
+					}
 					if (JSON.stringify(VARIABLES.userSettings.shelterSettings).indexOf(element) >= 0) { // shelter settings
 						if (VARIABLES.userSettings.shelterSettings[element] === false ) {
 							VARIABLES.userSettings.shelterSettings[element] = true;
@@ -219,36 +228,54 @@
 					}
 					fn.backwork.saveSettings();
 				},
-				
-				shelterCustomSearch() { 
+
+				shelterCustomSearch() { // layout: Meervoud, img || Delta search || customsearch: bulbasaur also finds bulbasaur egg ||
 					const shelterValueArray = [];
 					VARIABLES.shelterSearch[1] = VARIABLES.userSettings.shelterSettings.findCustom; //change customsearch in array to find what you need
 					document.querySelector('#sheltersuccess').innerHTML="";
-					
+
 					for (let key in VARIABLES.userSettings.shelterSettings) { //loop runs till all sheltersettings are found (14)
 						let value = VARIABLES.userSettings.shelterSettings[key];
 						if (value === true || value != "") { //creates an array of items that should be found
 							if (VARIABLES.shelterSearch.indexOf(key) >=0) {
-								var searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
+								let searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
 								shelterValueArray.push(searchKey);
 							}
 						}
 					}
-					;
+
 					for (let key in shelterValueArray) {
 						let value = shelterValueArray[key];
 						if (value.startsWith("[")) {
-							if ($("img[title*='"+value+"']").length) {  //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter, Custom Sprite & Gender search
-								console.log($("img[title*='"+value+"']").length+" - "+value+" found");
-								let result = $("img[title*='"+value+"']").length+" - "+value+" found";
-								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+result+"</div>");
+							if ($("img[title*='"+value+"']").length) { //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter, Custom Sprite & Gender search
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let imgResult = $("img[title*='"+value+"']").length+" - "+searchResult+" found";
+								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+imgResult+"</div>");
 							}
-						}	
-					}
-					
+						}
 
-					console.log("1. create array. "+shelterValueArray.length+" - "+shelterValueArray);
-					//console.log("2. create searchkeys. "+searchKey+" - "+searchKey);
+						if (value.startsWith("[") === false && value != "Egg") { //tooltip search. new pokémon & custom
+							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" - "+searchResult+" found";
+								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"</div>");
+							}
+						}
+
+						if (value === "Egg") {
+							if ($("#shelterarea .tooltip_content:contains("+value+")").length) { //tooltip search. new egg.
+								let allEggFinds = $("#shelterarea .tooltip_content:contains("+value+")").length;
+								let allKnownEggFinds = $("#shelterarea .tooltip_content:contains( "+value+")").length;
+								let newEggFinds = allEggFinds - allKnownEggFinds;
+
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let newEggResult = newEggFinds+" - "+searchResult+" found";
+								if (newEggFinds > 0) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+newEggResult+"</div>");
+								}
+							}
+						}
+					}
 				}, // end of shelterCustomSearch
 			}, // end of API
 		}; // end of fn
@@ -261,11 +288,11 @@
 	$(document).on('input', '.qolsetting', (function() {
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
 	}));
-	
+
 	$(document).on('change', 'input', (function() {
 		PFQoL.shelterCustomSearch();
 	}));
-	
+
 	$(document).on('click', '#sheltercommands ,#shelterarea', (function() {
 		PFQoL.shelterCustomSearch();
 	}));
