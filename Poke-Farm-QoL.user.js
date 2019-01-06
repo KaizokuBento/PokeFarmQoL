@@ -56,21 +56,21 @@
 			
 			i : 0,
 			
-			shelterSearch : [
+			shelterSearch : [ //div class forme (alolan || totem) || Apocalyptic  pokemon || species? ||
 				"findNewEgg", "egg",
 				"findNewPokemon", "Pokémon",
-				"findShiny", "shiny.png",
-				"findAlbino","albino.png",
-				"findMelanistic", "melanistic.png",
-				"findPrehistoric", "prehistoric.png",
-				"findDelta", "/_delta/",
-				"findMega", "mega.png",
-				"findStarter", "starter.png",
+				"findShiny", "[SHINY]",
+				"findAlbino","[ALBINO]",
+				"findMelanistic", "[MELANISTIC]",
+				"findPrehistoric", "[PREHISTORIC]",
+				"findDelta", "/_delta/", //[DELTA-FIRE] [DELTA-GHOST]
+				"findMega", "[MEGA]",
+				"findStarter", "[STARTER]",
 				"findCustomSprite", "[CUSTOM SPRITE]",
 				"findMale", "[M]",
 				"findFemale", "[F]",
 				"findNoGender", "[N]",
-				"findCustom", "VARIABLES.userSettings.shelterSettings.findCustom",
+				"findCustom", "VARIABLES.userSettings.shelterSettings.findCustom", //must be done separately
 			],
 		}
 
@@ -81,6 +81,9 @@
 		}
 
 		const OBSERVERS = {
+			shelterObserver() {
+				//observe change in shelterarea, function goes to fast to search for pokemon.
+			}
 		}
 
 		const fn = { // all the functions for the script
@@ -214,20 +217,23 @@
 					fn.backwork.saveSettings();
 				},
 				
-				shelterCustomSearch() {
-					console.log("shelterarea search starts");
+				shelterCustomSearch() {  //on settings change doesn't fire. || goes to fast, executes function before shelterarea loads. || 
+					//console.log("shelterarea search starts");
 					for (let shelterKey in VARIABLES.userSettings.shelterSettings) {
 						let shelterValue = VARIABLES.userSettings.shelterSettings[shelterKey];
 						if (shelterValue === true) {
 							if (VARIABLES.shelterSearch.indexOf(shelterKey) >=0) {
-								var nextValue = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(shelterKey) + 1];
-								console.log(nextValue)	
+								var searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(shelterKey) + 1];
+								//console.log(searchKey)	
 							}
-							if ($('#shelterarea > .tooltip_content:contains(JSON.stringify(nextValue))')) { // doesn't find exact!!!
-								console.log("FOUND!");
-							} else {
-								console.log("not found..");
+							if($( "img[title*='"+searchKey+"']" ).length) { //gender - shiny -  search
+								console.log(searchKey+"found");
 							}
+							//if ($('#shelterarea > .tooltip_content:contains(("'+searchKey+'"))').length) { 
+							//	console.log("FOUND!");
+							//} else {
+							//	console.log("not found..");
+							//}
 						continue;
 						}
 					}
@@ -244,7 +250,11 @@
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
 	}));
 	
-	$(document).on('click', '#sheltercommands ,#shelterarea ,input', (function() {
+	$(document).on('change', 'input', (function() {
+		PFQoL.shelterCustomSearch();
+	}));
+	
+	$(document).on('click', '#sheltercommands ,#shelterarea', (function() {
 		PFQoL.shelterCustomSearch();
 	}));
 
