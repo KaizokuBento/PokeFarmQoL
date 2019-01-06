@@ -32,6 +32,7 @@
 			shelterEnable: true,
 			//shelter settings
 			shelterSettings : {
+				findCustom: "",
 				findNewEgg: true,
 				findNewPokemon: true,
 				findShiny: true,
@@ -45,7 +46,6 @@
 				findMale: true,
 				findFemale: true,
 				findNoGender: true,
-				findCustom: "",
 			}
 		};
 
@@ -57,6 +57,7 @@
 			i : 0,
 			
 			shelterSearch : [ //div class forme (alolan || totem) || Apocalyptic  pokemon || species? ||
+				"findCustom", "",
 				"findNewEgg", "egg",
 				"findNewPokemon", "Pokémon",
 				"findShiny", "[SHINY]",
@@ -69,8 +70,10 @@
 				"findCustomSprite", "[CUSTOM SPRITE]",
 				"findMale", "[M]",
 				"findFemale", "[F]",
-				"findNoGender", "[N]",
-				"findCustom", "VARIABLES.userSettings.shelterSettings.findCustom", //must be done separately
+				"findNoGender", "[N]", 
+			],
+			
+			shelterSearchSucces : [
 			],
 		}
 
@@ -217,27 +220,36 @@
 					fn.backwork.saveSettings();
 				},
 				
-				shelterCustomSearch() {  //on settings change doesn't fire. || goes to fast, executes function before shelterarea loads. || 
-					//console.log("shelterarea search starts");
-					for (let shelterKey in VARIABLES.userSettings.shelterSettings) {
-						let shelterValue = VARIABLES.userSettings.shelterSettings[shelterKey];
-						if (shelterValue === true) {
-							if (VARIABLES.shelterSearch.indexOf(shelterKey) >=0) {
-								var searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(shelterKey) + 1];
-								//console.log(searchKey)	
+				shelterCustomSearch() { 
+					const shelterValueArray = [];
+					VARIABLES.shelterSearch[1] = VARIABLES.userSettings.shelterSettings.findCustom; //change customsearch in array to find what you need
+					document.querySelector('#sheltersuccess').innerHTML="";
+					
+					for (let key in VARIABLES.userSettings.shelterSettings) { //loop runs till all sheltersettings are found (14)
+						let value = VARIABLES.userSettings.shelterSettings[key];
+						if (value === true || value != "") { //creates an array of items that should be found
+							if (VARIABLES.shelterSearch.indexOf(key) >=0) {
+								var searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
+								shelterValueArray.push(searchKey);
 							}
-							if($( "img[title*='"+searchKey+"']" ).length) { //gender - shiny -  search
-								console.log(searchKey+"found");
-							}
-							//if ($('#shelterarea > .tooltip_content:contains(("'+searchKey+'"))').length) { 
-							//	console.log("FOUND!");
-							//} else {
-							//	console.log("not found..");
-							//}
-						continue;
 						}
 					}
-				},
+					;
+					for (let key in shelterValueArray) {
+						let value = shelterValueArray[key];
+						if (value.startsWith("[")) {
+							if ($("img[title*='"+value+"']").length) {  //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter, Custom Sprite & Gender search
+								console.log($("img[title*='"+value+"']").length+" - "+value+" found");
+								let result = $("img[title*='"+value+"']").length+" - "+value+" found";
+								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+result+"</div>");
+							}
+						}	
+					}
+					
+
+					console.log("1. create array. "+shelterValueArray.length+" - "+shelterValueArray);
+					//console.log("2. create searchkeys. "+searchKey+" - "+searchKey);
+				}, // end of shelterCustomSearch
 			}, // end of API
 		}; // end of fn
 
