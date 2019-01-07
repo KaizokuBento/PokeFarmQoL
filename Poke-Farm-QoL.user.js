@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Poké Farm QoL
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.3
 // @description  Quality of Life chan
 // @author       Bentomon
 // @match        https://pokefarm.com/*
