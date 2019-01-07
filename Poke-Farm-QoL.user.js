@@ -266,9 +266,9 @@
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if ($("img[title*='"+value+"']").length > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+imgResult+"s found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+imgResult+"s found "+imgFitResult+"</div>");
 								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+imgResult+" found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+imgResult+" found "+imgFitResult+"</div>");
 								}
 							}
 						}
@@ -280,9 +280,9 @@
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+"s found "+imgFitResult+"</div>");
 								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" found "+imgFitResult+"</div>");
 								}
 							}
 						}
@@ -298,9 +298,9 @@
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if (newEggFinds > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+newEggResult+"s found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+newEggResult+"s found "+imgFitResult+"</div>");
 								} else if (newEggFinds === 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+newEggResult+" found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+newEggResult+" found "+imgFitResult+"</div>");
 								}
 							}
 						}
@@ -317,9 +317,9 @@
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" found "+imgFitResult+"</div>");
 									}
 								}
 							}
@@ -332,9 +332,9 @@
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" found "+imgFitResult+"</div>");
 									}
 								}
 							}
@@ -347,9 +347,9 @@
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" found "+imgFitResult+"</div>");
 									} 
 								}
 							}
@@ -362,9 +362,9 @@
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" Eggs found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" Eggs found "+imgFitResult+"</div>");
 								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" egg found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" egg found "+imgFitResult+"</div>");
 								}
 							}
 						}	
@@ -376,9 +376,9 @@
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+"s found "+imgFitResult+"</div>");
 								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div id="shelterfound">"+tooltipResult+" found "+imgFitResult+"</div>");
 								} 
 							}
 						}
