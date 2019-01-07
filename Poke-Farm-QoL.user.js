@@ -1,23 +1,23 @@
 // ==UserScript==
-// @name         Poké Farm QoL
+// @name         Poké Farm QoL NEW
 // @namespace    https://github.com/KaizokuBento/
-// @author       Bento(mon)
+// @author       Bentomon
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.0.0
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
-// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/qolSettingsMenuHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/css/pfqol.css
-// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/Test/Poke-Farm-QoL.user.js
+// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
+// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
+// @version      1.0
 // @connect      github.com
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @grant		 GM_info
+// @grant	 GM_info
 // ==/UserScript==
 
 
@@ -151,7 +151,7 @@
 							var match = atob(data.response.content).match(/\/\/\s+@version\s+([^\n]+)/);
 							version = match[1];
 							if (fn.backwork.versionCompare(GM_info.script.version, version) < 0) {
-								document.querySelector("#head-right").insertAdjacentHTML('beforebegin','&nbsp;&nbsp;<a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/Test/Poke-Farm-QoL.user.js\" target=\"_blank\">Update Available!</a>');
+								document.querySelector("#head-right").insertAdjacentHTML('beforebegin','&nbsp;&nbsp;<a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\">Update Available!</a>');
 							} else {
 								VARIABLES.checkForUpdateTimer = setTimeout(fn.backwork.checkForUpdate, 24 * 60 * 60 * 1000);
 							}
@@ -160,10 +160,7 @@
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-					let countVariablesSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length;
-					let countLocalSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-
-					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null || countLocalSettings != countVariablesSettings) {
+					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
 					} else if (localStorage.getItem(SETTINGS_SAVE_KEY) != VARIABLES.userSettings) {
 						VARIABLES.userSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
@@ -476,8 +473,8 @@
 	}));
 
 	$(document).on('click', '*[data-menu="release"]', (function() {
-        PFQoL.releaseFieldSelectAll();
-    }));
+        	PFQoL.releaseFieldSelectAll();
+    	}));
 	
 	$(document).on('mouseover', '#caughtfishcontainer', (function() {
 		PFQoL.releaseFishSelectAll();
