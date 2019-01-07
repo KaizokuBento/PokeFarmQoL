@@ -58,7 +58,7 @@
 			userSettings : DEFAULT_USER_SETTINGS,
 
 			shelterSearch : [
-				"findCustom", "", "custom Pokémon", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
+				"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
 				"findNewEgg", "Egg", "new egg", '<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">',
 				"findNewPokemon", "Pokémon", "new Pokémon", '<img src="//pfq-static.com/img/pkmn/pkmn.png/t=1451852507">',
 				"findShiny", "[SHINY]", "Shiny", '<img src="//pfq-static.com/img/pkmn/shiny.png/t=1400179603">',
@@ -229,6 +229,15 @@
 							VARIABLES.userSettings.shelterSettings[element] = textElement;
 						}
 					}
+					if (VARIABLES.userSettings.shelterSettings.customPng === true) {
+						if (VARIABLES.userSettings.shelterSettings.customEgg === true || VARIABLES.userSettings.shelterSettings.customPokemon === true) {
+							alert("If you select 'By img code' then you have to de-select 'Custom Egg' & 'Custom Pokémon'. Can't find both at the same time.");
+						}
+					}
+					
+					if (VARIABLES.userSettings.shelterSettings.findMale === false && VARIABLES.userSettings.shelterSettings.findFemale === false && VARIABLES.userSettings.shelterSettings.findNoGender === false) {
+						alert("You need to select at least 1 of the 3 genders to custom find a Pokémon!");
+					}
 					fn.backwork.saveSettings();
 				},
 
@@ -247,7 +256,7 @@
 						}
 					}
 
-					for (let key in shelterValueArray) {
+					for (let key in shelterValueArray) { // all the search stuff that's being done
 						let value = shelterValueArray[key];
 						
 						if (value.startsWith("[") && value != "[M]" && value != "[F]" && value != "[N]") { //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter & Custom Sprite
@@ -267,7 +276,7 @@
 						if (value === "Pokémon") { //tooltip_content search. new pokémon
 							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" - "+searchResult;
+								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" "+searchResult;
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
@@ -285,7 +294,7 @@
 								let newEggFinds = allEggFinds - allKnownEggFinds;
 
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-								let newEggResult = newEggFinds+" - "+searchResult;
+								let newEggResult = newEggFinds+" "+searchResult;
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
 								if (newEggFinds > 1) {
@@ -296,17 +305,18 @@
 							}
 						}
 						
-						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false) { //custom search with genders || determine if it's an egg or an pokemon 
+
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPokemon === true) { //custom search with pokemon & genders
 							VARIABLES.shelterSearch[2] = VARIABLES.userSettings.shelterSettings.findCustom; // this is the custom search from the textbox
 							
 							if (shelterValueArray.indexOf("[M]") >0) {
 								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
 									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" Male "+imgGender+" "+searchResult;
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-								
-									if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
+
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
@@ -318,10 +328,10 @@
 								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
 									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" Female "+imgGender+" "+searchResult;
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
-									if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
@@ -333,15 +343,43 @@
 								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
 									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" Genderless "+imgGender+" "+searchResult;
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
 									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
 								
-									if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
 									} else {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
 									} 
 								}
+							}
+						}
+						
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customEgg === true) { //custom search with eggs						
+							if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length+" "+searchResult;
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+								
+								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" Eggs found "+imgFitResult+"</div>");
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" egg found "+imgFitResult+"</div>");
+								}
+							}
+						}	
+						
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPng === true) { //custom search with img code
+							if ($('#shelterarea img[src*="'+value+'"]').length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $('#shelterarea img[src*="'+value+'"]').length+"   <img src="+value+">";
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+								
+								if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+"s found "+imgFitResult+"</div>");
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend',"<div>"+tooltipResult+" found "+imgFitResult+"</div>");
+								} 
 							}
 						}
 					}
