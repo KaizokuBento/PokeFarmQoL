@@ -5,6 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
+// @version      1.0.2
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -12,7 +13,6 @@
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
-// @version      1.0.1
 // @connect      github.com
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -97,16 +97,6 @@
 
 		const fn = { // all the functions for the script
 			helpers: {
-				getUpdateVersion() {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: 'https://api.github.com/repos/KaizokuBento/PokeFarmQoL/contents/Poke-Farm-QoL.user.js',
-						responseType: 'json',
-						onload: function(data) {
-							console.log(data.response);
-						}
-					});
-				},
 				toggleSetting(key, set = false) {
                     if (typeof set === 'boolean') {
                         let element = document.querySelector(`.qolsetting[data-key="${key}"]`);
@@ -478,8 +468,5 @@
 	
 	$(document).on('mouseover', '#caughtfishcontainer', (function() {
 		PFQoL.releaseFishSelectAll();
-	}));
-	
-	
-	
+	}));	
 })(jQuery); //end of userscript
