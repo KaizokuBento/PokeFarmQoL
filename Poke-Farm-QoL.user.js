@@ -17,7 +17,7 @@
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @grant	 GM_info
+// @grant	     GM_info
 // ==/UserScript==
 
 
@@ -473,8 +473,8 @@
 	}));
 
 	$(document).on('click', '*[data-menu="release"]', (function() {
-        	PFQoL.releaseFieldSelectAll();
-    	}));
+		PFQoL.releaseFieldSelectAll();
+    }));
 	
 	$(document).on('mouseover', '#caughtfishcontainer', (function() {
 		PFQoL.releaseFishSelectAll();
