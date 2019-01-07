@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Poké Farm QoL NEW
+// @name         Poké Farm QoL
 // @namespace    https://github.com/KaizokuBento/
 // @author       Bentomon
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
