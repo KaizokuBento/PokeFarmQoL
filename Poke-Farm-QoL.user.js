@@ -1,725 +1,488 @@
 // ==UserScript==
 // @name         Poké Farm QoL
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Quality of Life chan
-// @author       Bentomon
+// @namespace    https://github.com/KaizokuBento/
+// @author       Bento(mon)
+// @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
+// @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
+// @description  Quality of Life changes to Pokéfarm!
+// @version      1.0.0
 // @match        https://pokefarm.com/*
-// @require      http://code.jquery.com/jquery-3.3.1.js
+// @require      http://code.jquery.com/jquery-3.3.1.min.js
+// @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
+// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/qolSettingsMenuHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/Test/resources/css/pfqol.css
+// @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/Test/Poke-Farm-QoL.user.js
+// @connect      github.com
+// @grant        GM_getResourceText
 // @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
+// @grant		 GM_info
 // ==/UserScript==
 
 
-//[16:43:50] [UserScripts] Vysn: if (true) ? thingWeDoIfTrue : thingWeDoIfFalse
-//[16:43:35] [UserScripts] Vysn: its a shorter way to do an if/else
-//[16:43:31] [UserScripts] Bento: yeah could be
-//[16:43:27] [UserScripts] Bento: Looool
-//[16:43:24] [UserScripts] Bento: why the true ? true : false. What does that do
-//https://www.google.de/search?rlz=1C1CHBF_deDE784DE784&ei=kvEGXN-kF5HcwQL8j42QDQ&q=javascript+indenting&oq=javascript+indenting&gs_l=psy-ab.3.0.0j0i22i30j0i22i10i30.22467.25690..26914...2.0..0.114.1438.21j1....2..0....1..gws-wiz.......0i71j35i39j0i10j0i10i203.5Fba41exxww
-
-// https://codeburst.io/difference-between-let-and-var-in-javascript-537410b2d707
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator
-
 (function($) {
     'use strict';
-        /////////////////////////////////////
-        // Welcome to my first ever script!//
-        // Let's setup the Settings first. //
-        /////////////////////////////////////
+    /////////////////////////////////////
+    // Welcome to my first ever script!//
+    // Let's hope everything works~    //
+    /////////////////////////////////////
 
-    // First checks if settings in local storage exists, if not it creates default settings.
+	let PFQoL = (function PFQoL() {
 
-    var settingShelter = localStorage.getItem('settingShelter', true);
-    if (settingShelter == null){
-        localStorage.setItem('settingShelter', true);
-    } else {
-        localStorage.getItem('settingShelter', settingShelter);
-    }
+		const DEFAULT_USER_SETTINGS = { // default settings when the script gets loaded the first time
+			//userscript settings
+			shelterEnable: true,
+			releaseSelectAll: true,
+			//shelter settings
+			shelterSettings : {
+				findCustom: "",
+				findNewEgg: true,
+				findNewPokemon: true,
+				findShiny: true,
+				findAlbino: true,
+				findMelanistic: true,
+				findPrehistoric: true,
+				findDelta: true,
+				findMega: true,
+				findStarter: true,
+				findCustomSprite: true,
+				findMale: true,
+				findFemale: true,
+				findNoGender: true,
+				customEgg: true,
+				customPokemon: true,
+				customPng: false,
+			}
+		};
 
-        ///////////////////////////////////////
-        // Css Changes                       //
-        // I should probably put this in Git.//
-        ///////////////////////////////////////
+		const SETTINGS_SAVE_KEY = 'QoLSettings';
 
-    const PFQOL_STYLES = `
-    /* Tooltip container */
-.tooltip {
-position: relative;
-display: inline-block;
-border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-}
+		const VARIABLES = { // all the variables that are going to be used in fn
+			userSettings : DEFAULT_USER_SETTINGS,
 
-    /* Tooltip text */
-.tooltip .tooltiptext {
-visibility: hidden;
-width: 500px;
-background-color: #555;
-color: #fff;
-text-align: center;
-padding: 5px 0;
-border-radius: 6px;
+			shelterSearch : [
+				"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
+				"findNewEgg", "Egg", "new egg", '<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">',
+				"findNewPokemon", "Pokémon", "new Pokémon", '<img src="//pfq-static.com/img/pkmn/pkmn.png/t=1451852507">',
+				"findShiny", "[SHINY]", "Shiny", '<img src="//pfq-static.com/img/pkmn/shiny.png/t=1400179603">',
+				"findAlbino","[ALBINO]", "Albino", '<img src="//pfq-static.com/img/pkmn/albino.png/t=1414662094">',
+				"findMelanistic", "[MELANISTIC]", "Melanistic", '<img src="//pfq-static.com/img/pkmn/melanistic.png/t=1435353274">',
+				"findPrehistoric", "[PREHISTORIC]", "Prehistoric", '<img src="//pfq-static.com/img/pkmn/prehistoric.png/t=1465558964">',
+				"findDelta", "[DELTA", "Delta", "Delta", '<img src="//pfq-static.com/img/pkmn/_delta/dark.png/t=1501325214">',
+				"findMega", "[MEGA]", "Mega", '<img src="//pfq-static.com/img/pkmn/mega.png/t=1400179603">',
+				"findStarter", "[STARTER]", "Starter", '<img src="//pfq-static.com/img/pkmn/starter.png/t=1484919510">',
+				"findCustomSprite", "[CUSTOM SPRITE]", "Custom Sprite", '<img src="//pfq-static.com/img/pkmn/cs.png/t=1405806997">',
+				"findMale", "[M]", "Male", '<img src="//pfq-static.com/img/pkmn/gender_m.png/t=1401213006">',
+				"findFemale", "[F]", "Female", '<img src="//pfq-static.com/img/pkmn/gender_f.png/t=1401213007">',
+				"findNoGender", "[N]", "No Gender", '<img src="//pfq-static.com/img/pkmn/gender_n.png/t=1401213004">',
+			],
 
-    /* Position the tooltip text */
-position: absolute;
-z-index: 1;
-bottom: 125%;
-left: 50%;
-margin-left: -60px;
+			checkForUpdateTimer : 0,
+		}
 
-    /* Fade in tooltip */
-opacity: 0;
-transition: opacity 0.3s;
-}
+		const TEMPLATES = { // all the new/changed HTML for the userscript
+			headerSettingsLinkHTML	: `<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>`,
+			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
+			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
+		}
 
-/* Tooltip arrow */
-.tooltip .tooltiptext::after {
-content: "";
-position: absolute;
-top: 100%;
-left: 50%;
-margin-left: -5px;
-border-width: 5px;
-border-style: solid;
-border-color: #555 transparent transparent transparent;
-}
+		const OBSERVERS = {
+			shelterObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.shelterCustomSearch();
+				});
+			})
+		}
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-visibility: visible;
-opacity: 1;
-}
-    `;
-
-// Add the CSS to the website
-function insertCss( code ) {
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    if (style.styleSheet) {
-        // IE
-        style.styleSheet.cssText = code;
-    } else {
-        // Other browsers
-        style.innerHTML = code;
-    }
-    document.getElementsByTagName("head")[0].appendChild( style );
-}
-
-// INJECT THE CSS INTO FUNCTION
-insertCss(PFQOL_STYLES);
-
-        /////////////////////////////////////
-        // Adding HTML on header           //
-        // Link to QoL Settings            //
-        /////////////////////////////////////
-    // worthless with only 1 setting.
-   // const qolOptionLink = document.getElementById("head-right");
-   // qolOptionLink.insertAdjacentHTML('beforebegin', "<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>");
-
-        /////////////////////////////////////
-        // Adding HTML on farmnews         //
-        // Creating the User Settings Menu //
-        /////////////////////////////////////
-if (window.location.href.indexOf("farm#tab=1") != -1){
-    const qolOptionHTML = `
-<div class = panel>
-<h3>QoL Settings</h3>
-<div>
-<p>Settings Page for the Poké Farm QoL Userscript! Check which features you want to run.</p>
-<table>
-<tbody>
-<tr>
-<td><input type =checkbox id = chkShelter value = true/><label for = chkShelter>Shelter Search QoL</label></td>
-<td><button type = "submit" button id = "saveusersetting">Save Settings</button></td>
-</tr>
-</div>
-</div>
-`;
-    //Inject the HTML on the farmnewspage
-    const qolOptionMenu = document.getElementById("farmnews");
-    qolOptionMenu.insertAdjacentHTML('afterbegin', qolOptionHTML);
-
-    //variables to save data
-    var chkShelter = document.getElementById("chkShelter");
-
-    //Save Settings
-    document.getElementById("saveusersetting").addEventListener("click", saveUserSettings);
-    function saveUserSettings(){
-        //get variables
-        //searches for the checkboxes
-
-        //checks which checkboxes are checked when the settings are saved
-        if (chkShelter.checked == true){
-            settingShelter = true;
-        } else {
-            settingShelter = false;
-        }
-    }
-
-    //Check Boxes out of LocalStorage
-    if ((/true/i).test(settingShelter) == true){
-        chkShelter.checked = true;
-    }
-}
-
-        /////////////////////////////////////
-        // Shelter QoL                     //
-        /////////////////////////////////////
-if ((/true/i).test(settingShelter) == true){
-    if (window.location.href.indexOf("shelter") != -1){
-        //Shelter Search and Success Variables/constants or whatever they are called
-        const shelterDivCreate = document.getElementById("sheltercommands");
-        const shelterSearch = document.getElementById("shelterarea").getElementsByClassName("tooltip_content");
-        const shelterSearchCustom = document.getElementById("shelterarea").getElementsByClassName("pokemon");
-
-        //Creating shelter Success Div and then we need to be able to find that div and adding some CSS that's not yet visible if you don't find a new Pokémon
-        shelterDivCreate.insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
-        const shelterSuccess = document.getElementById("sheltersuccess");
-        shelterSuccess.style.textAlign = "center";
-        shelterSuccess.style.background = "#e2ffcd";
-
-        //Shelter User Settings start settings
-        var newEgg = JSON.parse(localStorage.getItem('newEggSetting', newEgg));
-        var newPokemon = localStorage.getItem('newPokemonSetting', newPokemon);
-        var newShiny = localStorage.getItem('newShinySetting', newShiny);
-        var newAlbino = localStorage.getItem('newAlbinoSetting', newAlbino);
-        var newMelanistic = localStorage.getItem('newMelanisticSetting', newMelanistic);
-        var newPrehistoric = localStorage.getItem('newPrehistoricSetting', newPrehistoric);
-        var newDelta = localStorage.getItem("newDeltaSetting", newDelta);
-        var newMega = localStorage.getItem("newMegaSetting", newMega);
-        var newStarter = localStorage.getItem("newStarterSetting", newStarter);
-        var male = localStorage.getItem("newMaleSetting", male);
-        var female = localStorage.getItem("newFemaleSetting", female);
-        var none = localStorage.getItem("newNoneSetting", none);
-        var allGender = localStorage.getItem("newAllGenderSetting", allGender);
-        var customSearch = localStorage.getItem("newCustomSearchSetting", customSearch);
-        var customSearchInput = localStorage.getItem("newCustomSearchInput", customSearchInput);
-        var customInputTextField = localStorage.getItem("newCustomTextField", customInputTextField);
-
-        //Shelter Option menu Variable/constants or whatever they are called
-        const shelterOptionHeader = document.getElementById("shelterupgrades");
-        const shelterOptionMenu = document.getElementById("shelterupgrades");
-
-        //Shelter Option menu HTML
-        const shelterOptionHTML = `
-<div id = shelteroptionsqol>
-<p> Check the boxes of Pokémon you wish to find in the shelter!</p>
-<table>
-<tbody>
-<tr>
-<td><input type =checkbox id = chknewEgg value = true/><label for = chknewEgg>New Egg</label></td>
-<td><input type =checkbox id = chknewPokemon value = true/><label for = chknewPokemon>New Pokémon</label></td>
-</tr>
-<tr>
-<td><input type =checkbox id = chknewShiny value = true/><label for = chknewShiny>Shiny</label></td>
-<td><input type =checkbox id = chknewAlbino value = true/><label for = chknewAlbino>Albino</label></td>
-</tr>
-<tr>
-<td><input type =checkbox id = chknewMelanistic value = true/><label for = chknewMelanistic>Melanistic</label></td>
-<td><input type =checkbox id = chknewPrehistoric value = true/><label for = chknewPrehistoric>Prehistoric</label></td>
-</tr>
-<tr>
-<td><input type =checkbox id = chknewDelta value = true/><label for = chknewDelta>Delta</label></td>
-<td><input type =checkbox id = chknewMega value = true/><label for = chknewMega>Mega</label></td>
-</tr>
-<tr>
-<td><input type =checkbox id = chknewStarter value = true/><label for = chknewStarter>Starter</label></td>
-</tr>
-</tbody>
-</table>
-<p>Gender</p>
-<table>
-<tbody>
-<tr>
-<td><input type =checkbox id = chkmale value = true/><label for = chkmale>Male</label></td>
-<td><input type =checkbox id = chkfemale value = true/><label for = chkfemale>Female</label></td>
-</tr>
-<td><input type =checkbox id = chknone value = true/><label for = chknone>No gender</label></td>
-</tr>
-</tbody>
-</table>
-<p>Custom Search</p>
-<div class="tooltip">Custom Search Help
-<span class="tooltiptext">To custom search a Pokémon or Egg you check the "custom" checkbox and you need the 'IMAGE CODE' from that Pokémon or Egg.
-<br>Example: I want to find a Charmander. This is the image code for Charmander:<br>
-"pfq-static.com/img/pkmn/5/l/t.png".<br>
-Paste that in the textfield and save settings.<br>
-Voila, you can now find charmanders in the Shelter!<br><br>
-<a href="https://docs.google.com/spreadsheets/d/1rD1VZNTQRYXMOVKvGasjmMdMJu-iheE-ajsFkfs4QXA/edit?usp=sharing">List of Eggs Image Codes</a><br><br>
-More information that probably helps more then my explanation:<br>
-<br>
-<a href="https://pokefarm.com/forum/thread/127552/Site-Skins-How-To-and-Helpful-CSS>"Pokémon Modifications" > "Make Shelter Pokemon Stand Out"</a><br>
-</div>
-<table>
-<tbody>
-<tr>
-<td><input type =checkbox id = chkcustom value = true/><label for = chkcustom>Custom</label></td>
-<td><input type="text" id = chkcustominput name="customsearch"><br>
-</tr>
-<tr>
-<td><button type = "submit" button id = "saveshelter">Save Settings</button></td>
-</tr>
-</tbody>
-</table>
-</div>
-    `;
-
-        //Shelter Option menu
-        shelterOptionMenu.insertAdjacentHTML('afterend', shelterOptionHTML);
-        //Shelter Option Header
-        shelterOptionHeader.insertAdjacentHTML('afterend', "<h3>QoL Settings</h3>");
-
-        //Shelter Option menu Function to save the data
-        //Variables
-        var chknewEgg = document.getElementById("chknewEgg");
-        var chknewPokemon = document.getElementById("chknewPokemon");
-        var chknewShiny = document.getElementById("chknewShiny");
-        var chknewAlbino = document.getElementById("chknewAlbino");
-        var chknewMelanistic = document.getElementById("chknewMelanistic");
-        var chknewPrehistoric = document.getElementById("chknewPrehistoric");
-        var chknewDelta = document.getElementById("chknewDelta");
-        var chknewMega = document.getElementById("chknewMega");
-        var chknewStarter = document.getElementById("chknewStarter");
-        var chkmale = document.getElementById("chkmale");
-        var chkfemale = document.getElementById("chkfemale");
-        var chknone = document.getElementById("chknone");
-        var chkCustom = document.getElementById("chkcustom");
-        var chkCustomInput = document.getElementById("chkcustominput");
-        // Function to Save data
-        document.getElementById("saveshelter").addEventListener("click", saveShelter);
-        function saveShelter(){
-            //get variables
-            //searches for the checkboxes
-
-            //checks which checkboxes are checked when the settings are saved
-            if (chknewEgg.checked == true){
-                newEgg = true;
-            } else {
-                newEgg = false;
-            }
-            localStorage.setItem("newEggSetting", JSON.stringify(newEgg));
-            if (chknewPokemon.checked == true){
-                newPokemon = true;
-            } else {
-                newPokemon = false;
-            }
-            localStorage.setItem("newPokemonSetting", JSON.stringify(newPokemon));
-            if (chknewShiny.checked == true){
-                newShiny = true;
-            } else {
-                newShiny = false;
-            }
-            localStorage.setItem("newShinySetting", JSON.stringify(newShiny));
-            if (chknewAlbino.checked == true){
-                newAlbino = true;
-            } else {
-                newAlbino = false;
-            }
-            localStorage.setItem("newAlbinoSetting", JSON.stringify(newAlbino));
-            if (chknewMelanistic.checked == true){
-                newMelanistic = true;
-            } else {
-                newMelanistic = false;
-            }
-            localStorage.setItem("newMelanisticSetting", JSON.stringify(newMelanistic));
-            if (chknewPrehistoric.checked == true){
-                newPrehistoric = true;
-            } else {
-                newPrehistoric = false;
-            }
-            localStorage.setItem("newPrehistoricSetting", JSON.stringify(newPrehistoric));
-            if (chknewDelta.checked == true){
-                newDelta = true;
-            } else {
-                newDelta = false;
-            }
-            localStorage.setItem("newDeltaSetting", JSON.stringify(newDelta));
-            if (chknewMega.checked == true){
-                newMega = true;
-            } else {
-                newMega = false;
-            }
-            localStorage.setItem("newMegaSetting", JSON.stringify(newMega));
-            if (chknewStarter.checked == true){
-                newStarter = true;
-            } else {
-                newStarter = false;
-            }
-            localStorage.setItem("newStarterSetting", JSON.stringify(newStarter));
-            if (chkmale.checked == true){
-                male = true;
-            } else {
-                male = false;
-            }
-            localStorage.setItem("newMaleSetting", JSON.stringify(male));
-            if (chkfemale.checked == true){
-                female = true;
-            } else {
-                female = false;
-            }
-            localStorage.setItem("newFemaleSetting", JSON.stringify(female));
-            if (chknone.checked == true){
-                none = true;
-            } else {
-                none = false;
-            }
-            localStorage.setItem("newNoneSetting", JSON.stringify(none));
-            if (chknone.checked == true && chkmale.checked == true && chkfemale.checked == true){
-                allGender = true;
-            } else {
-                allGender = false;
-            }
-            localStorage.setItem("newAllGenderSetting", JSON.stringify(allGender));
-            if (chknone.checked == false && chkmale.checked == false && chkfemale.checked == false){
-            alert("You need to select at least 1 Gender type in the QoL settings!");
-            }
-            if (chkCustom.checked == true){
-                customSearch = true;
-                if (customSearchInput = document.getElementById("chkcustominput").value == ""){
-                    customInputTextField = false;
-                    if (customSearchInput = "Ha you can't find this!"){
-                        customSearchInput = "Ha you can't find this!";
-                    }
-                } else {
-                    customInputTextField = true;
-                    if (customSearchInput = document.getElementById("chkcustominput").value == ""){
-                        customSearchInput = "Ha you can't find this!";
-                    } else if (customSearchInput == document.getElementById("chkcustominput").value){
-                        customSearchInput = document.getElementById("chkcustominput").value;
-                    } else {
-                        customSearchInput = document.getElementById("chkcustominput").value;
-                    }
-                }
-            } else {
-                customSearch = false;
-            }
-            localStorage.setItem("newCustomSearchSetting", JSON.stringify(customSearch));
-            localStorage.setItem("newCustomSearchInput", customSearchInput);
-            localStorage.setItem("newCustomTextField", customInputTextField);
-        }
-
-
-        //Check boxes that have been selected (out of the localstorage)
-        var newEggLoad = localStorage.getItem('newEggSetting');
-        var newPokemonLoad = localStorage.getItem('newPokemonSetting');
-        var newShinyLoad = localStorage.getItem('newShinySetting');
-        var newAlbinoLoad = localStorage.getItem('newAlbinoSetting');
-        var newMelanisticLoad = localStorage.getItem('newMelanisticSetting');
-        var newPrehistoricLoad = localStorage.getItem('newPrehistoricSetting');
-        var newDeltaLoad = localStorage.getItem("newDeltaSetting", newDelta);
-        var newMegaLoad = localStorage.getItem("newMegaSetting", newMega);
-        var newStarterLoad = localStorage.getItem("newStarterSetting", newStarter);
-        var newFemaleLoad = localStorage.getItem("newMaleSetting", male);
-        var newMaleLoad = localStorage.getItem("newFemaleSetting", female);
-        var newNoneLoad = localStorage.getItem("newNoneSetting", none);
-        var newCustomSearchSettingLoad = localStorage.getItem("newCustomSearchSetting", customSearch);
-        var newCustomSearchInputLoad = localStorage.getItem("newCustomSearchInput", customSearchInput);
-
-        if ((/true/i).test(newEggLoad) == true){
-        chknewEgg.checked = true;
-        }
-        if ((/true/i).test(newPokemonLoad) == true){
-            chknewPokemon.checked = true;
-        }
-        if ((/true/i).test(newShinyLoad) == true){
-            chknewShiny.checked = true;
-        }
-        if ((/true/i).test(newAlbinoLoad) == true){
-            chknewAlbino.checked = true;
-        }
-        if ((/true/i).test(newMelanisticLoad) == true){
-            chknewMelanistic.checked = true;
-        }
-        if ((/true/i).test(newPrehistoricLoad) == true){
-            chknewPrehistoric.checked = true;
-        }
-        if ((/true/i).test(newDeltaLoad) == true){
-            chknewDelta.checked = true;
-        }
-        if ((/true/i).test(newMegaLoad) == true){
-            chknewMega.checked = true;
-        }
-        if ((/true/i).test(newStarterLoad) == true){
-            chknewStarter.checked = true;
-        }
-        if ((/true/i).test(newFemaleLoad) == true){
-            chkfemale.checked = true;
-        }
-        if ((/true/i).test(newMaleLoad) == true){
-            chkmale.checked = true;
-        }
-        if ((/true/i).test(newNoneLoad) == true){
-            chknone.checked = true;
-        }
-        if ((/true/i).test(newCustomSearchSettingLoad) == true){
-            chkCustom.checked = true;
-        }
-        if ((/true/i).test(customInputTextField) == false || customInputTextField == "false"){
-            chkCustomInput.value = null;
-        } else {
-            chkCustomInput.value = localStorage.getItem("newCustomSearchInput", customSearchInput);
-        }
-
-        //Looking for changes in the DOM if the buttons change on click.
-        const target = document.getElementById('sheltercommands');
-        const config = {
-            attributes: true,
-            attributeOldValue: true,
-            characterData: true,
-            characterDataOldValue: true,
-            childList: true,
-            subtree: true
-        };
-
-        function subscriber(mutations) {
-            mutations.forEach((mutation) => {
-                // makes sure that the shelterSuccess div is empty when you reload the shelter.
-                if (mutation.type == 'attributes') {
-                    shelterSuccess.innerHTML="";
-                    shelterSuccess.style.padding = "";
-                }
-                // Searches for results and displays if result is successfull
-                if (mutation.type == 'attributes') {
-                    for (var i = 0; i < shelterSearch.length; i++) {
-                        //newEgg search
-                        if(newEgg == true){
-                            if(shelterSearch[i].innerHTML.startsWith("Egg")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Egg found!</div>");
-                            }
-                        }
-                        //newPokemon search
-                        if(newPokemon == true && allGender == true || newPokemon == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("Pokémon")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Pokémon found!</div>");
-                            }
-                        }
-                        if(newPokemon == true && female == true && allGender == false || newPokemon == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Female Pokémon found!</div>");
-                            }
-                        }
-                        if(newPokemon == true && male == true && allGender == false || newPokemon == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[M]")){
-                            shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>New Male Pokémon found!</div>");
-                            }
-                        }
-                        if(newPokemon == true && none == true && allGender == false || newPokemon == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("Pokémon") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>New no gender Pokémon found!</div>");
-                            }
-                        }
-                        //newShiny search
-                        if(newShiny == true && allGender == true || newShiny == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("shiny.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Shiny Pokémon found!</div>");
-                            }
-                        }
-                        if(newShiny == true && female == true && allGender == false || newShiny == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Shiny Pokémon found!</div>");
-                            }
-                        }
-                        if(newShiny == true && male == true && allGender == false || newShiny == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Shiny Pokémon found!</div>");
-                            }
-                        }
-                        if(newShiny == true && none == true && allGender == false || newShiny == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("shiny.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Shiny Pokémon found!</div>");
-                            }
-                        }
-                        //newAlbino search
-                        if(newAlbino == true && allGender == true || newAlbino == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("albino.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Albino Pokémon found!</div>");
-                            }
-                        }
-                        if(newAlbino == true && female == true && allGender == false || newAlbino == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Albino Pokémon found!</div>");
-                            }
-                        }
-                        if(newAlbino == true && male == true && allGender == false || newAlbino == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Albino Pokémon found!</div>");
-                            }
-                        }
-                        if(newAlbino == true && none == true && allGender == false || newAlbino == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("albino.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Albino Pokémon found!</div>");
-                            }
-                        }
-                        //newMelanistic search
-                        if(newMelanistic == true && allGender == true || newMelanistic == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("melanistic.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Melanistic Pokémon found!</div>");
-                            }
-                        }
-                        if(newMelanistic == true && female == true && allGender == false || newMelanistic == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Melanistic Pokémon found!</div>");
-                            }
-                        }
-                        if(newMelanistic == true && male == true && allGender == false || newMelanistic == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Melanistic Pokémon found!</div>");
-                            }
-                        }
-                        if(newMelanistic == true && none == true && allGender == false || newMelanistic == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("melanistic.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Melanistic Pokémon found!</div>");
-                            }
-                        }
-                        //newDelta search
-                        if(newDelta == true && allGender == true || newDelta == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("/_delta/")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Delta Pokémon found!</div>");
-                            }
-                        }
-                        if(newDelta == true && female == true && allGender == false || newDelta == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Delta Pokémon found!</div>");
-                            }
-                        }
-                        if(newDelta == true && male == true && allGender == false || newDelta == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Delta Pokémon found!</div>");
-                            }
-                        }
-                        if(newDelta == true && none == true && allGender == false || newDelta == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("/_delta/") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Delta Pokémon found!</div>");
-                            }
-                        }
-                        //newPrehistoric search
-                        if(newPrehistoric == true && allGender == true || newPrehistoric == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("prehistoric.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Prehistoric Pokémon found!</div>");
-                            }
-                        }
-                        if(newPrehistoric == true && female == true && allGender == false || newPrehistoric == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Prehistoric Pokémon found!</div>");
-                            }
-                        }
-                        if(newPrehistoric == true && male == true && allGender == false || newPrehistoric == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Prehistoric Pokémon found!</div>");
-                            }
-                        }
-                        if(newPrehistoric == true && none == true && allGender == false || newPrehistoric == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("prehistoric.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Prehistoric Pokémon found!</div>");
-                            }
-                        }
-                        //newMega search
-                        if(newMega == true && allGender == true || newMega == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("mega.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Mega Pokémon found!</div>");
-                            }
-                        }
-                        if(newMega == true && female == true && allGender == false || newMega == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Mega Pokémon found!</div>");
-                            }
-                        }
-                        if(newMega == true && male == true && allGender == false || newMega == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Mega Pokémon found!</div>");
-                            }
-                        }
-                        if(newMega == true && none == true && allGender == false || newMega == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("mega.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Mega Pokémon found!</div>");
-                            }
-                        }
-                        //newStarter search
-                        if(newStarter == true && allGender == true || newStarter == "true" && allGender == "true"){
-                            if(shelterSearch[i].innerHTML.includes("starter.png")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Starter Pokémon found!</div>");
-                            }
-                        }
-                        if(newStarter == true && female == true && allGender == false || newStarter == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Starter Pokémon found!</div>");
-                            }
-                        }
-                        if(newStarter == true && male == true && allGender == false || newStarter == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Starter Pokémon found!</div>");
-                            }
-                        }
-                        if(newStarter == true && none == true && allGender == false || newStarter == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes("starter.png") && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Starter Pokémon found!</div>");
-                            }
-                        }
-                        //newCustom search
-                        if(customSearch == true && allGender == true || customSearch == "true" && allGender == "true"){
-                            if(shelterSearchCustom[i].innerHTML.includes(customSearchInput)){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Custom Search Pokémon/Egg found!</div>");
-                            }
-                        }
-                        if(customSearch == true && female == true && allGender == false || customSearch == "true" && female == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[F]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Female Custom Search Pokémon/Egg found!</div>");
-                            }
-                        }
-                        if(customSearch == true && male == true && allGender == false || customSearch == "true" && male == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[M]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>Male Custom Search Pokémon/Egg found!!</div>");
-                            }
-                        }
-                        if(customSearch == true && none == true && allGender == false || customSearch == "true" && none == "true" && allGender == "false"){
-                            if(shelterSearch[i].innerHTML.includes(customSearchInput) && shelterSearch[i].innerHTML.includes("[N]")){
-                                shelterSuccess.style.padding = "36px 4px 4px";
-                                shelterSuccess.insertAdjacentHTML('beforeend', "<div>No gender Custom Search Pokémon/Egg found!</div>");
-                            }
+		const fn = { // all the functions for the script
+			helpers: {
+				getUpdateVersion() {
+					GM_xmlhttpRequest({
+						method: 'GET',
+						url: 'https://api.github.com/repos/KaizokuBento/PokeFarmQoL/contents/Poke-Farm-QoL.user.js',
+						responseType: 'json',
+						onload: function(data) {
+							console.log(data.response);
+						}
+					});
+				},
+				toggleSetting(key, set = false) {
+                    if (typeof set === 'boolean') {
+                        let element = document.querySelector(`.qolsetting[data-key="${key}"]`);
+                        if (element && element.type === 'checkbox') {
+                            element.checked = set;
                         }
                     }
-                }
-            })
-        }
+					if (typeof set === 'string') {
+                        let element = document.querySelector(`.qolsetting[data-key="${key}"]`);
+                        if (element && element.type === 'text') {
+                            element.value = set;
+                        }
+                    }
 
-        const observer = new MutationObserver(subscriber);
-        observer.observe(target, config);
-        //************QoL Shelter End************
-    }
-}
-})();
+                },
+
+			},
+			/** background stuff */
+			backwork : { // backgrounds stuff
+				versionCompare(v1, v2) {
+					var regex = new RegExp("(\.0+)+");
+					v1 = v1.replace(regex, "").split(".");
+					v2 = v2.replace(regex, "").split(".");
+					var min = Math.min(v1.length, v2.length);
+
+					var diff = 0;
+					for (var i = 0; i < min; i++) {
+						diff = parseInt(v1[i], 10) - parseInt(v2[i], 10);
+						if (diff !== 0) {
+							return diff;
+						}
+					}
+                return v1.length - v2.length;
+				},
+				checkForUpdate() {
+					var version ="";
+					GM_xmlhttpRequest({
+						method: 'GET',
+						url: 'https://api.github.com/repos/KaizokuBento/PokeFarmQoL/contents/Poke-Farm-QoL.user.js',
+						responseType: 'json',
+						onload: function(data) {
+							var match = atob(data.response.content).match(/\/\/\s+@version\s+([^\n]+)/);
+							version = match[1];
+							if (fn.backwork.versionCompare(GM_info.script.version, version) < 0) {
+								document.querySelector("#head-right").insertAdjacentHTML('beforebegin','&nbsp;&nbsp;<a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/Test/Poke-Farm-QoL.user.js\" target=\"_blank\">Update Available!</a>');
+							} else {
+								VARIABLES.checkForUpdateTimer = setTimeout(fn.backwork.checkForUpdate, 24 * 60 * 60 * 1000);
+							}
+						}
+					});
+				},
+
+				loadSettings() { // initial settings on first run and setting the variable settings key
+					let countVariablesSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length;
+					let countLocalSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+
+					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null || countLocalSettings != countVariablesSettings) {
+						fn.backwork.saveSettings();
+					} else if (localStorage.getItem(SETTINGS_SAVE_KEY) != VARIABLES.userSettings) {
+						VARIABLES.userSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+					}
+				},
+				saveSettings() { // Save changed settings
+					localStorage.setItem(SETTINGS_SAVE_KEY, JSON.stringify(VARIABLES.userSettings));
+				},
+				populateSettingsPage() { // checks all settings checkboxes that are true in the settings
+                    for (let key in VARIABLES.userSettings) {
+                        if (!VARIABLES.userSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
+                    }
+					for (let key in VARIABLES.userSettings.shelterSettings) {
+                        if (!VARIABLES.userSettings.shelterSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings.shelterSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
+                    }
+                },
+
+				setupHTML() { // injects the HTML changes from TEMPLATES into the site
+
+					// Header link to Userscript settings
+					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
+
+					// QoL userscript Settings Menu in farmnews
+					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
+						document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
+						fn.backwork.populateSettingsPage();
+					}
+
+					// shelter Settings Menu
+					if (VARIABLES.userSettings.shelterEnable === true && window.location.href.indexOf("shelter") != -1) {
+						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
+						document.querySelector("#shelteroptionsqol").insertAdjacentHTML("beforebegin", "<h3>QoL Settings</h3>");
+						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
+						fn.backwork.populateSettingsPage();
+					}
+					
+					// fishing select all button on caught fishing
+					if (VARIABLES.userSettings.releaseSelectAll === true && window.location.href.indexOf("fishing") != -1 && $('#caughtfishcontainer').length > 0) {
+						document.querySelector('#caughtfishcontainer label').insertAdjacentHTML('beforeend', '<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>');
+					}
+				},
+				setupCSS() { // All the CSS changes are added here
+					GM_addStyle(GM_getResourceText('QoLCSS'));
+				},
+
+				setupObservers() { // all the Observers that needs to run
+					if (window.location.href.indexOf("shelter") != -1) {
+						OBSERVERS.shelterObserver.observe(document.querySelector('#shelterarea'), {
+							childList: true,
+						});
+					}
+				},
+
+				startup() { // All the functions that are run to start the script on Pokéfarm
+					return {
+						'loading Settings'		: fn.backwork.loadSettings,
+						'checking for update'	: fn.backwork.checkForUpdate,
+						'setting up CSS'		: fn.backwork.setupCSS,
+						'setting up HTML' 		: fn.backwork.setupHTML,
+						'setting up Observers'	: fn.backwork.setupObservers,
+					}
+				},
+				init() { // Starts all the functions.
+					console.log('Starting up ..');
+					let startup = fn.backwork.startup();
+					for (let message in startup) {
+						if (!startup.hasOwnProperty(message)) {
+							continue;
+						}
+						console.log(message);
+						startup[message]();
+					}
+				},
+			}, // end of backwork
+
+			/** public stuff */
+			API : { // the actual seeable and interactable part of the userscript
+				settingsChange(element, textElement) {
+					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
+						if (VARIABLES.userSettings[element] === false ) {
+							VARIABLES.userSettings[element] = true;
+						} else if (VARIABLES.userSettings[element] === true ) {
+							VARIABLES.userSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings[element] === 'string') {
+							VARIABLES.userSettings[element] = textElement;
+						}
+					}
+					if (JSON.stringify(VARIABLES.userSettings.shelterSettings).indexOf(element) >= 0) { // shelter settings
+						if (VARIABLES.userSettings.shelterSettings[element] === false ) {
+							VARIABLES.userSettings.shelterSettings[element] = true;
+						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
+							VARIABLES.userSettings.shelterSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
+							VARIABLES.userSettings.shelterSettings[element] = textElement;
+						}
+					}
+					if (VARIABLES.userSettings.shelterSettings.customPng === true) {
+						if (VARIABLES.userSettings.shelterSettings.customEgg === true || VARIABLES.userSettings.shelterSettings.customPokemon === true) {
+							alert("If you select 'By img code' then you have to de-select 'Custom Egg' & 'Custom Pokémon'. Can't find both at the same time.");
+						}
+					}
+
+					if (VARIABLES.userSettings.shelterSettings.findMale === false && VARIABLES.userSettings.shelterSettings.findFemale === false && VARIABLES.userSettings.shelterSettings.findNoGender === false) {
+						alert("You need to select at least 1 of the 3 genders to custom find a Pokémon!");
+					}
+					fn.backwork.saveSettings();
+				},
+
+				shelterCustomSearch() { // search whatever you want to find in the shelter
+					const shelterValueArray = [];
+					VARIABLES.shelterSearch[1] = VARIABLES.userSettings.shelterSettings.findCustom; //change customsearch in array to find what you need
+					document.querySelector('#sheltersuccess').innerHTML="";
+
+					for (let key in VARIABLES.userSettings.shelterSettings) { //loop to find all the shelter Settings
+						let value = VARIABLES.userSettings.shelterSettings[key];
+						if (value === true || value != "") { //creates an array of items that should be found
+							if (VARIABLES.shelterSearch.indexOf(key) >=0) {
+								let searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
+								shelterValueArray.push(searchKey);
+							}
+						}
+					}
+
+					for (let key in shelterValueArray) { // all the search stuff that's being done
+						let value = shelterValueArray[key];
+
+						if (value.startsWith("[") && value != "[M]" && value != "[F]" && value != "[N]") { //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter & Custom Sprite
+							if ($("img[title*='"+value+"']").length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let imgResult = $("img[title*='"+value+"']").length+" - "+searchResult;
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+								if ($("img[title*='"+value+"']").length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+imgResult+'s found '+imgFitResult+'</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+imgResult+' found '+imgFitResult+'</div>');
+								}
+							}
+						}
+
+						if (value === "Pokémon") { //tooltip_content search. new pokémon
+							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" "+searchResult;
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+								if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+								}
+							}
+						}
+
+						if (value === "Egg") { //tooltip_content search. new egg.
+							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
+								let allEggFinds = $("#shelterarea .tooltip_content:contains("+value+")").length;
+								let allKnownEggFinds = $("#shelterarea .tooltip_content:contains( "+value+")").length;
+								let newEggFinds = allEggFinds - allKnownEggFinds;
+
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let newEggResult = newEggFinds+" "+searchResult;
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+								if (newEggFinds > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+'s found '+imgFitResult+'</div>');
+								} else if (newEggFinds === 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+' found '+imgFitResult+'</div>');
+								}
+							}
+						}
+
+
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPokemon === true) { //custom search with pokemon & genders
+							VARIABLES.shelterSearch[2] = VARIABLES.userSettings.shelterSettings.findCustom; // this is the custom search from the textbox
+
+							if (shelterValueArray.indexOf("[M]") >0) {
+								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
+									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
+									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+									} else {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									}
+								}
+							}
+
+							if (shelterValueArray.indexOf("[F]") >0) {
+								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
+									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
+									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+									} else {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									}
+								}
+							}
+
+							if (shelterValueArray.indexOf("[N]") >0) {
+								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
+									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
+									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
+									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+									} else {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									}
+								}
+							}
+						}
+
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customEgg === true) { //custom search with eggs
+							if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length+" "+searchResult;
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' Eggs found '+imgFitResult+'</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' egg found '+imgFitResult+'</div>');
+								}
+							}
+						}
+
+						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPng === true) { //custom search with img code
+							if ($('#shelterarea img[src*="'+value+'"]').length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
+								let tooltipResult = $('#shelterarea img[src*="'+value+'"]').length+"   <img src="+value+">";
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+
+								if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+								}
+							}
+						}
+					}
+				}, // end of shelterCustomSearch
+
+				releaseFieldSelectAll() {
+					if (VARIABLES.userSettings.releaseSelectAll === true) {
+						document.querySelector('#massreleaselist label').insertAdjacentHTML('beforeend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all</label>');
+						$("#selectallfieldcheckbox").click(function(){
+							$('input:checkbox').not(this).prop('checked', this.checked);
+						});
+					}
+				},
+				releaseFishSelectAll() {
+					if (VARIABLES.userSettings.releaseSelectAll === true) {
+						$("#selectallfishcheckbox").click(function(){
+							$('input:checkbox').not(this).prop('checked', this.checked);
+						});
+					}
+				},
+			}, // end of API
+		}; // end of fn
+
+		fn.backwork.init();
+
+		return fn.API;
+	})(); // end of PFQoL function
+
+	$(document).on('input', '.qolsetting', (function() {
+		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
+	}));
+
+	$(document).on('change', '#shelteroptionsqol input', (function() {
+		PFQoL.shelterCustomSearch();
+	}));
+
+	$(document).on('click', '#sheltercommands ,#shelterarea', (function() {
+		PFQoL.shelterCustomSearch();
+	}));
+
+	$(document).on('click', '*[data-menu="release"]', (function() {
+        PFQoL.releaseFieldSelectAll();
+    }));
+	
+	$(document).on('mouseover', '#caughtfishcontainer', (function() {
+		PFQoL.releaseFishSelectAll();
+	}));
+	
+	
+	
+})(jQuery); //end of userscript
