@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.0.4
+// @version      1.0.5
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -152,9 +152,8 @@
 				loadSettings() { // initial settings on first run and setting the variable settings key
 				let countScriptSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length;
 				let localStorageString = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-				let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length;;
-				
-					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null || countScriptSettings != countLocalStorageSettings) {
+				//let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length;;
+					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
 					} else if (localStorage.getItem(SETTINGS_SAVE_KEY) != VARIABLES.userSettings) {
 						VARIABLES.userSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
