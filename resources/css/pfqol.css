@@ -58,10 +58,10 @@
 
 //sort by berry
 .qolAnySourBerry {
-    left: 0%!important;
+	left: 0%!important;
 	top: 45%!important;
 	margin: -10px!important;
-    transition: none!important;
+	transition: none!important;
 }
 
 .qolAnySourBerry>img.big {
