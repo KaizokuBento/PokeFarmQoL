@@ -62,10 +62,11 @@
 	top: 45%!important;
 	margin: -10px!important;
     transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+
+.qolAnySourBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
 }
 
 .qolSpicyBerry {
@@ -73,10 +74,10 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+.qolSpicyBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
 }
 
 .qolDryBerry {
@@ -84,10 +85,10 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+.qolDryBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
 }
 
 .qolSweetBerry {
@@ -95,10 +96,10 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+.qolSweetBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
 }
 
 .qolBitterBerry {
@@ -106,8 +107,8 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+.qolBitterBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
 }

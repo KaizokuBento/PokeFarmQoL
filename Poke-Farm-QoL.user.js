@@ -507,19 +507,23 @@
 					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 						if($('#field_field [data-flavour*="any-"]').length) {
 							console.log("Any: "+$('#field_field [data-flavour*="any-"]').length);
-							$('#field_field [data-flavour*="any-"]')
+							$('#field_field [data-flavour*="any-"]').addClass("qolAnySourBerry");
 						}
 						if($('#field_field [data-flavour*="sour-"]').length) {
 							console.log("Sour: "+$('#field_field [data-flavour*="sour-"]').length);
+							$('#field_field [data-flavour*="sour-"]').addClass("qolAnySourBerry");
 						}
 						if($('#field_field [data-flavour*="spicy-"]').length) {
 							console.log("Spicy: "+$('#field_field [data-flavour*="spicy-"]').length);
+							$('#field_field [data-flavour*="spicy-"]').addClass("qolSpicyBerry");
 						}
 						if($('#field_field [data-flavour*="dry-"]').length) {
 							console.log("Dry: "+$('#field_field [data-flavour*="dry-"]').length);
+							$('#field_field [data-flavour*="dry-"]').addClass("qolDryBerry");
 						}
 						if($('#field_field [data-flavour*="sweet-"]').length) {
 							console.log("Sweet: "+$('#field_field [data-flavour*="sweet-"]').length);
+							$('#field_field [data-flavour*="sweet-"]').addClass("qolSweetBerry");
 						}
 						if($('#field_field [data-flavour*="bitter-"]').length) {
 							console.log("Bitter: "+$('#field_field [data-flavour*="bitter-"]').length);
