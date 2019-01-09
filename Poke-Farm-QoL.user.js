@@ -56,7 +56,7 @@
 				customPng: false,
 			},
 			fieldSortSettings : {
-				fieldByBerry: true,
+				fieldByBerry: false,
 				fieldByMiddle: false,
 			},
 		};
@@ -89,6 +89,8 @@
 			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
+			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
+			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting" data-key="fieldByMiddle"/>Sort in the middle</label></div>`,
 		}
 
 		const OBSERVERS = {
@@ -96,7 +98,13 @@
 				mutations.forEach(function(mutation) {
 					fn.API.shelterCustomSearch();
 				});
-			})
+			}),
+
+			fieldsObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.fieldSorter();
+				});
+			}),
 		}
 
 		const fn = { // all the functions for the script
@@ -156,7 +164,7 @@
 
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
-					} else { 
+					} else {
 						try {
 							let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length + Object.keys(localStorageString.fieldSortSettings).length;
 							if (countLocalStorageSettings != countScriptSettings) {
@@ -205,6 +213,21 @@
                             continue;
 					   }
                     }
+					for (let key in VARIABLES.userSettings.fieldSortSettings) {
+                        if (!VARIABLES.userSettings.fieldSortSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings.fieldSortSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
+                    }
                 },
 
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
@@ -225,10 +248,16 @@
 						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
 						fn.backwork.populateSettingsPage();
 					}
-					
+
 					// fishing select all button on caught fishing
 					if (VARIABLES.userSettings.releaseSelectAll === true && window.location.href.indexOf("fishing") != -1 && $('#caughtfishcontainer').length > 0) {
-						document.querySelector('#caughtfishcontainer label').insertAdjacentHTML('beforeend', '<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>');
+						document.querySelector('#caughtfishcontainer label').insertAdjacentHTML('beforeend', TEMPLATES.massReleaseSelectHTML);
+					}
+
+					// fields sorter
+					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
+						document.querySelector('#field_berries').insertAdjacentHTML('beforeEnd', TEMPLATES.fieldSortHTML);
+						fn.backwork.populateSettingsPage();
 					}
 				},
 				setupCSS() { // All the CSS changes are added here
@@ -238,6 +267,12 @@
 				setupObservers() { // all the Observers that needs to run
 					if (window.location.href.indexOf("shelter") != -1) {
 						OBSERVERS.shelterObserver.observe(document.querySelector('#shelterarea'), {
+							childList: true,
+						});
+					}
+
+					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
+						OBSERVERS.fieldsObserver.observe(document.querySelector('#field_field'), {
 							childList: true,
 						});
 					}
@@ -291,9 +326,18 @@
 							alert("If you select 'By img code' then you have to de-select 'Custom Egg' & 'Custom Pokémon'. Can't find both at the same time.");
 						}
 					}
-
 					if (VARIABLES.userSettings.shelterSettings.findMale === false && VARIABLES.userSettings.shelterSettings.findFemale === false && VARIABLES.userSettings.shelterSettings.findNoGender === false) {
 						alert("You need to select at least 1 of the 3 genders to custom find a Pokémon!");
+					}
+
+					if (JSON.stringify(VARIABLES.userSettings.fieldSortSettings).indexOf(element) >= 0) { // field sort settings
+						if (VARIABLES.userSettings.fieldSortSettings[element] === false ) {
+							VARIABLES.userSettings.fieldSortSettings[element] = true;
+						} else if (VARIABLES.userSettings.fieldSortSettings[element] === true ) {
+							VARIABLES.userSettings.fieldSortSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.fieldSortSettings[element] === 'string') {
+							VARIABLES.userSettings.fieldSortSettings[element] = textElement;
+						}
 					}
 					fn.backwork.saveSettings();
 				},
@@ -458,11 +502,11 @@
 						});
 					}
 				},
-				
+
 				fieldSorter() {
-					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry = true) {
-						console.log("fieldByBerry");
-					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle = true) {
+					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) {
+						$('#field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="sour-"]').removeClass("fieldmon").addClass("qolSourBerry");
+					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) {
 						console.log("fieldByMiddle");
 					}
 				},
@@ -489,8 +533,8 @@
 	$(document).on('click', '*[data-menu="release"]', (function() {
 		PFQoL.releaseFieldSelectAll();
     }));
-	
+
 	$(document).on('mouseover', '#caughtfishcontainer', (function() {
 		PFQoL.releaseFishSelectAll();
-	}));	
+	}));
 })(jQuery); //end of userscript
