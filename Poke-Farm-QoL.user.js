@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.0.5
+// @version      1.0.6
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -17,7 +17,7 @@
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @grant	     GM_info
+// @grant        GM_info
 // ==/UserScript==
 
 
@@ -34,6 +34,7 @@
 			//userscript settings
 			shelterEnable: true,
 			releaseSelectAll: true,
+			fieldSort: true,
 			//shelter settings
 			shelterSettings : {
 				findCustom: "",
@@ -53,7 +54,11 @@
 				customEgg: true,
 				customPokemon: true,
 				customPng: false,
-			}
+			},
+			fieldSortSettings : {
+				fieldByBerry: true,
+				fieldByMiddle: false,
+			},
 		};
 
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
@@ -77,12 +82,11 @@
 				"findFemale", "[F]", "Female", '<img src="//pfq-static.com/img/pkmn/gender_f.png/t=1401213007">',
 				"findNoGender", "[N]", "No Gender", '<img src="//pfq-static.com/img/pkmn/gender_n.png/t=1401213004">',
 			],
-
-			checkForUpdateTimer : 0,
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
-			headerSettingsLinkHTML	: `<a href=https://pokefarm.com/farm#tab=1>QoL Userscript Settings</a href>`,
+			qolHubLinkHTML			: `<li data-name="QoL"><a href="/farm#tab=1" title="QoL Settings"><img src="https://i.imgur.com/L6KRli5.png" alt="QoL Settings">QoL</a></li>`,
+			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 		}
@@ -110,7 +114,6 @@
                             element.value = set;
                         }
                     }
-
                 },
 
 			},
@@ -141,22 +144,31 @@
 							var match = atob(data.response.content).match(/\/\/\s+@version\s+([^\n]+)/);
 							version = match[1];
 							if (fn.backwork.versionCompare(GM_info.script.version, version) < 0) {
-								document.querySelector("#head-right").insertAdjacentHTML('beforebegin','&nbsp;&nbsp;<a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\">Update Available!</a>');
-							} else {
-								VARIABLES.checkForUpdateTimer = setTimeout(fn.backwork.checkForUpdate, 24 * 60 * 60 * 1000);
+								document.querySelector("li[data-name*='QoL']").insertAdjacentHTML('afterend', TEMPLATES.qolHubUpdateLinkHTML);
 							}
 						}
 					});
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-				let countScriptSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length;
+				let countScriptSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length + Object.keys(VARIABLES.userSettings.fieldSortSettings).length;
 				let localStorageString = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-				//let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length;;
+
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
-					} else if (localStorage.getItem(SETTINGS_SAVE_KEY) != VARIABLES.userSettings) {
+					} else { 
+						try {
+							let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length + Object.keys(localStorageString.fieldSortSettings).length;
+							if (countLocalStorageSettings != countScriptSettings) {
+								fn.backwork.saveSettings();
+							}
+						}
+						catch(err) {
+							fn.backwork.saveSettings();
+						}
+						if (localStorage.getItem(SETTINGS_SAVE_KEY) != VARIABLES.userSettings) {
 						VARIABLES.userSettings = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+						}
 					}
 				},
 				saveSettings() { // Save changed settings
@@ -198,7 +210,7 @@
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
 
 					// Header link to Userscript settings
-					document.querySelector('#head-right').insertAdjacentHTML('beforebegin', TEMPLATES.headerSettingsLinkHTML);
+					document.querySelector("li[data-name*='Lucky Egg']").insertAdjacentHTML('afterend', TEMPLATES.qolHubLinkHTML);
 
 					// QoL userscript Settings Menu in farmnews
 					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
@@ -444,6 +456,14 @@
 						$("#selectallfishcheckbox").click(function(){
 							$('input:checkbox').not(this).prop('checked', this.checked);
 						});
+					}
+				},
+				
+				fieldSorter() {
+					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry = true) {
+						console.log("fieldByBerry");
+					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle = true) {
+						console.log("fieldByMiddle");
 					}
 				},
 			}, // end of API
