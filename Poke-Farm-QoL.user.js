@@ -25,7 +25,7 @@
     'use strict';
     /////////////////////////////////////
     // Welcome to my first ever script!//
-    // Let's hope everything works~    //
+    // Let's hope everything works~ l   //
     /////////////////////////////////////
 
 	let PFQoL = (function PFQoL() {
