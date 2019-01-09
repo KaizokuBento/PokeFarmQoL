@@ -145,3 +145,28 @@
 	animation: none!important;
 	padding: 40px!important;
 }
+
+/* sort in grid */
+.qolGridField {
+    min-height: 345px;
+    display: flex;
+    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(8,12.5%);
+    grid-template-rows: repeat(5,69px);
+	padding-top: 0%;
+}
+
+.qolGridPokeSize {
+    margin: 0 !important;
+    position: static;
+    flex: 1 1 12.5%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qolGridPokeImg {
+    max-width: 75px;
+    max-height: 70px;
+}
