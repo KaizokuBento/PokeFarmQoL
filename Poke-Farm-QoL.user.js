@@ -58,6 +58,8 @@
 			fieldSortSettings : {
 				fieldByBerry: false,
 				fieldByMiddle: false,
+				fieldByGrid: false,
+				fieldClickCount: true,
 			},
 		};
 
@@ -90,7 +92,7 @@
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
-			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting" data-key="fieldByMiddle"/>Sort in the middle</label></div>`,
+			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
 		}
 
 		const OBSERVERS = {
@@ -523,8 +525,8 @@
 						if($('#field_field [data-flavour*="bitter-"]').length) {
 							$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
 						}
-						
-					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
+					}	
+					if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
 						$('.fieldmon').addClass("qolSortMiddle");
 					}
 					
