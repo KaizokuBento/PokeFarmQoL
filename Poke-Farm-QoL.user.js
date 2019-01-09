@@ -507,11 +507,11 @@
 					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 						if($('#field_field [data-flavour*="any-"]').length) {
 							console.log("Any: "+$('#field_field [data-flavour*="any-"]').length);
-							$('#field_field [data-flavour*="any-"]').addClass("qolAnySourBerry");
+							$('#field_field [data-flavour*="any-"]').addClass("qolAnyBerry");
 						}
 						if($('#field_field [data-flavour*="sour-"]').length) {
 							console.log("Sour: "+$('#field_field [data-flavour*="sour-"]').length);
-							$('#field_field [data-flavour*="sour-"]').addClass("qolAnySourBerry");
+							$('#field_field [data-flavour*="sour-"]').addClass("qolSourBerry");
 						}
 						if($('#field_field [data-flavour*="spicy-"]').length) {
 							console.log("Spicy: "+$('#field_field [data-flavour*="spicy-"]').length);
@@ -561,5 +561,9 @@
 
 	$(document).on('mouseover', '#caughtfishcontainer', (function() {
 		PFQoL.releaseFishSelectAll();
+	}));
+	
+	$(document).on('click', '#fieldorder', (function() {
+		pfQoL.fieldSorter();
 	}));
 })(jQuery); //end of userscript

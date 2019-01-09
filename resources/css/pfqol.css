@@ -56,15 +56,36 @@
 	padding-top: 20px;
 }
 
-//sort by berry
-.qolAnySourBerry {
+/* sort by berry */
+.qolAnyBerry {
 	left: 0%!important;
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
 }
+.qolAnyBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
+}
 
-.qolAnySourBerry>img.big {
+.qolSourBerry {
+	left: 0%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+}
+.qolSourBerry>img.big {
+	animation: none!important;
+	padding: 10px!important;
+}
+
+.qolSourBerry {
+	left: 20%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+}
+.qolSourBerry>img.big {
 	animation: none!important;
 	padding: 10px!important;
 }
@@ -112,3 +133,5 @@
 	animation: none!important;
 	padding: 10px!important;
 }
+
+
