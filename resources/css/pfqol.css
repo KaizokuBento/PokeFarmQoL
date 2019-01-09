@@ -135,12 +135,13 @@
 
 /* sort in middle */
 .qolSortMiddle {
-	left: 45%!important;
-	top: 45%!important;
+	left: 40%!important;
+	top: 35%!important;
 	margin: -10px!important;
 	transition: none!important;
 }
 
 .qolSortMiddle>img.big {
 	animation: none!important;
+	padding: 40px!important;
 }
