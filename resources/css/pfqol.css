@@ -58,15 +58,56 @@
 
 //sort by berry
 .qolAnySourBerry {
-	#field_berries.selected ~ #field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="sour-"], #field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="any-"]{
-		left:0%!important;
-		top:45%!important;
-		margin:-@padding!important;
-		transition:none!important;
-		
-		img {
-			animation:none!important;
-			padding:@padding!important;
-		}
+    left: 0%!important;
+	top: 45%!important;
+	margin: -10px!important;
+    transition: none!important;
+	img.big {
+		animation: none!important;
+		padding: 10px!important;
+	}
+}
+
+.qolSpicyBerry {
+	left: 20%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+	img.big {
+		animation: none!important;
+		padding: 10px!important;
+	}
+}
+
+.qolDryBerry {
+	left: 40%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+	img.big {
+		animation: none!important;
+		padding: 10px!important;
+	}
+}
+
+.qolSweetBerry {
+	left: 60%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+	img.big {
+		animation: none!important;
+		padding: 10px!important;
+	}
+}
+
+.qolBitterBerry {
+	left: 80%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+	img.big {
+		animation: none!important;
+		padding: 10px!important;
 	}
 }

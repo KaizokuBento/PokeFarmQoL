@@ -523,6 +523,7 @@
 						}
 						if($('#field_field [data-flavour*="bitter-"]').length) {
 							console.log("Bitter: "+$('#field_field [data-flavour*="bitter-"]').length);
+							$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
 						}
 						
 						
