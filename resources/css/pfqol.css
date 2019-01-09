@@ -1,4 +1,4 @@
-//tooltip
+/* tooltip */
     /* Tooltip container */
 .tooltip {
 	position: relative;
@@ -58,13 +58,16 @@
 
 //sort by berry
 .qolAnySourBerry {
-	left:0%!important;
-	top:45%!important;
-	margin:-@padding!important;
-	transition:none!important;
-	img {
-		animation:none!important;
-		padding:@padding!important;
+	#field_berries.selected ~ #field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="sour-"], #field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="any-"]{
+		left:0%!important;
+		top:45%!important;
+		margin:-@padding!important;
+		transition:none!important;
+		
+		img {
+			animation:none!important;
+			padding:@padding!important;
+		}
 	}
 }
 
@@ -108,6 +111,11 @@
 	transition:none!important;
 	img {
 		animation:none!important;
+<<<<<<< HEAD
+	padding:@padding!important;
+}
+=======
 		padding:@padding!important;
 	}
+>>>>>>> ff5d334147bebd29779a8c3ca8f2b93ed01c34ed
 }

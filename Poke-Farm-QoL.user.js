@@ -11,7 +11,7 @@
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -505,7 +505,7 @@
 
 				fieldSorter() {
 					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) {
-						$('#field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="sour-"]').removeClass("fieldmon").addClass("qolSourBerry");
+						$('#field_field[data-mode="public"]>div.field>.fieldmon[data-flavour*="sour-"]').removeClass("fieldmon").addClass("qolAnySourBerry");
 					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) {
 						console.log("fieldByMiddle");
 					}
