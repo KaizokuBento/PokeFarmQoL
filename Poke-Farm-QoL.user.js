@@ -506,34 +506,34 @@
 				fieldSorter() {
 					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 						if($('#field_field [data-flavour*="any-"]').length) {
-							console.log("Any: "+$('#field_field [data-flavour*="any-"]').length);
 							$('#field_field [data-flavour*="any-"]').addClass("qolAnyBerry");
 						}
 						if($('#field_field [data-flavour*="sour-"]').length) {
-							console.log("Sour: "+$('#field_field [data-flavour*="sour-"]').length);
 							$('#field_field [data-flavour*="sour-"]').addClass("qolSourBerry");
 						}
 						if($('#field_field [data-flavour*="spicy-"]').length) {
-							console.log("Spicy: "+$('#field_field [data-flavour*="spicy-"]').length);
 							$('#field_field [data-flavour*="spicy-"]').addClass("qolSpicyBerry");
 						}
 						if($('#field_field [data-flavour*="dry-"]').length) {
-							console.log("Dry: "+$('#field_field [data-flavour*="dry-"]').length);
 							$('#field_field [data-flavour*="dry-"]').addClass("qolDryBerry");
 						}
 						if($('#field_field [data-flavour*="sweet-"]').length) {
-							console.log("Sweet: "+$('#field_field [data-flavour*="sweet-"]').length);
 							$('#field_field [data-flavour*="sweet-"]').addClass("qolSweetBerry");
 						}
 						if($('#field_field [data-flavour*="bitter-"]').length) {
-							console.log("Bitter: "+$('#field_field [data-flavour*="bitter-"]').length);
 							$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
 						}
 						
-						
 					} else if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
-						console.log("fieldByMiddle");
+						$('.fieldmon').addClass("qolSortMiddle");
 					}
+					
+					//Pokémon click counter
+					let pokemonInField = $('.fieldpkmncount').text();
+					let pokemonClicked = $('#field_field .nothungry').length;
+
+					$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
+					document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
 				},
 			}, // end of API
 		}; // end of fn
@@ -563,7 +563,7 @@
 		PFQoL.releaseFishSelectAll();
 	}));
 	
-	$(document).on('click', '#fieldorder', (function() {
-		pfQoL.fieldSorter();
+	$(document).on('click', '#fieldorder, #field_field, #field_berries, #field_nav', (function() {
+		PFQoL.fieldSorter();
 	}));
 })(jQuery); //end of userscript

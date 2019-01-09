@@ -65,7 +65,7 @@
 }
 .qolAnyBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolSourBerry {
@@ -76,7 +76,7 @@
 }
 .qolSourBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolSourBerry {
@@ -87,7 +87,7 @@
 }
 .qolSourBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolSpicyBerry {
@@ -98,7 +98,7 @@
 }
 .qolSpicyBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolDryBerry {
@@ -109,7 +109,7 @@
 }
 .qolDryBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolSweetBerry {
@@ -120,7 +120,7 @@
 }
 .qolSweetBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
 .qolBitterBerry {
@@ -131,7 +131,17 @@
 }
 .qolBitterBerry>img.big {
 	animation: none!important;
-	padding: 10px!important;
+	padding: 25px!important;
 }
 
+/* sort in middle */
+.qolSortMiddle {
+	left: 45%!important;
+	top: 45%!important!;
+	margin: -10px!important;
+	transition: none!important;
+}
 
+.qolSortMiddle>img.big {
+	animation: none!important;
+}
