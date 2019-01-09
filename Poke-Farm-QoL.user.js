@@ -258,7 +258,7 @@
 
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
-						document.querySelector('#field_berries').insertAdjacentHTML('beforeEnd', TEMPLATES.fieldSortHTML);
+						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
 						fn.backwork.populateSettingsPage();
 					}
 				},
@@ -530,12 +530,18 @@
 						$('.fieldmon').addClass("qolSortMiddle");
 					}
 					
+					if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
+						//$('.fieldmon').addClass("qolSortMiddle");
+					}
+					
 					//Pokémon click counter
-					let pokemonInField = $('.fieldpkmncount').text();
-					let pokemonClicked = $('#field_field .nothungry').length;
-
-					$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
-					document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
+					if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === true) {
+						let pokemonInField = $('.fieldpkmncount').text();
+						let pokemonClicked = $('#field_field .nothungry').length;
+					
+						$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
+						document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
+					}
 				},
 			}, // end of API
 		}; // end of fn

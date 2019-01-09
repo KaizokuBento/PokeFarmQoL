@@ -55,6 +55,16 @@
 #shelterfound {
 	padding-top: 20px;
 }
+/* Field settings */
+#fieldorder {
+    margin: 16px auto;
+    padding: 4px;
+    border: 1px solid #9ec690;
+    background-color: #e2ffcd;
+    border-radius: 4px;
+    max-width: 600px;
+    position: relative;
+}
 
 /* sort by berry */
 .qolAnyBerry {
