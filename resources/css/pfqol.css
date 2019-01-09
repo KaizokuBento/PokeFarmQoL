@@ -149,17 +149,17 @@
 /* sort in grid */
 .qolGridField {
     min-height: 345px;
-    display: flex;
+    display: flex!important;
     flex-flow: row wrap;
     display: grid;
     grid-template-columns: repeat(8,12.5%);
     grid-template-rows: repeat(5,69px);
-	padding-top: 0%;
+	padding-top: 0%!important;
 }
 
 .qolGridPokeSize {
     margin: 0 !important;
-    position: static;
+    position: static!important;
     flex: 1 1 12.5%;
     display: inline-flex;
     justify-content: center;
