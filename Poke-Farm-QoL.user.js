@@ -531,7 +531,9 @@
 					}
 					
 					if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
-						//$('.fieldmon').addClass("qolSortMiddle");
+						$('#field_field').addClass("qolGridField");
+						$('.fieldmon').addClass("qolGridPokeSize");
+						$('.fieldmon>img').addClass("qolGridPokeImg");
 					}
 					
 					//Pokémon click counter
