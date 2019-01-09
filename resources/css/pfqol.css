@@ -111,11 +111,5 @@
 	transition:none!important;
 	img {
 		animation:none!important;
-<<<<<<< HEAD
-	padding:@padding!important;
-}
-=======
 		padding:@padding!important;
-	}
->>>>>>> ff5d334147bebd29779a8c3ca8f2b93ed01c34ed
 }
