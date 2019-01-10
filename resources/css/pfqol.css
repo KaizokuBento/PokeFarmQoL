@@ -55,6 +55,7 @@
 #shelterfound {
 	padding-top: 20px;
 }
+
 /* Field settings */
 #fieldorder {
     margin: 16px auto;
@@ -95,6 +96,7 @@
 	margin: -10px!important;
 	transition: none!important;
 }
+
 .qolSpicyBerry>img.big {
 	animation: none!important;
 	padding: 25px!important;
@@ -106,6 +108,7 @@
 	margin: -10px!important;
 	transition: none!important;
 }
+
 .qolDryBerry>img.big {
 	animation: none!important;
 	padding: 25px!important;
@@ -117,6 +120,7 @@
 	margin: -10px!important;
 	transition: none!important;
 }
+
 .qolSweetBerry>img.big {
 	animation: none!important;
 	padding: 25px!important;
@@ -277,4 +281,3 @@
 	border: 1px solid #9ec690;
 	margin: 0px;
 }
-
