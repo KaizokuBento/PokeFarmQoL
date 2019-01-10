@@ -56,16 +56,38 @@
 	padding-top: 20px;
 }
 
-//sort by berry
-.qolAnySourBerry {
-    left: 0%!important;
+/* Field settings */
+#fieldorder {
+    margin: 16px auto;
+    padding: 4px;
+    border: 1px solid #9ec690;
+    background-color: #e2ffcd;
+    border-radius: 4px;
+    max-width: 600px;
+    position: relative;
+}
+
+/* sort by berry */
+.qolAnyBerry {
+	left: 0%!important;
 	top: 45%!important;
 	margin: -10px!important;
-    transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+	transition: none!important;
+}
+.qolAnyBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
+}
+
+.qolSourBerry {
+	left: 0%!important;
+	top: 45%!important;
+	margin: -10px!important;
+	transition: none!important;
+}
+.qolSourBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
 }
 
 .qolSpicyBerry {
@@ -73,10 +95,11 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+
+.qolSpicyBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
 }
 
 .qolDryBerry {
@@ -84,10 +107,11 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+
+.qolDryBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
 }
 
 .qolSweetBerry {
@@ -95,10 +119,11 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+
+.qolSweetBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
 }
 
 .qolBitterBerry {
@@ -106,8 +131,153 @@
 	top: 45%!important;
 	margin: -10px!important;
 	transition: none!important;
-	img.big {
-		animation: none!important;
-		padding: 10px!important;
-	}
+}
+.qolBitterBerry>img.big {
+	animation: none!important;
+	padding: 25px!important;
+}
+
+/* sort in middle */
+.qolSortMiddle {
+	left: 40%!important;
+	top: 35%!important;
+	margin: -10px!important;
+	transition: none!important;
+}
+
+.qolSortMiddle>img.big {
+	animation: none!important;
+	padding: 40px!important;
+}
+
+/* sort in grid */
+.qolGridField {
+    min-height: 345px;
+    display: flex!important;
+    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(8,12.5%);
+    grid-template-rows: repeat(5,69px);
+	padding-top: 0%!important;
+}
+
+.qolGridPokeSize {
+    margin: 0 !important;
+    position: static!important;
+    flex: 1 1 12.5%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qolGridPokeImg {
+    max-width: 75px;
+    max-height: 70px;
+}
+
+/* Settings Hub */
+.dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 100%;
+    background-color: rgba(193,208,145,0.75);
+    text-align: center;
+    overflow: auto;
+}
+
+.dialog>div {
+    display: table;
+    width: 100%;
+    height: 100%;
+    height: 100vh;
+}
+
+.dialog>div>div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.dialog>div>div>div {
+    display: inline-block;
+    text-align: left;
+    min-width: 300px;
+    max-width: 640px;
+    border: 1px solid #9ec690;
+    background-color: #e2ffcd;
+    border-radius: 6px;
+    box-shadow: 0 0 8px #9ec690;
+}
+
+.qolHubSuperHead:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+} 
+
+.qolHubHead {
+    background-color: #d2e8af;
+    border-bottom: 1px solid #9ec690;
+    color: #004000;
+    text-align: center;
+    padding: 4px;
+    margin: 0;
+	text-align: center;
+}
+
+.dialog>div>div>div>div {
+    padding: 4px;
+    color: #004000;
+}
+
+.qolAllSettings {
+	width: 315px;
+	height: 100%;
+	border: 1px solid #9ec690;
+	border-top: none;
+	vertical-align: top;
+}
+
+.qolChangeLog {
+	width: 315px;
+	height: 100%;
+	border: 1px solid #9ec690;
+	border-top: none;
+}
+
+.qolAllSettings>ul {
+	list-style-type: none;
+	padding: 0px;
+	vertical-align: top;
+}
+
+.qolHubTable {
+	border-spacing: 0px 0px;
+	border-collapse: collapse;
+}
+
+.qolChangeLogList {
+    background-color: #d2e8af;
+    border-bottom: 1px solid #9ec690;
+    color: #004000;
+    text-align: left;
+    padding: 4px;
+    margin: 0;
+	text-align: center;
+}
+
+.qolChangeLogContent {
+	background-color: #e2ffcd;
+	list-style-type: disc;
+	display: none;
+}
+
+.expandlist {
+	font-size: 16px;
+	text-align: center;
+	list-style-type: none;
+}
+
+.qolChangeLogHead {
+	border: 1px solid #9ec690;
+	margin: 0px;
 }
