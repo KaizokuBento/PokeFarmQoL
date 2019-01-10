@@ -92,7 +92,7 @@
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
-			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
+			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
 		}
 
 		const OBSERVERS = {
@@ -267,14 +267,20 @@
 				},
 
 				setupObservers() { // all the Observers that needs to run
-					if (window.location.href.indexOf("shelter") != -1) {
+					if (VARIABLES.userSettings.shelterEnable === true && window.location.href.indexOf("shelter") != -1) { //observe changes on the shelter page
 						OBSERVERS.shelterObserver.observe(document.querySelector('#shelterarea'), {
 							childList: true,
 						});
 					}
 
-					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
+					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe pokemon changes on the fields page
 						OBSERVERS.fieldsObserver.observe(document.querySelector('#field_field'), {
+							childList: true,
+						});
+					}
+					
+					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe settings changes on the fields page
+						OBSERVERS.fieldsObserver.observe(document.querySelector('#fieldorder'), {
 							childList: true,
 						});
 					}
@@ -335,13 +341,22 @@
 					if (JSON.stringify(VARIABLES.userSettings.fieldSortSettings).indexOf(element) >= 0) { // field sort settings
 						if (VARIABLES.userSettings.fieldSortSettings[element] === false ) {
 							VARIABLES.userSettings.fieldSortSettings[element] = true;
+							if (element === "fieldByBerry") {
+								VARIABLES.userSettings.fieldSortSettings.fieldByMiddle = false;
+								VARIABLES.userSettings.fieldSortSettings.fieldByGrid = false;
+							} else if (element === "fieldByMiddle") {
+								VARIABLES.userSettings.fieldSortSettings.fieldByBerry = false;
+								VARIABLES.userSettings.fieldSortSettings.fieldByGrid = false;
+							} else if (element === "fieldByGrid") {
+								VARIABLES.userSettings.fieldSortSettings.fieldByBerry = false;
+								VARIABLES.userSettings.fieldSortSettings.fieldByMiddle = false;
+							}
 						} else if (VARIABLES.userSettings.fieldSortSettings[element] === true ) {
 							VARIABLES.userSettings.fieldSortSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.fieldSortSettings[element] === 'string') {
 							VARIABLES.userSettings.fieldSortSettings[element] = textElement;
 						}
 					}
-					console.log(element);
 					fn.backwork.saveSettings();
 				},
 
@@ -507,79 +522,99 @@
 				},
 
 				fieldSorter() {
-					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
-						$('.fieldmon').removeClass("qolSortMiddle");
-						$('.field').removeClass("qolGridField");
-						$('.fieldmon').removeClass("qolGridPokeSize");
-						$('.fieldmon>img').removeClass("qolGridPokeImg");
-
-						if($('#field_field [data-flavour*="any-"]').length) {
-							$('#field_field [data-flavour*="any-"]').addClass("qolAnyBerry");
-						}
-						if($('#field_field [data-flavour*="sour-"]').length) {
-							$('#field_field [data-flavour*="sour-"]').addClass("qolSourBerry");
-						}
-						if($('#field_field [data-flavour*="spicy-"]').length) {
-							$('#field_field [data-flavour*="spicy-"]').addClass("qolSpicyBerry");
-						}
-						if($('#field_field [data-flavour*="dry-"]').length) {
-							$('#field_field [data-flavour*="dry-"]').addClass("qolDryBerry");
-						}
-						if($('#field_field [data-flavour*="sweet-"]').length) {
-							$('#field_field [data-flavour*="sweet-"]').addClass("qolSweetBerry");
-						}
-						if($('#field_field [data-flavour*="bitter-"]').length) {
-							$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
-						}
-					}	
-					if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
-						$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
-						$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
-						$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
-						$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
-						$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
-						$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
-						$('.field').removeClass("qolGridField");
-						$('.fieldmon').removeClass("qolGridPokeSize");
-						$('.fieldmon>img').removeClass("qolGridPokeImg");
+					if (VARIABLES.userSettings.fieldSort === true) {
+						$('input.qolalone').on('change', function() {
+							$('input.qolalone').not(this).prop('checked', false);  
+						});
 						
-						$('.fieldmon').addClass("qolSortMiddle");
-					}
-					
-					if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
-						$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
-						$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
-						$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
-						$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
-						$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
-						$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
-						$('.fieldmon').removeClass("qolSortMiddle");
-					
-						$('.field').addClass("qolGridField");
-						$('.fieldmon').addClass("qolGridPokeSize");
-						$('.fieldmon>img').addClass("qolGridPokeImg");
-					}
-					
-					if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === false && VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === false && VARIABLES.userSettings.fieldSortSettings.fieldByGrid === false) {
-						$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
-						$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
-						$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
-						$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
-						$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
-						$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
-						$('.fieldmon').removeClass("qolSortMiddle");
-						$('.field').removeClass("qolGridField");
-						$('.fieldmon').removeClass("qolGridPokeSize");
-						$('.fieldmon>img').removeClass("qolGridPokeImg");
-					}
-					
-					//Pokémon click counter
-					if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === true) {
-						let pokemonInField = $('.fieldpkmncount').text();
-						let pokemonClicked = $('#field_field .nothungry').length;
-					
-						$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
-						document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
+						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
+							$('.fieldmon').removeClass("qolSortMiddle");
+							$('.field').removeClass("qolGridField");
+							$('.fieldmon').removeClass("qolGridPokeSize");
+							$('.fieldmon>img').removeClass("qolGridPokeImg");
+
+							if($('#field_field [data-flavour*="any-"]').length) {
+								$('#field_field [data-flavour*="any-"]').addClass("qolAnyBerry");
+							}
+							if($('#field_field [data-flavour*="sour-"]').length) {
+								$('#field_field [data-flavour*="sour-"]').addClass("qolSourBerry");
+							}
+							if($('#field_field [data-flavour*="spicy-"]').length) {
+								$('#field_field [data-flavour*="spicy-"]').addClass("qolSpicyBerry");
+							}
+							if($('#field_field [data-flavour*="dry-"]').length) {
+								$('#field_field [data-flavour*="dry-"]').addClass("qolDryBerry");
+							}
+							if($('#field_field [data-flavour*="sweet-"]').length) {
+								$('#field_field [data-flavour*="sweet-"]').addClass("qolSweetBerry");
+							}
+							if($('#field_field [data-flavour*="bitter-"]').length) {
+								$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
+							}
+						}	
+						if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
+							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
+							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
+							$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
+							$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
+							$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
+							$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
+							$('.field').removeClass("qolGridField");
+							$('.fieldmon').removeClass("qolGridPokeSize");
+							$('.fieldmon>img').removeClass("qolGridPokeImg");
+							
+							$('.fieldmon').addClass("qolSortMiddle");
+						}
+						
+						if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
+							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
+							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
+							$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
+							$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
+							$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
+							$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
+							$('.fieldmon').removeClass("qolSortMiddle");
+						
+							$('.field').addClass("qolGridField");
+							$('.fieldmon').addClass("qolGridPokeSize");
+							$('.fieldmon>img').addClass("qolGridPokeImg");
+						}
+						
+						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === false && VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === false && VARIABLES.userSettings.fieldSortSettings.fieldByGrid === false) {
+							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
+							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
+							$('#field_field [data-flavour*="spicy-"]').removeClass("qolSpicyBerry");
+							$('#field_field [data-flavour*="dry-"]').removeClass("qolDryBerry");
+							$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
+							$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
+							$('.fieldmon').removeClass("qolSortMiddle");
+							$('.field').removeClass("qolGridField");
+							$('.fieldmon').removeClass("qolGridPokeSize");
+							$('.fieldmon>img').removeClass("qolGridPokeImg");
+						}
+						
+						//Pokémon click counter
+						if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === false) {
+							$('#pokemonclickcount').remove();
+						} else if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === true) {
+							let pokemonFed = $(".fieldmon").map(function(){return $(this).attr("data-fed");}).get();
+
+							let pokemonClicked = 0;
+							for (var i = 0; i < pokemonFed.length; i++) {
+								pokemonClicked += pokemonFed[i] << 0;
+							}
+							
+							let pokemonInField = $('.fieldpkmncount').text();
+
+							$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
+							document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
+							if (JSON.stringify(pokemonClicked) === pokemonInField) {
+								$('#pokemonclickcount').css({"color" : "#059121"});
+							} 
+							if (pokemonClicked !== JSON.parse(pokemonInField)) {
+								$('#pokemonclickcount').css({"color" : "#a30323"});
+							}
+						}
 					}
 				},
 			}, // end of API
@@ -613,4 +648,10 @@
 	$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() {
 		PFQoL.fieldSorter();
 	}));
+	
+	if(window.location.href.indexOf("fields/") != -1) {
+		$(window).on('load', (function() {
+			PFQoL.fieldSorter();
+		}));
+	}
 })(jQuery); //end of userscript
