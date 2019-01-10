@@ -9,7 +9,7 @@
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
-// @resource     QoLSettingsMenuHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolSettingsMenuHTML.html
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
@@ -88,91 +88,12 @@
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
 			qolHubLinkHTML			: `<li data-name="QoL"><a title="QoL Settings"><img src="https://i.imgur.com/L6KRli5.png" alt="QoL Settings">QoL</a></li>`,
-			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=#"<img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
+			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
-			qolHubHTML				: `
-<div class="dialog">
-	<div>
-		<div>
-			<div>
-				<h3 class="qolHubHead qolHubSuperHead">Quality of Life userscript Hub</h3>
-				<div>
-					<p>Welcome to the user hub of the QoL userscript! Here you can adjust the script settings and view the latest changes to the script.</p>
-					<p>Note: for now all your settings will be reset when there are new features added to the script. I'm looking to fix this.</p>
-					<div>
-						<table class="qolHubTable"">
-							<tbody>
-								<tr>
-									<td class>
-										<h3 class="qolHubHead">Settings</h3>
-									</td>
-									<td>
-										<h3 class="qolHubHead">Change log</h3>
-									</td>
-								</tr>
-								<tr>
-									<td class="qolAllSettings">
-										<ul>
-										<li>
-											<label>
-												<input type="checkbox" class="qolsetting" data-key="shelterEnable"/>
-												<span>
-													Advanced Shelter Search
-												</span>
-											</label>
-										</li>
-										<li>
-											<label>
-												<input type="checkbox" class="qolsetting" data-key="releaseSelectAll"/>
-												<span>
-													Release/Fishing select all
-												</span>
-											</label>
-										</li>
-										<li>
-											<label>
-												<input type="checkbox" class="qolsetting" data-key="fieldSort"/>
-												<span>
-													Sort Fields
-												</span>
-											</label>
-										</li>
-										</ul>
-									</td>
-									<td class="qolChangeLog">
-										<ul class="qolChangeLogList">
-											<li class="expandlist"><h3 class="qolChangeLogHead">V 1.1.0 - ../01/2019</h3>
-												<ul class="qolopencloselist qolChangeLogContent">
-													<li>Added various field sorter features & Pokémon click counter in fields.</li><br>
-													<li>Userscript has it's own settings page now and removed itself from the farm tab.</li><br>
-													<li></li><br>
-													<li></li><br>
-													<li></li><br>
-												</ul>
-											</li>
-											<li class="expandlist"><h3 class="qolChangeLogHead">V 1.0.0 - 08/01/2019</h3>
-												<ul class="qolopencloselist qolChangeLogContent">
-													<li>complete script rewrite, now using jQuery.</li></br>
-													<li>Advanced Shelter Search rewritten. Can now search on Pokémon with Custom Sprites and on Pokémon name instead of only with image code.</li></br>
-													<li>Select All checkbox added on field mass release & fishing.</li></br>
-													<li>Userscript prompts the user when there is an update available for the script.</li></br>
-												</ul>
-											</li>
-										</ul>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<button type="button" class="closeHub" style="float: right; margin: 0px 0px 0px 8px;">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>`,
+			qolHubHTML				: GM_getResourceText('QolHubHTML'),
 		}
 
 		const OBSERVERS = {
@@ -250,6 +171,7 @@
 						try {
 							let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length + Object.keys(localStorageString.fieldSortSettings).length;
 							if (countLocalStorageSettings != countScriptSettings) {
+								for(let key in VARIABLES.userSettings
 								fn.backwork.saveSettings();
 							}
 						}
@@ -317,16 +239,14 @@
 					// Header link to Userscript settings
 					document.querySelector("li[data-name*='Lucky Egg']").insertAdjacentHTML('afterend', TEMPLATES.qolHubLinkHTML);
 
-					// QoL userscript Settings Menu in farmnews
-					if(window.location.href.indexOf("farm#tab=1") != -1){ // Creating the QoL Settings Menu in farmnews
-						document.querySelector('#farmnews').insertAdjacentHTML("afterbegin", TEMPLATES.qolSettingsMenuHTML);
-						fn.backwork.populateSettingsPage();
-					}
-
 					// shelter Settings Menu
 					if (VARIABLES.userSettings.shelterEnable === true && window.location.href.indexOf("shelter") != -1) {
-						document.querySelector("#shelterupgrades").insertAdjacentHTML("afterend", TEMPLATES.shelterSettingsHTML);
-						document.querySelector("#shelteroptionsqol").insertAdjacentHTML("beforebegin", "<h3>QoL Settings</h3>");
+						$('.tabbed_interface.horizontal>div').removeClass('tab-active');
+						$('.tabbed_interface.horizontal>ul>li').removeClass('tab-active');
+						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterbegin', '<li class="tab-active"><label>QoL</label></li>');
+						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterend', TEMPLATES.shelterSettingsHTML);
+						$('#shelteroptionsqol').addClass('tab-active');
+						
 						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
 						fn.backwork.populateSettingsPage();
 					}
@@ -398,13 +318,6 @@
 				qolHubClose() {
 					$('.dialog').remove();
 					$('#core').removeClass('scrolllock');
-				},
-				
-				expandList() {
-					$('#docLocked').click(function(e){
-						e.preventDefault();
-						$(this).find('.qolopencloselist ').toggleClass('qolwhereismycontent qolChangeLogContent');
-					});
 				},
 			
 				settingsChange(element, textElement) {
