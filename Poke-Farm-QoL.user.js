@@ -5,13 +5,13 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.0.7
+// @version      1.1.0
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -162,16 +162,27 @@
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-				let countScriptSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length + Object.keys(VARIABLES.userSettings.fieldSortSettings).length;
-				let localStorageString = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+				
 
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
 					} else {
 						try {
+							let countScriptSettings = Object.keys(VARIABLES.userSettings).length + Object.keys(VARIABLES.userSettings.shelterSettings).length + Object.keys(VARIABLES.userSettings.fieldSortSettings).length;
+							let localStorageString = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
 							let countLocalStorageSettings = Object.keys(localStorageString).length + Object.keys(localStorageString.shelterSettings).length + Object.keys(localStorageString.fieldSortSettings).length;
-							if (countLocalStorageSettings != countScriptSettings) {
-								for(let key in VARIABLES.userSettings
+							if (countLocalStorageSettings < countScriptSettings) { // adds new objects (settings) to the local storage
+								let defaultsSetting = VARIABLES.userSettings;
+								let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+								let newSetting = $.extend({}, defaultsSetting, userSetting);
+								
+								VARIABLES.userSettings = newSetting;
+								fn.backwork.saveSettings();
+							}
+							if (countLocalStorageSettings > countScriptSettings) { // removes objects from the local storage if they don't exist anymore. Not yet possible..
+								//let defaultsSetting = VARIABLES.userSettings;
+								//let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
+								
 								fn.backwork.saveSettings();
 							}
 						}
