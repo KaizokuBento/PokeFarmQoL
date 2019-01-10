@@ -144,18 +144,23 @@
 									</td>
 									<td class="qolChangeLog">
 										<ul class="qolChangeLogList">
-											<li class="expandlist">V 1.1.0 - ../01/2019</li>
-												<ul class="qolopencloselist qolwhereismycontent">
-													<li>Added various field sorter features & Pokémon click counter in fields.</li>
-													<li>Userscript has it's own settings page now and removed itself from the farm tab.</li>
+											<li class="expandlist"><h3 class="qolChangeLogHead">V 1.1.0 - ../01/2019</h3>
+												<ul class="qolopencloselist qolChangeLogContent">
+													<li>Added various field sorter features & Pokémon click counter in fields.</li><br>
+													<li>Userscript has it's own settings page now and removed itself from the farm tab.</li><br>
+													<li></li><br>
+													<li></li><br>
+													<li></li><br>
 												</ul>
-											<li class="expandlist">V 1.0.0 - 08/01/2019</li>
-												<ul class="qolopencloselist qolwhereismycontent">
-													<li>complete script rewrite, now using jQuery.</li>
-													<li>Advanced Shelter Search rewritten. Can now search on Pokémon with Custom Sprites and on Pokémon name instead of only with image code.</li>
-													<li>Select All checkbox added on field mass release & fishing.</li>
-													<li>Userscript prompts the user when there is an update available for the script.</li>
+											</li>
+											<li class="expandlist"><h3 class="qolChangeLogHead">V 1.0.0 - 08/01/2019</h3>
+												<ul class="qolopencloselist qolChangeLogContent">
+													<li>complete script rewrite, now using jQuery.</li></br>
+													<li>Advanced Shelter Search rewritten. Can now search on Pokémon with Custom Sprites and on Pokémon name instead of only with image code.</li></br>
+													<li>Select All checkbox added on field mass release & fishing.</li></br>
+													<li>Userscript prompts the user when there is an update available for the script.</li></br>
 												</ul>
+											</li>
 										</ul>
 									</td>
 								</tr>
@@ -167,9 +172,7 @@
 			</div>
 		</div>
 	</div>
-</div>
-</body>
-</html>,
+</div>`,
 		}
 
 		const OBSERVERS = {
@@ -727,9 +730,8 @@
 		PFQoL.qolHubClose();
 	}));
 	
-	$(document).on('click', '.expandlist', (function(e) {
-		e.preventDefault();
-		$(this).find('.qolopencloselist ').toggleClass('qolwhereismycontent qolChangeLogContent');
+	$(document).on('click', '.expandlist', (function() {
+		$(this).children('ul').slideToggle();;
 	}));
 
 	$(document).on('input', '.qolsetting', (function() {

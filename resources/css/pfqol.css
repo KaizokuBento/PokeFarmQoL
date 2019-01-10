@@ -230,6 +230,7 @@
 	height: 100%;
 	border: 1px solid #9ec690;
 	border-top: none;
+	vertical-align: top;
 }
 
 .qolChangeLog {
@@ -242,6 +243,7 @@
 .qolAllSettings>ul {
 	list-style-type: none;
 	padding: 0px;
+	vertical-align: top;
 }
 
 .qolHubTable {
@@ -261,9 +263,18 @@
 
 .qolChangeLogContent {
 	background-color: #e2ffcd;
+	list-style-type: disc;
+	display: none;
 }
 
-.qolwhereismycontent {
-	display: none;
+.expandlist {
+	font-size: 16px;
+	text-align: center;
+	list-style-type: none;
+}
+
+.qolChangeLogHead {
+	border: 1px solid #9ec690;
+	margin: 0px;
 }
 
