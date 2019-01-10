@@ -87,14 +87,14 @@
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
-			qolHubLinkHTML			: `<li data-name="QoL"><a href="/farm#tab=1" title="QoL Settings"><img src="https://i.imgur.com/L6KRli5.png" alt="QoL Settings">QoL</a></li>`,
+			qolHubLinkHTML			: `<li data-name="QoL"><a title="QoL Settings"><img src="https://i.imgur.com/L6KRli5.png" alt="QoL Settings">QoL</a></li>`,
 			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=#"<img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
 			qolHubHTML				: `
-			<div class="dialog">
+<div class="dialog">
 	<div>
 		<div>
 			<div>
@@ -144,11 +144,18 @@
 									</td>
 									<td class="qolChangeLog">
 										<ul class="qolChangeLogList">
-											<li>V 1.1.0 - ../01/2019</li>
-												<ul class="qolChangeLogContent">
-													<li>Added field sorter!</li>
+											<li class="expandlist">V 1.1.0 - ../01/2019</li>
+												<ul class="qolopencloselist qolwhereismycontent">
+													<li>Added various field sorter features & Pokémon click counter in fields.</li>
+													<li>Userscript has it's own settings page now and removed itself from the farm tab.</li>
 												</ul>
-											<li>V 1.0.0 - 08/01/2019</li>
+											<li class="expandlist">V 1.0.0 - 08/01/2019</li>
+												<ul class="qolopencloselist qolwhereismycontent">
+													<li>complete script rewrite, now using jQuery.</li>
+													<li>Advanced Shelter Search rewritten. Can now search on Pokémon with Custom Sprites and on Pokémon name instead of only with image code.</li>
+													<li>Select All checkbox added on field mass release & fishing.</li>
+													<li>Userscript prompts the user when there is an update available for the script.</li>
+												</ul>
 										</ul>
 									</td>
 								</tr>
@@ -161,7 +168,8 @@
 		</div>
 	</div>
 </div>
-			`,
+</body>
+</html>,
 		}
 
 		const OBSERVERS = {
@@ -382,11 +390,18 @@
 				qolHubBuild() {
 					document.querySelector('body').insertAdjacentHTML('beforeend', TEMPLATES.qolHubHTML);
 					$('#core').addClass('scrolllock');
+					fn.backwork.populateSettingsPage();
 				},
-				
 				qolHubClose() {
 					$('.dialog').remove();
 					$('#core').removeClass('scrolllock');
+				},
+				
+				expandList() {
+					$('#docLocked').click(function(e){
+						e.preventDefault();
+						$(this).find('.qolopencloselist ').toggleClass('qolwhereismycontent qolChangeLogContent');
+					});
 				},
 			
 				settingsChange(element, textElement) {
@@ -710,6 +725,11 @@
 	
 	$(document).on('click', '.closeHub', (function() {
 		PFQoL.qolHubClose();
+	}));
+	
+	$(document).on('click', '.expandlist', (function(e) {
+		e.preventDefault();
+		$(this).find('.qolopencloselist ').toggleClass('qolwhereismycontent qolChangeLogContent');
 	}));
 
 	$(document).on('input', '.qolsetting', (function() {
