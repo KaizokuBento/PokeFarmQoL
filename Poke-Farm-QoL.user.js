@@ -93,6 +93,75 @@
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
+			qolHubHTML				: `
+			<div class="dialog">
+	<div>
+		<div>
+			<div>
+				<h3 class="qolHubHead qolHubSuperHead">Quality of Life userscript Hub</h3>
+				<div>
+					<p>Welcome to the user hub of the QoL userscript! Here you can adjust the script settings and view the latest changes to the script.</p>
+					<p>Note: for now all your settings will be reset when there are new features added to the script. I'm looking to fix this.</p>
+					<div>
+						<table class="qolHubTable"">
+							<tbody>
+								<tr>
+									<td class>
+										<h3 class="qolHubHead">Settings</h3>
+									</td>
+									<td>
+										<h3 class="qolHubHead">Change log</h3>
+									</td>
+								</tr>
+								<tr>
+									<td class="qolAllSettings">
+										<ul>
+										<li>
+											<label>
+												<input type="checkbox" class="qolsetting" data-key="shelterEnable"/>
+												<span>
+													Advanced Shelter Search
+												</span>
+											</label>
+										</li>
+										<li>
+											<label>
+												<input type="checkbox" class="qolsetting" data-key="releaseSelectAll"/>
+												<span>
+													Release/Fishing select all
+												</span>
+											</label>
+										</li>
+										<li>
+											<label>
+												<input type="checkbox" class="qolsetting" data-key="fieldSort"/>
+												<span>
+													Sort Fields
+												</span>
+											</label>
+										</li>
+										</ul>
+									</td>
+									<td class="qolChangeLog">
+										<ul class="qolChangeLogList">
+											<li>V 1.1.0 - ../01/2019</li>
+												<ul class="qolChangeLogContent">
+													<li>Added field sorter!</li>
+												</ul>
+											<li>V 1.0.0 - 08/01/2019</li>
+										</ul>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<button type="button" class="closeHub" style="float: right; margin: 0px 0px 0px 8px;">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+			`,
 		}
 
 		const OBSERVERS = {
@@ -310,6 +379,16 @@
 
 			/** public stuff */
 			API : { // the actual seeable and interactable part of the userscript
+				qolHubBuild() {
+					document.querySelector('body').insertAdjacentHTML('beforeend', TEMPLATES.qolHubHTML);
+					$('#core').addClass('scrolllock');
+				},
+				
+				qolHubClose() {
+					$('.dialog').remove();
+					$('#core').removeClass('scrolllock');
+				},
+			
 				settingsChange(element, textElement) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
@@ -624,6 +703,14 @@
 
 		return fn.API;
 	})(); // end of PFQoL function
+	
+	$(document).on('click', 'li[data-name*="QoL"]', (function() {
+		PFQoL.qolHubBuild();
+	}));
+	
+	$(document).on('click', '.closeHub', (function() {
+		PFQoL.qolHubClose();
+	}));
 
 	$(document).on('input', '.qolsetting', (function() {
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
