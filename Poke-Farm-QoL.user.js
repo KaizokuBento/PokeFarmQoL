@@ -38,7 +38,7 @@
 			fieldSort: true,
 			//shelter settings
 			shelterSettings : {
-				findCustom: [],
+				findCustom: "",
 				findNewEgg: true,
 				findNewPokemon: true,
 				findShiny: true,
@@ -68,6 +68,8 @@
 
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
+			
+			shelterCustomArray : [],
 
 			shelterSearch : [
 				"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
@@ -344,7 +346,9 @@
 						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
-							VARIABLES.userSettings.shelterSettings[element] = textElement;
+							VARIABLES.shelterCustomArray.push(textElement);
+							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
+							console.log(VARIABLES.shelterCustomArray.toString());
 						}
 					}
 					if (VARIABLES.userSettings.shelterSettings.customPng === true) {
@@ -379,12 +383,20 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div><tr><td><label><input type="text" class="qolsettingshelter" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
+					let theField = `<div><tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' id='removeShelterTextfield'>Remove</button></td></tr>`;
 					$('#searchkeys').append(theField);
 					//VARIABLES.userSettings.findCustom();
 				},
-				shelterRemoveTextfield(byebye) {
+				shelterRemoveTextfield(byebye, key) {
+					console.log(key);
+					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) {
+						return value != key;
+					});
+					VARIABLES.userSettings.shelterSettings.findCustom = JSON.stringify(VARIABLES.shelterCustomArray);
+					console.log(VARIABLES.userSettings.shelterSettings.findCustom);
+					fn.backwork.saveSettings();
 					$(byebye).parent().remove();
+					
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
@@ -667,7 +679,7 @@
 		$(this).children('ul').slideToggle();
 	}));
 
-	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
+	$(document).on('change', '.qolsetting', (function() { //Changes QoL settings
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
 	}));
 
@@ -684,7 +696,7 @@
 	}));
 	
 	$(document).on('click', '#removeShelterTextfield', (function() { //remove shelter text field
-		PFQoL.shelterRemoveTextfield(this);
+		PFQoL.shelterRemoveTextfield(this, $(this).parent().find('input').val());
 	}));
 
 	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
