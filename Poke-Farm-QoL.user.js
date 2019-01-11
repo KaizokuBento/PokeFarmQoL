@@ -9,6 +9,7 @@
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
+// @require https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
 // @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
@@ -129,32 +130,17 @@
 
 			},
 			/** background stuff */
-			backwork : { // backgrounds stuff
-				versionCompare(v1, v2) {
-					var regex = new RegExp("(\.0+)+");
-					v1 = v1.replace(regex, "").split(".");
-					v2 = v2.replace(regex, "").split(".");
-					var min = Math.min(v1.length, v2.length);
-
-					var diff = 0;
-					for (var i = 0; i < min; i++) {
-						diff = parseInt(v1[i], 10) - parseInt(v2[i], 10);
-						if (diff !== 0) {
-							return diff;
-						}
-					}
-                return v1.length - v2.length;
-				},
+			backwork : { // backgrounds stuff	
 				checkForUpdate() {
-					var version ="";
+					let version ="";
 					GM_xmlhttpRequest({
 						method: 'GET',
 						url: 'https://api.github.com/repos/KaizokuBento/PokeFarmQoL/contents/Poke-Farm-QoL.user.js',
 						responseType: 'json',
 						onload: function(data) {
-							var match = atob(data.response.content).match(/\/\/\s+@version\s+([^\n]+)/);
+							let match = atob(data.response.content).match(/\/\/\s+@version\s+([^\n]+)/);
 							version = match[1];
-							if (fn.backwork.versionCompare(GM_info.script.version, version) < 0) {
+							if (compareVersions(GM_info.script.version, version) < 0) {
 								document.querySelector("li[data-name*='QoL']").insertAdjacentHTML('afterend', TEMPLATES.qolHubUpdateLinkHTML);
 							}
 						}
