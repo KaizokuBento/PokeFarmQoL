@@ -88,7 +88,7 @@
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
 			qolHubLinkHTML			: `<li data-name="QoL"><a title="QoL Settings"><img src="https://i.imgur.com/L6KRli5.png" alt="QoL Settings">QoL</a></li>`,
-			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
+			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://api.github.com/repos/KaizokuBento/PokeFarmQoL/contents/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
