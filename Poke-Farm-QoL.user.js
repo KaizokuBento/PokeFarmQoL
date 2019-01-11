@@ -330,7 +330,7 @@
 					$('#core').removeClass('scrolllock');
 				},
 
-				settingsChange(element, textElement) {
+				settingsChange(element, textElement, customClass) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
 							VARIABLES.userSettings[element] = true;
@@ -346,9 +346,12 @@
 						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
-							VARIABLES.shelterCustomArray.push(textElement);
-							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
-							console.log(VARIABLES.shelterCustomArray.toString());
+							//VARIABLES.shelterCustomArray.push(textElement);
+							
+							let tempIndex = customClass - 1;
+							VARIABLES.shelterCustomArray[tempIndex] = textElement;
+							console.log(VARIABLES.shelterCustomArray);
+							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString();
 						}
 					}
 					if (VARIABLES.userSettings.shelterSettings.customPng === true) {
@@ -384,14 +387,12 @@
 
 				shelterAddTextField() {
 					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
-					let numberDiv = $('#searchkeys>div').length + 1
+					let numberDiv = $('#searchkeys>div').length
 					$('#searchkeys').append(theField);
 					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
-					//VARIABLES.userSettings.findCustom();
 				},
 				shelterRemoveTextfield(byebye, key) { //add a loop to change all the classes of divs (amount of divs) so it fits with the save keys
-					console.log(key);
-					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) {
+					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
 						return value != key;
 					});
 					VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
@@ -400,14 +401,9 @@
 					$(byebye).parent().remove();
 					
 					let i;
-					for(i = 0; i < $('#searchkeys>div').length + 1; i++) {
+					for(i = 0; i < $('#searchkeys>div').length; i++) {
 						let rightDiv = i + 1;
-						let divOne = i - 1;
-						if ($('.0').children().attr('class') === JSON.stringify(1)) {
-							$('.0').children().removeClass().addClass(''+i+'');
-						} else {
-							$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
-						}
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
 					}
 
 				},
@@ -693,7 +689,7 @@
 	}));
 
 	$(document).on('change', '.qolsetting', (function() { //Changes QoL settings
-		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
+		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val(), $(this).parent().parent().attr('class'));
 	}));
 
 	$(document).on('change', '#shelteroptionsqol input', (function() { //shelter search
