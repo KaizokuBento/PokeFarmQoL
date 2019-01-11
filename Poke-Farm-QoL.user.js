@@ -379,11 +379,11 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td></tr>`;
+					let theField = `<tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
 					$('#searchkeys').append(theField)
 				},
 				shelterRemoveTextfield() {
-					$('#searchkeys').children().last().remove();
+					this.$delete(this.collection, this.index);
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
