@@ -383,7 +383,7 @@
 					$('#searchkeys').append(theField)
 				},
 				shelterRemoveTextfield() {
-					
+					$('#searchkeys').children().last().remove();
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
@@ -682,7 +682,7 @@
 		PFQoL.shelterAddTextField();
 	}));
 	
-	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
+	$(document).on('click', '#removeShelterTextfield', (function() { //add shelter text field
 		PFQoL.shelterRemoveTextfield();
 	}));
 

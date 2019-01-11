@@ -143,7 +143,6 @@
 	
     <p>Search Keys</p>
 	<input type='button' value='Add' id='addShelterTextfield'>
-	<input type='button' value='Remove' id='removeShelterTextfield'>
     <table id="searchkeys">
 		<tbody>
 			<tr>
@@ -151,6 +150,9 @@
 					<label>
 						<input type="text" class="qolsetting" data-key="findCustom"/>
 					</label>
+				</td>
+				<td>
+					<input type='button' value='Remove' id='removeShelterTextfield' onclick="shelterRemoveTextfield()">
 				</td>
 			</tr>
 		</tbody>
