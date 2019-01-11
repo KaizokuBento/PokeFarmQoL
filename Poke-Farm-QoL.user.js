@@ -55,14 +55,6 @@
 				customEgg: true,
 				customPokemon: true,
 				customPng: false,
-				noEggFind : {
-					noEggOne: "",
-					noEggTwo: "",
-					NoEggThree: "",
-					NoEggFour: "",
-					NoEggFive: "",
-					NoEggSix: "",
-				}
 			},
 			fieldSortSettings : {
 				fieldByBerry: false,
@@ -138,7 +130,7 @@
 
 			},
 			/** background stuff */
-			backwork : { // backgrounds stuff	
+			backwork : { // backgrounds stuff
 				checkForUpdate() {
 					let version ="";
 					GM_xmlhttpRequest({
@@ -156,7 +148,7 @@
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-				
+
 
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
@@ -169,14 +161,14 @@
 								let defaultsSetting = VARIABLES.userSettings;
 								let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
 								let newSetting = $.extend(true,{}, defaultsSetting, userSetting);
-								
+
 								VARIABLES.userSettings = newSetting;
 								fn.backwork.saveSettings();
 							}
 							if (countLocalStorageSettings > countScriptSettings) { // removes objects from the local storage if they don't exist anymore. Not yet possible..
 								//let defaultsSetting = VARIABLES.userSettings;
 								//let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-								
+
 								fn.backwork.saveSettings();
 							}
 						}
@@ -251,7 +243,7 @@
 						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterbegin', '<li class="tab-active"><label>QoL</label></li>');
 						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterend', TEMPLATES.shelterSettingsHTML);
 						$('#shelteroptionsqol').addClass('tab-active');
-						
+
 						let shelterSuccessCss = $('#sheltercommands').css('background-color');
 						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', '<div id="sheltersuccess" style="background-color:'+shelterSuccessCss+';"></div>');
 						fn.backwork.populateSettingsPage();
@@ -265,8 +257,8 @@
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
-						
-						
+
+
 						fn.backwork.populateSettingsPage();
 					}
 				},
@@ -286,7 +278,7 @@
 							childList: true,
 						});
 					}
-					
+
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe settings changes on the fields page
 						OBSERVERS.fieldsObserver.observe(document.querySelector('#fieldorder'), {
 							childList: true,
@@ -328,14 +320,14 @@
 					$('.qolHubHead').css({"backgroundColor":""+qolHubCssBackgroundHead+"","color":""+qolHubCssTextColorHead+""});
 					$('.qolChangeLogHead').css({"backgroundColor":""+qolHubCssBackgroundHead+"","color":""+qolHubCssTextColorHead+""});
 					$('.qolopencloselist.qolChangeLogContent').css({"backgroundColor":""+qolHubCssBackground+"","color":""+qolHubCssTextColor+""});
-					
+
 					fn.backwork.populateSettingsPage();
 				},
 				qolHubClose() {
 					$('.dialog').remove();
 					$('#core').removeClass('scrolllock');
 				},
-			
+
 				settingsChange(element, textElement) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
@@ -386,6 +378,13 @@
 					fn.backwork.saveSettings();
 				},
 
+				shelterAddTextField() {
+					let theField = `<tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td></tr>`;
+					$('#searchkeys').append(theField)
+				},
+				shelterRemoveTextfield() {
+					
+				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
 					VARIABLES.shelterSearch[1] = VARIABLES.userSettings.shelterSettings.findCustom; //change customsearch in array to find what you need
@@ -550,13 +549,13 @@
 				fieldSorter() {
 					if (VARIABLES.userSettings.fieldSort === true) {
 						$('input.qolalone').on('change', function() {
-							$('input.qolalone').not(this).prop('checked', false);  
+							$('input.qolalone').not(this).prop('checked', false);
 						});
 						let fieldOrderCssColor = $('#field_field').css('background-color');
 						let fieldOrderCssBorder = $('#field_field').css('border');
 						$("#fieldorder").css("background-color", ""+fieldOrderCssColor+"");
 						$("#fieldorder").css("border", ""+fieldOrderCssBorder+"");
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 							$('.fieldmon').removeClass("qolSortMiddle");
 							$('.field').removeClass("qolGridField");
@@ -581,7 +580,7 @@
 							if($('#field_field [data-flavour*="bitter-"]').length) {
 								$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
 							}
-						}	
+						}
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -592,10 +591,10 @@
 							$('.field').removeClass("qolGridField");
 							$('.fieldmon').removeClass("qolGridPokeSize");
 							$('.fieldmon>img').removeClass("qolGridPokeImg");
-							
+
 							$('.fieldmon').addClass("qolSortMiddle");
 						}
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -604,12 +603,12 @@
 							$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
 							$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
 							$('.fieldmon').removeClass("qolSortMiddle");
-						
+
 							$('.field').addClass("qolGridField");
 							$('.fieldmon').addClass("qolGridPokeSize");
 							$('.fieldmon>img').addClass("qolGridPokeImg");
 						}
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === false && VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === false && VARIABLES.userSettings.fieldSortSettings.fieldByGrid === false) {
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -622,7 +621,7 @@
 							$('.fieldmon').removeClass("qolGridPokeSize");
 							$('.fieldmon>img').removeClass("qolGridPokeImg");
 						}
-						
+
 						//Pokémon click counter
 						if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === false) {
 							$('#pokemonclickcount').remove();
@@ -633,14 +632,14 @@
 							for (var i = 0; i < pokemonFed.length; i++) {
 								pokemonClicked += pokemonFed[i] << 0;
 							}
-							
+
 							let pokemonInField = $('.fieldpkmncount').text();
 
 							$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
 							document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
 							if (JSON.stringify(pokemonClicked) === pokemonInField) {
 								$('#pokemonclickcount').css({"color" : "#059121"});
-							} 
+							}
 							if (pokemonClicked !== JSON.parse(pokemonInField)) {
 								$('#pokemonclickcount').css({"color" : "#a30323"});
 							}
@@ -654,44 +653,52 @@
 
 		return fn.API;
 	})(); // end of PFQoL function
-	
-	$(document).on('click', 'li[data-name*="QoL"]', (function() {
+
+	$(document).on('click', 'li[data-name*="QoL"]', (function() { //open QoL hub
 		PFQoL.qolHubBuild();
 	}));
-	
-	$(document).on('click', '.closeHub', (function() {
+
+	$(document).on('click', '.closeHub', (function() { //close QoL hub
 		PFQoL.qolHubClose();
 	}));
-	
-	$(document).on('click', '.expandlist', (function() {
+
+	$(document).on('click', '.expandlist', (function() { //show hidden li in change log
 		$(this).children('ul').slideToggle();;
 	}));
 
-	$(document).on('input', '.qolsetting', (function() {
+	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
 		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
 	}));
 
-	$(document).on('change', '#shelteroptionsqol input', (function() {
+	$(document).on('change', '#shelteroptionsqol input', (function() { //shelter search
 		PFQoL.shelterCustomSearch();
 	}));
 
-	$(document).on('click', '#sheltercommands ,#shelterarea', (function() {
+	$(document).on('click', '#sheltercommands ,#shelterarea', (function() { //shelter search
 		PFQoL.shelterCustomSearch();
 	}));
+	
+	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
+		PFQoL.shelterAddTextField();
+	}));
+	
+	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
+		PFQoL.shelterRemoveTextfield();
+	}));
 
-	$(document).on('click', '*[data-menu="release"]', (function() {
+	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
 		PFQoL.releaseFieldSelectAll();
     }));
 
-	$(document).on('mouseover', '#caughtfishcontainer', (function() {
+	$(document).on('mouseover', '#caughtfishcontainer', (function() { //select all feature
 		PFQoL.releaseFishSelectAll();
 	}));
-	
-	$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() {
+
+	$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
 		PFQoL.fieldSorter();
 	}));
-	
-	if(window.location.href.indexOf("fields/") != -1) {
+
+	if(window.location.href.indexOf("fields/") != -1) { //field sort
 		$(window).on('load', (function() {
 			PFQoL.fieldSorter();
 		}));
