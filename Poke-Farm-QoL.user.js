@@ -55,6 +55,14 @@
 				customEgg: true,
 				customPokemon: true,
 				customPng: false,
+				noEggFind : {
+					noEggOne: "",
+					noEggTwo: "",
+					NoEggThree: "",
+					NoEggFour: "",
+					NoEggFive: "",
+					NoEggSix: "",
+				}
 			},
 			fieldSortSettings : {
 				fieldByBerry: false,
@@ -160,7 +168,7 @@
 							if (countLocalStorageSettings < countScriptSettings) { // adds new objects (settings) to the local storage
 								let defaultsSetting = VARIABLES.userSettings;
 								let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-								let newSetting = $.extend({}, defaultsSetting, userSetting);
+								let newSetting = $.extend(true,{}, defaultsSetting, userSetting);
 								
 								VARIABLES.userSettings = newSetting;
 								fn.backwork.saveSettings();
