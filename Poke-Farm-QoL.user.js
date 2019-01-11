@@ -55,14 +55,6 @@
 				customEgg: true,
 				customPokemon: true,
 				customPng: false,
-				noEggFind : {
-					noEggOne: "",
-					noEggTwo: "",
-					NoEggThree: "",
-					NoEggFour: "",
-					NoEggFive: "",
-					NoEggSix: "",
-				}
 			},
 			fieldSortSettings : {
 				fieldByBerry: false,
