@@ -383,7 +383,7 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div><tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
+					let theField = `<div><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
 					$('#searchkeys').append(theField);
 					//VARIABLES.userSettings.findCustom();
 				},
