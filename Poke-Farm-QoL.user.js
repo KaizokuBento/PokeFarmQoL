@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.1.0
+// @version      1.0.9
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -258,7 +258,8 @@
 						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterend', TEMPLATES.shelterSettingsHTML);
 						$('#shelteroptionsqol').addClass('tab-active');
 						
-						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', "<div id='sheltersuccess'></div>");
+						let shelterSuccessCss = $('#sheltercommands').css('background-color');
+						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', '<div id="sheltersuccess" style="background-color:'+shelterSuccessCss+';"></div>');
 						fn.backwork.populateSettingsPage();
 					}
 
@@ -270,6 +271,8 @@
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
+						
+						
 						fn.backwork.populateSettingsPage();
 					}
 				},
@@ -324,6 +327,10 @@
 				qolHubBuild() {
 					document.querySelector('body').insertAdjacentHTML('beforeend', TEMPLATES.qolHubHTML);
 					$('#core').addClass('scrolllock');
+					let qolHubCssBackground = $('.qolHubHead.qolHubSuperHead').css('background-color');
+					let qolHubCssTextColor = $('.qolHubHead.qolHubSuperHead').css('color');
+					$('.qolHubHead').css({"backgroundColor":""+qolHubCssBackground+"","color":""+qolHubCssTextColor+""});
+					$('.qolChangeLogHead').css({"backgroundColor":""+qolHubCssBackground+"","color":""+qolHubCssTextColor+""});
 					fn.backwork.populateSettingsPage();
 				},
 				qolHubClose() {
@@ -547,6 +554,9 @@
 						$('input.qolalone').on('change', function() {
 							$('input.qolalone').not(this).prop('checked', false);  
 						});
+						let fieldOrderCss = $('#field_field').css('background-color');
+						$("#fieldorder").css("background-color", ""+fieldOrderCss+"");
+						console.log($('#fieldorder').css('backgroundColor:'+fieldOrderCss+''));
 						
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 							$('.fieldmon').removeClass("qolSortMiddle");
