@@ -38,7 +38,7 @@
 			fieldSort: true,
 			//shelter settings
 			shelterSettings : {
-				findCustom: "",
+				findCustom: [],
 				findNewEgg: true,
 				findNewPokemon: true,
 				findShiny: true,
@@ -380,7 +380,8 @@
 
 				shelterAddTextField() {
 					let theField = `<div><tr><td><label><input type="text" class="qolsettingshelter" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
-					$('#searchkeys').append(theField)
+					$('#searchkeys').append(theField);
+					//VARIABLES.userSettings.findCustom();
 				},
 				shelterRemoveTextfield(byebye) {
 					$(byebye).parent().remove();
@@ -663,7 +664,7 @@
 	}));
 
 	$(document).on('click', '.expandlist', (function() { //show hidden li in change log
-		$(this).children('ul').slideToggle();;
+		$(this).children('ul').slideToggle();
 	}));
 
 	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
