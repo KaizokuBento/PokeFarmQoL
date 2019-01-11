@@ -68,7 +68,7 @@
 
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
-			
+
 			shelterCustomArray : [],
 
 			shelterSearch : [
@@ -383,8 +383,10 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
+					let theField = `<div class='customdiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
+					let numberDiv = $('#searchkeys>div').length + 1
 					$('#searchkeys').append(theField);
+					$('.customdiv').removeClass('customdiv').addClass(""+numberDiv+"");
 					//VARIABLES.userSettings.findCustom();
 				},
 				shelterRemoveTextfield(byebye, key) {
@@ -393,11 +395,11 @@
 						return value != key;
 					});
 					VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
-					
+
 					fn.backwork.saveSettings();
 					console.log($(byebye).parent());
 					$(byebye).parent().remove();
-					
+
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
@@ -691,11 +693,11 @@
 	$(document).on('click', '#sheltercommands ,#shelterarea', (function() { //shelter search
 		PFQoL.shelterCustomSearch();
 	}));
-	
+
 	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
 		PFQoL.shelterAddTextField();
 	}));
-	
+
 	$(document).on('click', '#removeShelterTextfield', (function() { //remove shelter text field
 		PFQoL.shelterRemoveTextfield(this, $(this).parent().find('input').val());
 	}));
