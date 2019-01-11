@@ -383,13 +383,13 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div class='customdiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
+					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
 					let numberDiv = $('#searchkeys>div').length + 1
 					$('#searchkeys').append(theField);
-					$('.customdiv').removeClass('customdiv').addClass(""+numberDiv+"");
+					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
 					//VARIABLES.userSettings.findCustom();
 				},
-				shelterRemoveTextfield(byebye, key) {
+				shelterRemoveTextfield(byebye, key) { //add a loop to change all the classes of divs (amount of divs) so it fits with the save keys
 					console.log(key);
 					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) {
 						return value != key;
@@ -397,8 +397,18 @@
 					VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
 
 					fn.backwork.saveSettings();
-					console.log($(byebye).parent());
 					$(byebye).parent().remove();
+					
+					let i;
+					for(i = 0; i < $('#searchkeys>div').length + 1; i++) {
+						let rightDiv = i + 1;
+						let divOne = i - 1;
+						if ($('.0').children().attr('class') === JSON.stringify(1)) {
+							$('.0').children().removeClass().addClass(''+i+'');
+						} else {
+							$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+						}
+					}
 
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
