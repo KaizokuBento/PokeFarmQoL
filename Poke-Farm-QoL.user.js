@@ -379,11 +379,11 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div><tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
+					let theField = `<div><tr><td><label><input type="text" class="qolsettingshelter" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
 					$('#searchkeys').append(theField)
 				},
-				shelterRemoveTextfield() {
-					
+				shelterRemoveTextfield(byebye) {
+					$(byebye).parent().remove();
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter
 					const shelterValueArray = [];
@@ -682,8 +682,8 @@
 		PFQoL.shelterAddTextField();
 	}));
 	
-	$(document).on('click', '#removeShelterTextfield', (function() { //add shelter text field
-		PFQoL.shelterRemoveTextfield();
+	$(document).on('click', '#removeShelterTextfield', (function() { //remove shelter text field
+		PFQoL.shelterRemoveTextfield(this);
 	}));
 
 	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
