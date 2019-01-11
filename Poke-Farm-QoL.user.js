@@ -383,7 +383,7 @@
 				},
 
 				shelterAddTextField() {
-					let theField = `<div><tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' id='removeShelterTextfield'>Remove</button></td></tr>`;
+					let theField = `<div><tr><td><label><input type="text" class="qolsetting" data-key="findCustom"/></label></td><td><input type='button' value='Remove' id='removeShelterTextfield'></td></tr>`;
 					$('#searchkeys').append(theField);
 					//VARIABLES.userSettings.findCustom();
 				},
@@ -392,9 +392,10 @@
 					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) {
 						return value != key;
 					});
-					VARIABLES.userSettings.shelterSettings.findCustom = JSON.stringify(VARIABLES.shelterCustomArray);
-					console.log(VARIABLES.userSettings.shelterSettings.findCustom);
+					VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
+					
 					fn.backwork.saveSettings();
+					console.log($(byebye).parent());
 					$(byebye).parent().remove();
 					
 				},
