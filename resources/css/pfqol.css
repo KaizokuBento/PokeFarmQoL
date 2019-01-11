@@ -191,11 +191,6 @@
 	text-align: center;
 }
 
-.dialog>div>div>div>div {
-    padding: 4px;
-    color: #004000;
-}
-
 .qolAllSettings {
 	width: 315px;
 	height: 100%;
@@ -223,8 +218,6 @@
 }
 
 .qolChangeLogList {
-    background-color: #d2e8af;
-    border-bottom: 1px solid #9ec690;
     color: #004000;
     text-align: left;
     padding: 4px;
