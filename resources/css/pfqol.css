@@ -164,7 +164,40 @@
 	padding: 40px!important;
 }
 
-/* sort in grid */
+/* shelter grid sort */
+.qolshelterareagrid {
+    min-height: 350px;
+    display: flex;
+	flex-direction:row;
+    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 70px);
+}
+.qolshelterareagridmq2 {
+    min-height: 175px;
+    grid-template-rows: repeat(5, 35px);
+}
+.qoltooltipgrid {
+    position: absolute;
+    bottom: 0;
+    transform: translate(0, 100%);
+}
+.qolpokemongrid {
+    position: static;
+    flex: 1 1 16%;
+    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.qolbeforenone {
+    display: none;
+}
+
+
+
+/* field sort in grid */
 .qolGridField {
     min-height: 345px;
     display: flex!important;
