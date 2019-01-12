@@ -56,6 +56,38 @@
 	padding-top: 20px;
 }
 
+	/*shelterSort */
+	/* shelter grid sort */
+.qolshelterareagrid {
+    min-height: 350px;
+    display: flex!important;
+	flex-direction:row;
+    flex-flow: row wrap;
+    display: grid!important;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 70px);
+}
+.qolshelterareagridmq2 {
+    min-height: 175px;
+    grid-template-rows: repeat(5, 35px);
+}
+.qoltooltipgrid {
+    position: absolute;
+    bottom: 0;
+    transform: translate(0, 100%);
+}
+.qolpokemongrid {
+    position: static;
+    flex: 1 1 16%;
+    display: inline-block!important;
+    display: inline-flex!important;
+    justify-content: center;
+    align-items: center;
+}
+#shelterpage #shelter #shelterarea:before {
+    display: none;
+}
+
 /* Field settings */
 #fieldorder {
     margin: 16px auto;
@@ -163,38 +195,6 @@
 	animation: none!important;
 	padding: 40px!important;
 }
-
-/* shelter grid sort */
-.qolshelterareagrid {
-    min-height: 350px;
-    display: flex!important;
-	flex-direction:row;
-    flex-flow: row wrap;
-    display: grid!important;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 70px);
-}
-.qolshelterareagridmq2 {
-    min-height: 175px;
-    grid-template-rows: repeat(5, 35px);
-}
-.qoltooltipgrid {
-    position: absolute;
-    bottom: 0;
-    transform: translate(0, 100%);
-}
-.qolpokemongrid {
-    position: static;
-    flex: 1 1 16%;
-    display: inline-block!important;
-    display: inline-flex!important;
-    justify-content: center;
-    align-items: center;
-}
-#shelterpage #shelter #shelterarea:before {
-    display: none;
-}
-
 
 
 /* field sort in grid */
