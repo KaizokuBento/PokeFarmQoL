@@ -21,7 +21,7 @@
 	z-index: 1;
 	bottom: 125%;
 	left: 50%;
-	margin-left: -60px;
+	margin-left: 0px;
 
     /* Fade in tooltip */
 	opacity: 0;
@@ -67,6 +67,21 @@
     position: relative;
 }
 
+/* field sort color fix */
+#field_field>div.field>.fieldmon.cormyr>img {
+    background-color: rgba(243,240,189,0.8)!important;
+    border-radius: 4px;
+    animation: cormyr 2s infinite;
+    animation-delay: inherit;
+}
+
+#field_field>div.field>.fieldmon.goaway>img {
+    background-color: rgba(243,181,208,0.8)!important;
+    border-radius: 4px;
+    animation: goaway 2s infinite;
+    animation-delay: inherit;
+}
+
 /* sort by berry */
 .qolAnyBerry {
 	left: 0%!important;
@@ -78,7 +93,6 @@
 	animation: none!important;
 	padding: 25px!important;
 }
-
 .qolSourBerry {
 	left: 0%!important;
 	top: 45%!important;
@@ -161,6 +175,11 @@
 	padding-top: 0%!important;
 }
 
+.mq25 .qolGridField {
+	min-height: 180px;
+	grid-template-rows: repeat(5, 36px);
+}
+
 .qolGridPokeSize {
     margin: 0 !important;
     position: static!important;
@@ -173,6 +192,7 @@
 .qolGridPokeImg {
     max-width: 75px;
     max-height: 70px;
+	animation: none!important;
 }
 
 /* Settings Hub */
