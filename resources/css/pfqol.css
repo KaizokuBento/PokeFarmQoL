@@ -84,9 +84,6 @@
     justify-content: center;
     align-items: center;
 }
-#shelterpage #shelter #shelterarea:before {
-    display: none;
-}
 
 /* Field settings */
 #fieldorder {
