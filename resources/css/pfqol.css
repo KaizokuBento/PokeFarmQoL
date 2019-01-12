@@ -167,10 +167,10 @@
 /* shelter grid sort */
 .qolshelterareagrid {
     min-height: 350px;
-    display: flex;
+    display: flex!important;
 	flex-direction:row;
     flex-flow: row wrap;
-    display: grid;
+    display: grid!important;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(5, 70px);
 }
@@ -186,8 +186,8 @@
 .qolpokemongrid {
     position: static;
     flex: 1 1 16%;
-    display: inline-block;
-    display: inline-flex;
+    display: inline-block!important;
+    display: inline-flex!important;
     justify-content: center;
     align-items: center;
 }
