@@ -98,14 +98,14 @@
 
 /* field sort color fix */
 #field_field>div.field>.fieldmon.cormyr>img {
-    background-color: rgba(243,240,189,0.8)!important;
+    background-color: rgba(102,204,102,0.8)!important;
     border-radius: 4px;
     animation: cormyr 2s infinite;
     animation-delay: inherit;
 }
 
 #field_field>div.field>.fieldmon.goaway>img {
-    background-color: rgba(243,181,208,0.8)!important;
+    background-color: rgba(204,102,102,0.8)!important;
     border-radius: 4px;
     animation: goaway 2s infinite;
     animation-delay: inherit;
