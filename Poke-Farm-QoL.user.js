@@ -10,9 +10,9 @@
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -414,13 +414,25 @@
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter & grid
 					//sort in grid
+					$('#shelterarea').removeClass('qolshelterareagrid');
+					$('.mq2 #shelterarea').removeClass('qolshelterareagridmq2');
+					$('#shelterarea .tooltip_content').removeClass('qoltooltipgrid');
+					$('#shelterpage #shelter #shelterarea > .pokemon').removeClass('qolpokemongrid');
+					$('#sheltergridthingy').remove();
+					//$('<pseudo:before>').css({'content' : '""', 'display' : 'block', 'padding-top' : '66.666666666667%'});
+					
 					if (VARIABLES.userSettings.shelterSettings.shelterGrid === true) {
-						$('#shelterarea').removeClass('qolshelterareagrid').addClass('qolshelterareagrid');
-						$('.mq2 #shelterarea').removeClass('qolshelterareagridmq2').addClass('qolshelterareagridmq2');
-						$('#shelterarea .tooltip_content').removeClass('qoltooltipgrid').addClass('qoltooltipgrid');
-						$('#shelterpage #shelter #shelterarea > .pokemon').removeClass('qolpokemongrid').addClass('qolpokemongrid')';
-						$('#shelterpage #shelter #shelterarea:before').removeClass('qolbeforenone').addClass('qolbeforenone');
+						$('#shelterarea').addClass('qolshelterareagrid');
+						$('.mq2 #shelterarea').addClass('qolshelterareagridmq2');
+						$('#shelterarea .tooltip_content').addClass('qoltooltipgrid');
+						$('#shelterpage #shelter #shelterarea > .pokemon').addClass('qolpokemongrid');
+						$('#shelterpage #shelter #shelterarea:before').css({'display' : 'none!important'});
+						$('<pseudo:before>').attr('style', 'display: none!important');
+						$('head').append('<style id="sheltergridthingy">#shelterarea:before{display:none !important;}</style>');
 					}
+					
+					var style = $('<style>.class { background-color: blue; }</style>');
+						$('html > head').append(style);
 					
 					//search values depending on settings
 					const shelterValueArray = [];
