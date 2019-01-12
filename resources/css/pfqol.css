@@ -21,7 +21,7 @@
 	z-index: 1;
 	bottom: 125%;
 	left: 50%;
-	margin-left: -60px;
+	margin-left: 0px;
 
     /* Fade in tooltip */
 	opacity: 0;
@@ -56,6 +56,35 @@
 	padding-top: 20px;
 }
 
+	/*shelterSort */
+	/* shelter grid sort */
+.qolshelterareagrid {
+    min-height: 350px;
+    display: flex!important;
+	flex-direction:row;
+    flex-flow: row wrap;
+    display: grid!important;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 70px);
+}
+.qolshelterareagridmq2 {
+    min-height: 175px;
+    grid-template-rows: repeat(5, 35px);
+}
+.qoltooltipgrid {
+    position: absolute!important;
+    bottom: 0;
+    transform: translate(0, 100%);
+}
+.qolpokemongrid {
+    position: static!important;
+    flex: 1 1 16%;
+    display: inline-block!important;
+    display: inline-flex!important;
+    justify-content: center;
+    align-items: center;
+}
+
 /* Field settings */
 #fieldorder {
     margin: 16px auto;
@@ -65,6 +94,21 @@
     border-radius: 4px;
     max-width: 600px;
     position: relative;
+}
+
+/* field sort color fix */
+#field_field>div.field>.fieldmon.cormyr>img {
+    background-color: rgba(243,240,189,0.8)!important;
+    border-radius: 4px;
+    animation: cormyr 2s infinite;
+    animation-delay: inherit;
+}
+
+#field_field>div.field>.fieldmon.goaway>img {
+    background-color: rgba(243,181,208,0.8)!important;
+    border-radius: 4px;
+    animation: goaway 2s infinite;
+    animation-delay: inherit;
 }
 
 /* sort by berry */
@@ -78,7 +122,6 @@
 	animation: none!important;
 	padding: 25px!important;
 }
-
 .qolSourBerry {
 	left: 0%!important;
 	top: 45%!important;
@@ -150,7 +193,8 @@
 	padding: 40px!important;
 }
 
-/* sort in grid */
+
+/* field sort in grid */
 .qolGridField {
     min-height: 345px;
     display: flex!important;
@@ -159,6 +203,11 @@
     grid-template-columns: repeat(8,12.5%);
     grid-template-rows: repeat(5,69px);
 	padding-top: 0%!important;
+}
+
+.mq25 .qolGridField {
+	min-height: 180px;
+	grid-template-rows: repeat(5, 36px);
 }
 
 .qolGridPokeSize {
@@ -173,6 +222,7 @@
 .qolGridPokeImg {
     max-width: 75px;
     max-height: 70px;
+	animation: none!important;
 }
 
 /* Settings Hub */

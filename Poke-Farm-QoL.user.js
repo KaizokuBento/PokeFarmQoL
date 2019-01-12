@@ -5,11 +5,11 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.0.93
+// @version      1.1.5
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
-// @require https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
+// @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
 // @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
@@ -55,6 +55,7 @@
 				customEgg: true,
 				customPokemon: true,
 				customPng: false,
+				shelterGrid: true,
 			},
 			fieldSortSettings : {
 				fieldByBerry: false,
@@ -69,8 +70,11 @@
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
 
+			shelterCustomArray : [],
+			
+			//"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
+
 			shelterSearch : [
-				"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
 				"findNewEgg", "Egg", "new egg", '<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">',
 				"findNewPokemon", "Pokémon", "new Pokémon", '<img src="//pfq-static.com/img/pkmn/pkmn.png/t=1451852507">',
 				"findShiny", "[SHINY]", "Shiny", '<img src="//pfq-static.com/img/pkmn/shiny.png/t=1400179603">',
@@ -130,7 +134,7 @@
 
 			},
 			/** background stuff */
-			backwork : { // backgrounds stuff	
+			backwork : { // backgrounds stuff
 				checkForUpdate() {
 					let version ="";
 					GM_xmlhttpRequest({
@@ -148,7 +152,7 @@
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-				
+
 
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
@@ -161,14 +165,14 @@
 								let defaultsSetting = VARIABLES.userSettings;
 								let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
 								let newSetting = $.extend(true,{}, defaultsSetting, userSetting);
-								
+
 								VARIABLES.userSettings = newSetting;
 								fn.backwork.saveSettings();
 							}
 							if (countLocalStorageSettings > countScriptSettings) { // removes objects from the local storage if they don't exist anymore. Not yet possible..
 								//let defaultsSetting = VARIABLES.userSettings;
 								//let userSetting = JSON.parse(localStorage.getItem(SETTINGS_SAVE_KEY));
-								
+
 								fn.backwork.saveSettings();
 							}
 						}
@@ -208,11 +212,6 @@
                             fn.helpers.toggleSetting(key, value, false);
                             continue;
                         }
-
-                       if (typeof value === 'string') {
-                            fn.helpers.toggleSetting(key, value, false);
-                            continue;
-					   }
                     }
 					for (let key in VARIABLES.userSettings.fieldSortSettings) {
                         if (!VARIABLES.userSettings.fieldSortSettings.hasOwnProperty(key)) {
@@ -240,12 +239,28 @@
 					if (VARIABLES.userSettings.shelterEnable === true && window.location.href.indexOf("shelter") != -1) {
 						$('.tabbed_interface.horizontal>div').removeClass('tab-active');
 						$('.tabbed_interface.horizontal>ul>li').removeClass('tab-active');
-						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterbegin', '<li class="tab-active"><label>QoL</label></li>');
+						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterbegin', '<li class="tab-active"><label>Search</label></li>');
+						document.querySelector('.tabbed_interface.horizontal>ul>li').insertAdjacentHTML('afterend', '<li class=""><label>Sort</label></li>');
 						document.querySelector('.tabbed_interface.horizontal>ul').insertAdjacentHTML('afterend', TEMPLATES.shelterSettingsHTML);
+						document.querySelector('#shelteroptionsqol').insertAdjacentHTML('afterend', '<div id="qolsheltersort"><label><input type="checkbox" class="qolsetting" data-key="shelterGrid"/><span>Sort by Grid</span></label>');
 						$('#shelteroptionsqol').addClass('tab-active');
-						
+
 						let shelterSuccessCss = $('#sheltercommands').css('background-color');
 						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', '<div id="sheltersuccess" style="background-color:'+shelterSuccessCss+';"></div>');
+						
+						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
+						VARIABLES.shelterCustomArray = VARIABLES.userSettings.shelterSettings.findCustom.split(',');
+						let numberOfValue = VARIABLES.shelterCustomArray.length;
+						
+						
+						let i;
+						for (i = 0; i < numberOfValue; i++) {
+							let rightDiv = i + 1
+							let rightValue = VARIABLES.shelterCustomArray[i];
+							$('#searchkeys').append(theField);
+							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
 						fn.backwork.populateSettingsPage();
 					}
 
@@ -257,8 +272,8 @@
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
-						
-						
+
+
 						fn.backwork.populateSettingsPage();
 					}
 				},
@@ -276,9 +291,10 @@
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe pokemon changes on the fields page
 						OBSERVERS.fieldsObserver.observe(document.querySelector('#field_field'), {
 							childList: true,
+							attributeFilter: ['class'],
 						});
 					}
-					
+
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe settings changes on the fields page
 						OBSERVERS.fieldsObserver.observe(document.querySelector('#fieldorder'), {
 							childList: true,
@@ -320,15 +336,15 @@
 					$('.qolHubHead').css({"backgroundColor":""+qolHubCssBackgroundHead+"","color":""+qolHubCssTextColorHead+""});
 					$('.qolChangeLogHead').css({"backgroundColor":""+qolHubCssBackgroundHead+"","color":""+qolHubCssTextColorHead+""});
 					$('.qolopencloselist.qolChangeLogContent').css({"backgroundColor":""+qolHubCssBackground+"","color":""+qolHubCssTextColor+""});
-					
+
 					fn.backwork.populateSettingsPage();
 				},
 				qolHubClose() {
 					$('.dialog').remove();
 					$('#core').removeClass('scrolllock');
 				},
-			
-				settingsChange(element, textElement) {
+
+				settingsChange(element, textElement, customClass) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
 							VARIABLES.userSettings[element] = true;
@@ -344,16 +360,12 @@
 						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
-							VARIABLES.userSettings.shelterSettings[element] = textElement;
+							//VARIABLES.shelterCustomArray.push(textElement);
+							
+							let tempIndex = customClass - 1;
+							VARIABLES.shelterCustomArray[tempIndex] = textElement;
+							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString();
 						}
-					}
-					if (VARIABLES.userSettings.shelterSettings.customPng === true) {
-						if (VARIABLES.userSettings.shelterSettings.customEgg === true || VARIABLES.userSettings.shelterSettings.customPokemon === true) {
-							alert("If you select 'By img code' then you have to de-select 'Custom Egg' & 'Custom Pokémon'. Can't find both at the same time.");
-						}
-					}
-					if (VARIABLES.userSettings.shelterSettings.findMale === false && VARIABLES.userSettings.shelterSettings.findFemale === false && VARIABLES.userSettings.shelterSettings.findNoGender === false) {
-						alert("You need to select at least 1 of the 3 genders to custom find a Pokémon!");
 					}
 
 					if (JSON.stringify(VARIABLES.userSettings.fieldSortSettings).indexOf(element) >= 0) { // field sort settings
@@ -378,29 +390,74 @@
 					fn.backwork.saveSettings();
 				},
 
-				shelterCustomSearch() { // search whatever you want to find in the shelter
-					const shelterValueArray = [];
-					VARIABLES.shelterSearch[1] = VARIABLES.userSettings.shelterSettings.findCustom; //change customsearch in array to find what you need
-					document.querySelector('#sheltersuccess').innerHTML="";
+				shelterAddTextField() {
+					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
+					let numberDiv = $('#searchkeys>div').length
+					$('#searchkeys').append(theField);
+					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
+				},
+				shelterRemoveTextfield(byebye, key) { //add a loop to change all the classes of divs (amount of divs) so it fits with the save keys
+					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString()
 
-					for (let key in VARIABLES.userSettings.shelterSettings) { //loop to find all the shelter Settings
-						let value = VARIABLES.userSettings.shelterSettings[key];
-						if (value === true || value != "") { //creates an array of items that should be found
-							if (VARIABLES.shelterSearch.indexOf(key) >=0) {
-								let searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
-								shelterValueArray.push(searchKey);
-							}
-						}
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+					
+					let i;
+					for(i = 0; i < $('#searchkeys>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
 					}
 
-					for (let key in shelterValueArray) { // all the search stuff that's being done
+				},
+				shelterCustomSearch() { // search whatever you want to find in the shelter & grid
+					//sort in grid
+					$('#shelterarea').removeClass('qolshelterareagrid');
+					$('.mq2 #shelterarea').removeClass('qolshelterareagridmq2');
+					$('#shelterarea .tooltip_content').removeClass('qoltooltipgrid');
+					$('#shelterpage #shelter #shelterarea > .pokemon').removeClass('qolpokemongrid');
+					$('#sheltergridthingy').remove();
+					//$('<pseudo:before>').css({'content' : '""', 'display' : 'block', 'padding-top' : '66.666666666667%'});
+					
+					if (VARIABLES.userSettings.shelterSettings.shelterGrid === true) {
+						$('#shelterarea').addClass('qolshelterareagrid');
+						$('.mq2 #shelterarea').addClass('qolshelterareagridmq2');
+						$('#shelterarea .tooltip_content').addClass('qoltooltipgrid');
+						$('#shelterpage #shelter #shelterarea > .pokemon').addClass('qolpokemongrid');
+						$('#shelterpage #shelter #shelterarea:before').css({'display' : 'none!important'});
+						$('<pseudo:before>').attr('style', 'display: none!important');
+						$('head').append('<style id="sheltergridthingy">#shelterarea:before{display:none !important;}</style>');
+					}
+					
+					var style = $('<style>.class { background-color: blue; }</style>');
+						$('html > head').append(style);
+					
+					//search values depending on settings
+					const shelterValueArray = [];
+					//emptying the sheltersuccess div to avoid duplicates
+					document.querySelector('#sheltersuccess').innerHTML="";
+					
+					//loop to find all search values for the top checkboxes
+					for (let key in VARIABLES.userSettings.shelterSettings) {
+						let value = VARIABLES.userSettings.shelterSettings[key];
+						if (value === true && key != 'findCustom' && key != 'findMale' && key != 'findFemale' && key != 'findNoGender' && key != 'customEgg' && key != 'customPokemon' && key != 'customPng') {
+							let searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
+							shelterValueArray.push(searchKey);
+						}
+					}
+					
+					//loop to find the top checkboxes in the shelter
+					for (let key in shelterValueArray) {
 						let value = shelterValueArray[key];
-
-						if (value.startsWith("[") && value != "[M]" && value != "[F]" && value != "[N]") { //img[TITLE] search. Shiny, Albino, Melanistic, Prehistoric, Mega, Starter & Custom Sprite
-							if ($("img[title*='"+value+"']").length) {
-								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-								let imgResult = $("img[title*='"+value+"']").length+" - "+searchResult;
-								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+						
+						//img[TITLE] search. everything aside from new pokémon & new eggs || Image for Delta fails
+						if (value.startsWith('[')) {
+							if ($('img[title*="'+value+'"]').length) {
+								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];  //type of Pokémon found
+								let imgResult = $("img[title*='"+value+"']").length+" "+searchResult; //amount + type found
+								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2]; //image for type of Pokémon
 
 								if ($("img[title*='"+value+"']").length > 1) {
 									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+imgResult+'s found '+imgFitResult+'</div>');
@@ -409,8 +466,8 @@
 								}
 							}
 						}
-
-						if (value === "Pokémon") { //tooltip_content search. new pokémon
+						//new Pokémon search.
+						if (value === 'Pokémon') {
 							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" "+searchResult;
@@ -423,7 +480,7 @@
 								}
 							}
 						}
-
+						//new egg search.
 						if (value === "Egg") { //tooltip_content search. new egg.
 							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
 								let allEggFinds = $("#shelterarea .tooltip_content:contains("+value+")").length;
@@ -441,87 +498,122 @@
 								}
 							}
 						}
-
-
-						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPokemon === true) { //custom search with pokemon & genders
-							VARIABLES.shelterSearch[2] = VARIABLES.userSettings.shelterSettings.findCustom; // this is the custom search from the textbox
-
-							if (shelterValueArray.indexOf("[M]") >0) {
-								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
-									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
-									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
-									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
-									}
-								}
-							}
-
-							if (shelterValueArray.indexOf("[F]") >0) {
-								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
-									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
-									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
-									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
-									}
-								}
-							}
-
-							if (shelterValueArray.indexOf("[N]") >0) {
-								if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
-									let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-									let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
-									let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
-									let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
-									} else {
-										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
-									}
-								}
-							}
-						}
-
-						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customEgg === true) { //custom search with eggs
-							if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
-								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-								let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length+" "+searchResult;
-								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' Eggs found '+imgFitResult+'</div>');
-								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' egg found '+imgFitResult+'</div>');
-								}
-							}
-						}
-
-						if (value != "Egg" && value != "Pokémon" && value.startsWith("[") === false && VARIABLES.userSettings.shelterSettings.customPng === true) { //custom search with img code
-							if ($('#shelterarea img[src*="'+value+'"]').length) {
-								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
-								let amountOfEggs = $('#shelterarea img[src*="'+value+'"]').length / 2
-								let tooltipResult = amountOfEggs+"   <img src="+value+">";
-								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-								if (amountOfEggs > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
-								} else {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
-								}
+					}
+					
+					
+					//loop to find all search genders for the custom 
+					const shelterValueArrayCustom = [];
+					for (let key in VARIABLES.userSettings.shelterSettings) {
+						let value = VARIABLES.userSettings.shelterSettings[key];
+						if (value === true) {
+							if(key === 'findMale' || key === 'findFemale' || key === 'findNoGender') {
+								let searchKey = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(key) + 1];
+								shelterValueArrayCustom.push(searchKey);
 							}
 						}
 					}
-				}, // end of shelterCustomSearch
+					
+					//loop to find all the custom search parameters
+					let customSearchAmount = VARIABLES.shelterCustomArray.length;
+					let i;
+					for (i = 0; i < customSearchAmount; i++) {
+						let value = VARIABLES.shelterCustomArray[i];
+						if (value != "") {
+							//custom pokemon search
+							if (VARIABLES.userSettings.shelterSettings.customPokemon === true) {
+									//Males
+								if (shelterValueArrayCustom.indexOf("[M]") > -1) {
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
+										let searchResult = value;
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2]; 
+										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
+										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+
+										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+										} else {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+										}
+									}
+								}
+									//Females
+								if (shelterValueArrayCustom.indexOf("[F]") > -1) {
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
+										let searchResult = value;
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2]; 
+										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
+										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+
+										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+										} else {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+										}
+									}
+								}
+									//Genderless
+								if (shelterValueArrayCustom.indexOf("[N]") > -1) {
+									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
+										let searchResult = value;
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2]; 
+										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
+										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+
+										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+										} else {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+										}
+									}
+								}
+									//No genders
+								if (shelterValueArrayCustom.length === 0) {
+									if ($('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length) {
+										let searchResult = value; 
+										let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length+" "+searchResult;
+										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+
+										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+										} else {
+											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+										}
+									}
+								}
+							}
+							
+							//custom egg
+							if (VARIABLES.userSettings.shelterSettings.customEgg === true) {
+								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
+									let searchResult = value;
+									let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length+" "+searchResult;
+									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">`;
+
+									if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' Eggs found '+imgFitResult+'</div>');
+									} else {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' egg found '+imgFitResult+'</div>');
+									}
+								}
+							}
+							
+							//imgSearch with Pokémon
+							if (VARIABLES.userSettings.shelterSettings.customPng === true) {
+								if ($('#shelterarea img[src*="'+value+'"]').length) {
+									let searchResult = $('#shelterarea img[src*="'+value+'"]').parent().next().text().split('(')[0]
+									let tooltipResult = $('#shelterarea img[src*="'+value+'"]').length+" "+searchResult+' (Custom img search)';
+									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+							
+									if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									} else {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									}
+								}
+							} 
+						}
+					}
+				},
 
 				releaseFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
@@ -542,13 +634,13 @@
 				fieldSorter() {
 					if (VARIABLES.userSettings.fieldSort === true) {
 						$('input.qolalone').on('change', function() {
-							$('input.qolalone').not(this).prop('checked', false);  
+							$('input.qolalone').not(this).prop('checked', false);
 						});
 						let fieldOrderCssColor = $('#field_field').css('background-color');
 						let fieldOrderCssBorder = $('#field_field').css('border');
 						$("#fieldorder").css("background-color", ""+fieldOrderCssColor+"");
 						$("#fieldorder").css("border", ""+fieldOrderCssBorder+"");
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === true) { //sort field by berries
 							$('.fieldmon').removeClass("qolSortMiddle");
 							$('.field').removeClass("qolGridField");
@@ -573,7 +665,7 @@
 							if($('#field_field [data-flavour*="bitter-"]').length) {
 								$('#field_field [data-flavour*="bitter-"]').addClass("qolBitterBerry");
 							}
-						}	
+						}
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === true) { //sort field in the middle
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -584,10 +676,10 @@
 							$('.field').removeClass("qolGridField");
 							$('.fieldmon').removeClass("qolGridPokeSize");
 							$('.fieldmon>img').removeClass("qolGridPokeImg");
-							
+
 							$('.fieldmon').addClass("qolSortMiddle");
 						}
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByGrid === true) { //sort field in a grid
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -596,12 +688,12 @@
 							$('#field_field [data-flavour*="sweet-"]').removeClass("qolSweetBerry");
 							$('#field_field [data-flavour*="bitter-"]').removeClass("qolBitterBerry");
 							$('.fieldmon').removeClass("qolSortMiddle");
-						
+
 							$('.field').addClass("qolGridField");
 							$('.fieldmon').addClass("qolGridPokeSize");
 							$('.fieldmon>img').addClass("qolGridPokeImg");
 						}
-						
+
 						if (VARIABLES.userSettings.fieldSortSettings.fieldByBerry === false && VARIABLES.userSettings.fieldSortSettings.fieldByMiddle === false && VARIABLES.userSettings.fieldSortSettings.fieldByGrid === false) {
 							$('#field_field [data-flavour*="any-"]').removeClass("qolAnyBerry");
 							$('#field_field [data-flavour*="sour-"]').removeClass("qolSourBerry");
@@ -614,7 +706,7 @@
 							$('.fieldmon').removeClass("qolGridPokeSize");
 							$('.fieldmon>img').removeClass("qolGridPokeImg");
 						}
-						
+
 						//Pokémon click counter
 						if (VARIABLES.userSettings.fieldSortSettings.fieldClickCount === false) {
 							$('#pokemonclickcount').remove();
@@ -625,14 +717,14 @@
 							for (var i = 0; i < pokemonFed.length; i++) {
 								pokemonClicked += pokemonFed[i] << 0;
 							}
-							
+
 							let pokemonInField = $('.fieldpkmncount').text();
 
 							$('#pokemonclickcount').remove(); //make sure no duplicates are being produced
 							document.querySelector('.fielddata').insertAdjacentHTML('beforeend','<div id="pokemonclickcount">'+pokemonClicked+' / '+pokemonInField+' Clicked</div>');
 							if (JSON.stringify(pokemonClicked) === pokemonInField) {
 								$('#pokemonclickcount').css({"color" : "#059121"});
-							} 
+							}
 							if (pokemonClicked !== JSON.parse(pokemonInField)) {
 								$('#pokemonclickcount').css({"color" : "#a30323"});
 							}
@@ -646,46 +738,59 @@
 
 		return fn.API;
 	})(); // end of PFQoL function
-	
-	$(document).on('click', 'li[data-name*="QoL"]', (function() {
+
+	$(document).on('click', 'li[data-name*="QoL"]', (function() { //open QoL hub
 		PFQoL.qolHubBuild();
 	}));
-	
-	$(document).on('click', '.closeHub', (function() {
+
+	$(document).on('click', '.closeHub', (function() { //close QoL hub
 		PFQoL.qolHubClose();
 	}));
-	
-	$(document).on('click', '.expandlist', (function() {
-		$(this).children('ul').slideToggle();;
+
+	$(document).on('click', '.expandlist', (function() { //show hidden li in change log
+		$(this).children('ul').slideToggle();
 	}));
 
-	$(document).on('input', '.qolsetting', (function() {
-		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val());
+	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
+		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val(), $(this).parent().parent().attr('class'));
 	}));
 
-	$(document).on('change', '#shelteroptionsqol input', (function() {
+	$(document).on('change', '#shelteroptionsqol input', (function() { //shelter search
 		PFQoL.shelterCustomSearch();
 	}));
 
-	$(document).on('click', '#sheltercommands ,#shelterarea', (function() {
+	$(document).on('click', '#shelterpage', (function() { //shelter search
 		PFQoL.shelterCustomSearch();
 	}));
 
-	$(document).on('click', '*[data-menu="release"]', (function() {
+	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
+		PFQoL.shelterAddTextField();
+	}));
+
+	$(document).on('click', '#removeShelterTextfield', (function() { //remove shelter text field
+		PFQoL.shelterRemoveTextfield(this, $(this).parent().find('input').val());
+	}));
+
+	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
 		PFQoL.releaseFieldSelectAll();
     }));
 
-	$(document).on('mouseover', '#caughtfishcontainer', (function() {
+	$(document).on('mouseover', '#caughtfishcontainer', (function() { //select all feature
 		PFQoL.releaseFishSelectAll();
 	}));
 	
-	$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() {
-		PFQoL.fieldSorter();
-	}));
-	
 	if(window.location.href.indexOf("fields/") != -1) {
+		$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
+			PFQoL.fieldSorter();
+		}));
+	}
+
+	if(window.location.href.indexOf("fields/") != -1) { //field sort
 		$(window).on('load', (function() {
 			PFQoL.fieldSorter();
 		}));
+		document.addEventListener("keydown", function(event) {
+			PFQoL.fieldSorter();
+		});
 	}
 })(jQuery); //end of userscript

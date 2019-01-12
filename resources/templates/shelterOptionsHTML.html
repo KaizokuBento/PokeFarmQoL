@@ -65,7 +65,7 @@
 		</tbody>
 	</table>
 	<h4>Custom Search</h4>
-	<p>Here you can custom find any Pokémon you want! Be careful, the search field is case sensitive, so use capital letters! Hover over "Custom Search Help" for more info.</p>
+	<p>Here you can custom find any Pokémon you want! Hover over "Custom Search Help" for more info.</p>
 	<div class="tooltip">Custom Search Help
 		<span class="tooltiptext">
 			Custom search by Pokémon name
@@ -81,7 +81,7 @@
 			<br>
 			//pfq-static.com/img/pkmn/1/g/g.png/t=1474027727
 			<br>
-			and now it will show you when a Bulbasaur is found! Copy paste the complete link (starting from //) to have the most accurate search.
+			and now it will show you when a Bulbasaur is found! Copy paste the complete link (starting from //) or you won't find anything.
 			<br>
 			<br>
 			<a href="https://docs.google.com/spreadsheets/d/1rD1VZNTQRYXMOVKvGasjmMdMJu-iheE-ajsFkfs4QXA/edit?usp=sharing">List of Eggs Image Codes</a>
@@ -89,11 +89,12 @@
 			<br>
 			More info on finding Pokémon with their img code:
 			<br>
+			<br>
 			<a href="https://pokefarm.com/forum/thread/127552/Site-Skins-How-To-and-Helpful-CSS>"Pokémon Modifications" > "Make Shelter Pokemon Stand Out"</a>
 		</span>
 	</div>
 	
-	<table>
+		<table>
 	    <tbody>
 	        <tr>
 	            <td>
@@ -134,23 +135,16 @@
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findNoGender"/>No Gender
+						<input type="checkbox" class="qolsetting" data-key="findNoGender"/>Genderless
 					</label>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	
-    <p>Search Key</p>
-    <table>
-		<tbody>
-			<tr>
-				<td>
-					<label>
-						<input type="text" class="qolsetting" data-key="findCustom"/>
-					</label>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+    <p>Search Keys</p>
+	<input type='button' value='Add' id='addShelterTextfield'>
+    <div id="searchkeys">
+		<div class='0'></div>
+	</div>
 </div>
