@@ -191,7 +191,7 @@
     justify-content: center;
     align-items: center;
 }
-.qolbeforenone {
+#shelterpage #shelter #shelterarea:before {
     display: none;
 }
 
