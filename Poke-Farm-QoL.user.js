@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.1.5
+// @version      1.1.6
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -623,6 +623,14 @@
 						});
 					}
 				},
+				moveFieldSelectAll() {
+					if (VARIABLES.userSettings.releaseSelectAll === true) {
+						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all</label>');
+						$('#movefieldselectallcheckbox').click(function() {
+							$('input:checkbox').not(this).prop('checked', this.checked);
+						});	
+					}
+				},
 				releaseFishSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
 						$("#selectallfishcheckbox").click(function(){
@@ -774,6 +782,10 @@
 	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
 		PFQoL.releaseFieldSelectAll();
     }));
+	
+	$(document).on('click', '*[data-menu="bulkmove"]', (function() {
+		PFQoL.moveFieldSelectAll();
+	}));
 
 	$(document).on('mouseover', '#caughtfishcontainer', (function() { //select all feature
 		PFQoL.releaseFishSelectAll();
