@@ -865,12 +865,20 @@
 				
 				partyModification() {
 					if (VARIABLES.userSettings.partyMod === true) {
-						console.log('hello?');
 						$('input.qolalone').on('change', function() { //only 1 textbox may be true
 							$('input.qolalone').not(this).prop('checked', false);
 						});
 						
-						//lala
+						if (VARIABLES.userSettings.partyModSettings.hideAll === true) {
+							$('#trainerimage').addClass('qolpartyclickhide');
+							$('#profilebox').addClass('qolpartyclickhide');
+							$('#multiuser .pkmn').addClass('qolpartyclickhide');
+							$('#multiuser .name').addClass('qolpartyclickhide');
+							$('#multiuser .expbar').addClass('qolpartyclickhide');
+							$('#multiuser .taste').addClass('qolpartyclickhide');
+							$('#multiuser .taste').addClass('qolpartyclickhide');
+							$('#multiuser .taste').addClass('qolpartyclickhide');
+						}
 					}
 				},
 			}, // end of API

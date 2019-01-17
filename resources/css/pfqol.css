@@ -297,3 +297,7 @@
     background: #D2E8AF;
     text-align: center;
 }
+
+.qolpartyclickhide {
+	display: none;
+}
