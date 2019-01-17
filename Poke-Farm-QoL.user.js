@@ -1062,11 +1062,12 @@
 				},
 				
 				easyEvolveList() {
+					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
 					$('#farmnews-evolutions>.scrollable>ul>Li').each(function (index, value) {
 						
 						
 						
-						document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
+						
 						let getEvolveString = $(this).html();
 						let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12)
 						
