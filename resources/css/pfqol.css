@@ -299,5 +299,5 @@
 }
 
 .qolpartyclickhide {
-	display: none;
+	display: none!important;
 }
