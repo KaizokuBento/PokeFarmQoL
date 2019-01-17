@@ -871,6 +871,62 @@
 						});
 						console.log('clickyparty');
 						
+						if (VARIABLES.userSettings.partyModSettings.hideDislike === false && VARIABLES.userSettings.partyModSettings.hideAll === false) {
+							$('#trainerimage').removeClass('qolpartyclickhide');
+							$('#profilebox').removeClass('qolpartyclickhide');
+							$('#multiuser .pkmn').removeClass('qolpartyclickhide');
+							$('#multiuser .name').removeClass('qolpartyclickhide');
+							$('#multiuser .expbar').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#partybox .party>div>.action.working').removeClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons:not([data-up='sour'])>[data-berry='aspear'], .party>div>.action>.berrybuttons:not([data-up='spicy'])>[data-berry='cheri'], .party>div>.action>.berrybuttons:not([data-up='dry'])>[data-berry='chesto'], .party>div>.action>.berrybuttons:not([data-up='sweet'])>[data-berry='pecha'], .party>div>.action>.berrybuttons:not([data-up='bitter'])>[data-berry='rawst']").removeClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons[data-up='sour']>[data-berry='aspear'], .party>div>.action>.berrybuttons[data-up='spicy']>[data-berry='cheri'], .party>div>.action>.berrybuttons[data-up='dry']>[data-berry='chesto'], .party>div>.action>.berrybuttons[data-up='sweet']>[data-berry='pecha'], .party>div>.action>.berrybuttons[data-up='bitter']>[data-berry='rawst']").removeClass('qolpartyclickwidth');
+							$(".party>div>.action>.berrybuttons[data-up='any']>[data-berry]").removeClass('qolpartyclickblock');
+							$('#multiuser .party>div>.action>.berrybuttons>.tooltip_content').removeClass('qolpartyclickhide');
+							$('#multiuser .party>div').removeClass('qolpartyclickalot');
+							$('#multiuser .party>div>.action a[data-berry]').removeClass('qolpartyclickz');
+							$('.mu_navlink.next').removeClass('qolpartyclicknav');
+							$('#multiuser .party').removeClass('qolpartyclickpartywidth');
+							$('#multiuser .party>div').removeClass('qolpartyclickpartydivwidth');
+							$('#multiuser .party>div:nth-child(1)').removeClass('qolpartyclickborderone');
+							$('#multiuser .party>div:nth-child(2)').removeClass('qolpartyclickbordertwo');
+							$('#multiuser .party>div:nth-child(5)').removeClass('qolpartyclickborderthree');
+							$('#multiuser .party>div:nth-child(6)').removeClass('qolpartyclickborderfour');
+							$('#multiuser .party>div:nth-child(2n+1)').removeClass('qolpartyclickborderfive');
+							$('#multiuser.tabbed_interface.horizontal>ul').removeClass('qolpartyclickul');
+							$('#multiuser.tabbed_interface>ul>li>label').removeClass('qolpartyclicklilabel');
+						}
+						
+						if (VARIABLES.userSettings.partyModSettings.hideDislike === true) {
+							$('#trainerimage').removeClass('qolpartyclickhide');
+							$('#profilebox').removeClass('qolpartyclickhide');
+							$('#multiuser .pkmn').removeClass('qolpartyclickhide');
+							$('#multiuser .name').removeClass('qolpartyclickhide');
+							$('#multiuser .expbar').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#multiuser .taste').removeClass('qolpartyclickhide');
+							$('#partybox .party>div>.action.working').removeClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons:not([data-up='sour'])>[data-berry='aspear'], .party>div>.action>.berrybuttons:not([data-up='spicy'])>[data-berry='cheri'], .party>div>.action>.berrybuttons:not([data-up='dry'])>[data-berry='chesto'], .party>div>.action>.berrybuttons:not([data-up='sweet'])>[data-berry='pecha'], .party>div>.action>.berrybuttons:not([data-up='bitter'])>[data-berry='rawst']").removeClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons[data-up='sour']>[data-berry='aspear'], .party>div>.action>.berrybuttons[data-up='spicy']>[data-berry='cheri'], .party>div>.action>.berrybuttons[data-up='dry']>[data-berry='chesto'], .party>div>.action>.berrybuttons[data-up='sweet']>[data-berry='pecha'], .party>div>.action>.berrybuttons[data-up='bitter']>[data-berry='rawst']").removeClass('qolpartyclickwidth');
+							$(".party>div>.action>.berrybuttons[data-up='any']>[data-berry]").removeClass('qolpartyclickblock');
+							$('#multiuser .party>div>.action>.berrybuttons>.tooltip_content').removeClass('qolpartyclickhide');
+							$('#multiuser .party>div').removeClass('qolpartyclickalot');
+							$('#multiuser .party>div>.action a[data-berry]').removeClass('qolpartyclickz');
+							$('.mu_navlink.next').removeClass('qolpartyclicknav');
+							$('#multiuser .party').removeClass('qolpartyclickpartywidth');
+							$('#multiuser .party>div').removeClass('qolpartyclickpartydivwidth');
+							$('#multiuser .party>div:nth-child(1)').removeClass('qolpartyclickborderone');
+							$('#multiuser .party>div:nth-child(2)').removeClass('qolpartyclickbordertwo');
+							$('#multiuser .party>div:nth-child(5)').removeClass('qolpartyclickborderthree');
+							$('#multiuser .party>div:nth-child(6)').removeClass('qolpartyclickborderfour');
+							$('#multiuser .party>div:nth-child(2n+1)').removeClass('qolpartyclickborderfive');
+							$('#multiuser.tabbed_interface.horizontal>ul').removeClass('qolpartyclickul');
+							$('#multiuser.tabbed_interface>ul>li>label').removeClass('qolpartyclicklilabel');
+						}
+						
 						if (VARIABLES.userSettings.partyModSettings.hideAll === true) {
 							$('#trainerimage').addClass('qolpartyclickhide');
 							$('#profilebox').addClass('qolpartyclickhide');
@@ -880,7 +936,6 @@
 							$('#multiuser .taste').addClass('qolpartyclickhide');
 							$('#multiuser .taste').addClass('qolpartyclickhide');
 							$('#multiuser .taste').addClass('qolpartyclickhide');
-							
 							$('#partybox .party>div>.action.working').addClass('qolpartyclickhide');
 							$(".party>div>.action>.berrybuttons:not([data-up='sour'])>[data-berry='aspear'], .party>div>.action>.berrybuttons:not([data-up='spicy'])>[data-berry='cheri'], .party>div>.action>.berrybuttons:not([data-up='dry'])>[data-berry='chesto'], .party>div>.action>.berrybuttons:not([data-up='sweet'])>[data-berry='pecha'], .party>div>.action>.berrybuttons:not([data-up='bitter'])>[data-berry='rawst']").addClass('qolpartyclickhide');
 							$(".party>div>.action>.berrybuttons[data-up='sour']>[data-berry='aspear'], .party>div>.action>.berrybuttons[data-up='spicy']>[data-berry='cheri'], .party>div>.action>.berrybuttons[data-up='dry']>[data-berry='chesto'], .party>div>.action>.berrybuttons[data-up='sweet']>[data-berry='pecha'], .party>div>.action>.berrybuttons[data-up='bitter']>[data-berry='rawst']").addClass('qolpartyclickwidth');
@@ -898,7 +953,6 @@
 							$('#multiuser .party>div:nth-child(2n+1)').addClass('qolpartyclickborderfive');
 							$('#multiuser.tabbed_interface.horizontal>ul').addClass('qolpartyclickul');
 							$('#multiuser.tabbed_interface>ul>li>label').addClass('qolpartyclicklilabel');
-							
 						}
 					}
 				},
@@ -974,6 +1028,10 @@
 	}
 	
 	if(window.location.href.indexOf("users/") != -1) {
+		$(window).on('load', (function() {
+			PFQoL.partyModification();
+		}));
+		
 		$(document).on('click input', '#qolpartymod', (function() { // partymods
 			PFQoL.partyModification();
 		}));
