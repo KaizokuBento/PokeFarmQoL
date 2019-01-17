@@ -130,6 +130,7 @@
 			partyClickObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.partyModification();
+					console.log(mutation);
 				});
 			}),
 		}
@@ -868,6 +869,7 @@
 						$('input.qolalone').on('change', function() { //only 1 textbox may be true
 							$('input.qolalone').not(this).prop('checked', false);
 						});
+						console.log('clickyparty');
 						
 						if (VARIABLES.userSettings.partyModSettings.hideAll === true) {
 							$('#trainerimage').addClass('qolpartyclickhide');
@@ -878,6 +880,25 @@
 							$('#multiuser .taste').addClass('qolpartyclickhide');
 							$('#multiuser .taste').addClass('qolpartyclickhide');
 							$('#multiuser .taste').addClass('qolpartyclickhide');
+							
+							$('#partybox .party>div>.action.working').addClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons:not([data-up='sour'])>[data-berry='aspear'], .party>div>.action>.berrybuttons:not([data-up='spicy'])>[data-berry='cheri'], .party>div>.action>.berrybuttons:not([data-up='dry'])>[data-berry='chesto'], .party>div>.action>.berrybuttons:not([data-up='sweet'])>[data-berry='pecha'], .party>div>.action>.berrybuttons:not([data-up='bitter'])>[data-berry='rawst']").addClass('qolpartyclickhide');
+							$(".party>div>.action>.berrybuttons[data-up='sour']>[data-berry='aspear'], .party>div>.action>.berrybuttons[data-up='spicy']>[data-berry='cheri'], .party>div>.action>.berrybuttons[data-up='dry']>[data-berry='chesto'], .party>div>.action>.berrybuttons[data-up='sweet']>[data-berry='pecha'], .party>div>.action>.berrybuttons[data-up='bitter']>[data-berry='rawst']").addClass('qolpartyclickwidth');
+							$(".party>div>.action>.berrybuttons[data-up='any']>[data-berry]").addClass('qolpartyclickblock');
+							$('#multiuser .party>div>.action>.berrybuttons>.tooltip_content').addClass('qolpartyclickhide');
+							$('#multiuser .party>div').addClass('qolpartyclickalot');
+							$('#multiuser .party>div>.action a[data-berry]').addClass('qolpartyclickz');
+							$('.mu_navlink.next').addClass('qolpartyclicknav');
+							$('#multiuser .party').addClass('qolpartyclickpartywidth');
+							$('#multiuser .party>div').addClass('qolpartyclickpartydivwidth');
+							$('#multiuser .party>div:nth-child(1)').addClass('qolpartyclickborderone');
+							$('#multiuser .party>div:nth-child(2)').addClass('qolpartyclickbordertwo');
+							$('#multiuser .party>div:nth-child(5)').addClass('qolpartyclickborderthree');
+							$('#multiuser .party>div:nth-child(6)').addClass('qolpartyclickborderfour');
+							$('#multiuser .party>div:nth-child(2n+1)').addClass('qolpartyclickborderfive');
+							$('#multiuser.tabbed_interface.horizontal>ul').addClass('qolpartyclickul');
+							$('#multiuser.tabbed_interface>ul>li>label').addClass('qolpartyclicklilabel');
+							
 						}
 					}
 				},
@@ -953,8 +974,14 @@
 	}
 	
 	if(window.location.href.indexOf("users/") != -1) {
-		$(document).on('click input', '#qolpartymod', (function() { //field sort
+		$(document).on('click input', '#qolpartymod', (function() { // partymods
+			PFQoL.partyModification();
+		}));
+		
+		$(document).on('click', '.tabbed_interface', (function() {
 			PFQoL.partyModification();
 		}));
 	}
+	
+	
 })(jQuery); //end of userscript
