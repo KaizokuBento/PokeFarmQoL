@@ -10,9 +10,9 @@
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -36,10 +36,12 @@
 			shelterEnable: true,
 			releaseSelectAll: true,
 			fieldSort: true,
+			partyMod: true,
 			//shelter settings
 			shelterSettings : {
 				findCustom: "",
 				findNewEgg: true,
+				NewEggDuplicate: "",
 				findNewPokemon: true,
 				findShiny: true,
 				findAlbino: true,
@@ -63,6 +65,10 @@
 				fieldByGrid: false,
 				fieldClickCount: true,
 			},
+			partyModSettings : {
+				hideDislike: false,
+				hideAll: false,
+			},
 		};
 
 		const SETTINGS_SAVE_KEY = 'QoLSettings';
@@ -71,7 +77,13 @@
 			userSettings : DEFAULT_USER_SETTINGS,
 
 			shelterCustomArray : [],
+
+			newEggAdopt : "",
 			
+			eggNoDuplicateArray : [],
+			
+			lengthEggs : 0,
+
 			//"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
 
 			shelterSearch : [
@@ -99,6 +111,7 @@
 			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
 			qolHubHTML				: GM_getResourceText('QolHubHTML'),
+			partyModHTML			: `<div id='qolpartymod'><label><input type="checkbox" class="qolsetting qolalone" data-key="hideDislike"/>Hide disliked berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="hideAll"/>Hide all</label></div>`,
 		}
 
 		const OBSERVERS = {
@@ -111,6 +124,12 @@
 			fieldsObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.fieldSorter();
+				});
+			}),
+			
+			partyClickObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.partyModification();
 				});
 			}),
 		}
@@ -228,6 +247,21 @@
                             continue;
 					   }
                     }
+					for (let key in VARIABLES.userSettings.partyModSettings) {
+                        if (!VARIABLES.userSettings.partyModSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings.partyModSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
+                    }
                 },
 
 				setupHTML() { // injects the HTML changes from TEMPLATES into the site
@@ -247,12 +281,12 @@
 
 						let shelterSuccessCss = $('#sheltercommands').css('background-color');
 						document.querySelector('#sheltercommands').insertAdjacentHTML('beforebegin', '<div id="sheltersuccess" style="background-color:'+shelterSuccessCss+';"></div>');
-						
+
 						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findCustom"/></label><input type='button' value='Remove' id='removeShelterTextfield'></div>`;
 						VARIABLES.shelterCustomArray = VARIABLES.userSettings.shelterSettings.findCustom.split(',');
 						let numberOfValue = VARIABLES.shelterCustomArray.length;
-						
-						
+
+
 						let i;
 						for (i = 0; i < numberOfValue; i++) {
 							let rightDiv = i + 1
@@ -260,7 +294,7 @@
 							$('#searchkeys').append(theField);
 							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
 						}
-						
+
 						fn.backwork.populateSettingsPage();
 					}
 
@@ -273,9 +307,18 @@
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
 
-
 						fn.backwork.populateSettingsPage();
 					}
+					
+					// party click mods
+					if (VARIABLES.userSettings.partyMod === true && window.location.href.indexOf("users/") != -1) {
+						$(document).ready(function() {
+							document.querySelector('#multiuser').insertAdjacentHTML('beforebegin', TEMPLATES.partyModHTML);
+						
+							fn.backwork.populateSettingsPage();
+						});
+					}
+
 				},
 				setupCSS() { // All the CSS changes are added here
 					GM_addStyle(GM_getResourceText('QoLCSS'));
@@ -297,6 +340,12 @@
 
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) { //observe settings changes on the fields page
 						OBSERVERS.fieldsObserver.observe(document.querySelector('#fieldorder'), {
+							childList: true,
+						});
+					}
+					
+					if (VARIABLES.userSettings.partyMod === true && window.location.href.indexOf("users/") != -1) { //observe party click changes on the users page
+						OBSERVERS.partyClickObserver.observe(document.querySelector('.tabbed_interface.horizontal'), {
 							childList: true,
 						});
 					}
@@ -361,7 +410,7 @@
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
 							//VARIABLES.shelterCustomArray.push(textElement);
-							
+
 							let tempIndex = customClass - 1;
 							VARIABLES.shelterCustomArray[tempIndex] = textElement;
 							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString();
@@ -387,6 +436,24 @@
 							VARIABLES.userSettings.fieldSortSettings[element] = textElement;
 						}
 					}
+					
+					if (JSON.stringify(VARIABLES.userSettings.partyModSettings).indexOf(element) >= 0) { // partymod settings
+						if (VARIABLES.userSettings.partyModSettings[element] === false ) {
+							VARIABLES.userSettings.partyModSettings[element] = true;
+							if (element === "hideAll") {
+								VARIABLES.userSettings.partyModSettings.hideDislike = false;
+							} else if (element === "hideDislike") {
+								VARIABLES.userSettings.partyModSettings.hideAll = false;
+							}
+						} else if (VARIABLES.userSettings.partyModSettings[element] === true ) {
+							VARIABLES.userSettings.partyModSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.partyModSettings[element] === 'string') {
+							VARIABLES.userSettings.partyModSettings[element] = textElement;
+						}
+					}
+					
+					
+					
 					fn.backwork.saveSettings();
 				},
 
@@ -404,7 +471,7 @@
 
 					fn.backwork.saveSettings();
 					$(byebye).parent().remove();
-					
+
 					let i;
 					for(i = 0; i < $('#searchkeys>div').length; i++) {
 						let rightDiv = i + 1;
@@ -413,6 +480,7 @@
 
 				},
 				shelterCustomSearch() { // search whatever you want to find in the shelter & grid
+					VARIABLES.lengthEggs = 0;
 					//sort in grid
 					$('#shelterarea').removeClass('qolshelterareagrid');
 					$('.mq2 #shelterarea').removeClass('qolshelterareagridmq2');
@@ -420,8 +488,8 @@
 					$('#shelterpage #shelter #shelterarea > .pokemon').removeClass('qolpokemongrid');
 					$('#sheltergridthingy').remove();
 					//$('<pseudo:before>').css({'content' : '""', 'display' : 'block', 'padding-top' : '66.666666666667%'});
-					
-					if (VARIABLES.userSettings.shelterSettings.shelterGrid === true) {
+
+					if (VARIABLES.userSettings.shelterSettings.shelterGrid === true) { //shelter grid
 						$('#shelterarea').addClass('qolshelterareagrid');
 						$('.mq2 #shelterarea').addClass('qolshelterareagridmq2');
 						$('#shelterarea .tooltip_content').addClass('qoltooltipgrid');
@@ -430,15 +498,15 @@
 						$('<pseudo:before>').attr('style', 'display: none!important');
 						$('head').append('<style id="sheltergridthingy">#shelterarea:before{display:none !important;}</style>');
 					}
-					
+
 					var style = $('<style>.class { background-color: blue; }</style>');
 						$('html > head').append(style);
-					
+
 					//search values depending on settings
 					const shelterValueArray = [];
 					//emptying the sheltersuccess div to avoid duplicates
 					document.querySelector('#sheltersuccess').innerHTML="";
-					
+
 					//loop to find all search values for the top checkboxes
 					for (let key in VARIABLES.userSettings.shelterSettings) {
 						let value = VARIABLES.userSettings.shelterSettings[key];
@@ -447,11 +515,11 @@
 							shelterValueArray.push(searchKey);
 						}
 					}
-					
+
 					//loop to find the top checkboxes in the shelter
 					for (let key in shelterValueArray) {
 						let value = shelterValueArray[key];
-						
+
 						//img[TITLE] search. everything aside from new pokémon & new eggs || Image for Delta fails
 						if (value.startsWith('[')) {
 							if ($('img[title*="'+value+'"]').length) {
@@ -483,25 +551,61 @@
 						//new egg search.
 						if (value === "Egg") { //tooltip_content search. new egg.
 							if ($("#shelterarea .tooltip_content:contains("+value+")").length) {
+								fn.backwork.loadSettings();
+								VARIABLES.eggNoDuplicateArray = VARIABLES.userSettings.shelterSettings.NewEggDuplicate.split(',');
+								VARIABLES.eggNoDuplicateArray = VARIABLES.eggNoDuplicateArray.filter(v=>v!='');
+								
+								let eggList = VARIABLES.eggNoDuplicateArray.length;
+								let i;
+								for (i = 0; i < eggList; i++) {
+									let value = VARIABLES.eggNoDuplicateArray[i];				
+									if ($('img[src*="//'+value+'"]').length) {
+										VARIABLES.lengthEggs = $('img[src*="//'+value+'"]').length + VARIABLES.lengthEggs; 
+									}
+								}
+								
 								let allEggFinds = $("#shelterarea .tooltip_content:contains("+value+")").length;
 								let allKnownEggFinds = $("#shelterarea .tooltip_content:contains( "+value+")").length;
-								let newEggFinds = allEggFinds - allKnownEggFinds;
+								let newEggDup = VARIABLES.lengthEggs / 2;
+								let newEggFinds = allEggFinds - allKnownEggFinds - newEggDup;
+
 
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 								let newEggResult = newEggFinds+" "+searchResult;
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
-
-								if (newEggFinds > 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+'s found '+imgFitResult+'</div>');
-								} else if (newEggFinds === 1) {
-									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+' found '+imgFitResult+'</div>');
+								
+								if (newEggFinds <1) {
+									let thisDoesNothing = 0;
+								} else {
+									if (newEggFinds > 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+'s found '+imgFitResult+'</div>');
+									} else if (newEggFinds === 1) {
+										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+' found '+imgFitResult+'</div>');
+									}
 								}
 							}
 						}
+
+						//New egg no duplicates
+						if ($('#shelterarea .lock').next('.tooltip_content:contains("Egg")').length && $('#shelterarea .lock').next('.tooltip_content:not(:contains(" Egg")').length < 1) {
+							VARIABLES.newEggAdopt = $('#shelterarea .lock').children('img').attr('src').substring(2);
+						}
+
+						if ($('div.panel:contains("Adoption successful!")').length) {
+							if ($('.egg').css('background-image') === 'url("https://'+VARIABLES.newEggAdopt+'")') {
+
+								fn.backwork.loadSettings();
+								VARIABLES.eggNoDuplicateArray = VARIABLES.userSettings.shelterSettings.NewEggDuplicate.split(',');
+								VARIABLES.eggNoDuplicateArray.push(VARIABLES.newEggAdopt);
+								VARIABLES.userSettings.shelterSettings.NewEggDuplicate = VARIABLES.eggNoDuplicateArray.toString();
+
+								fn.backwork.saveSettings();
+								VARIABLES.newEggAdopt = "";
+							}
+						}
 					}
-					
-					
-					//loop to find all search genders for the custom 
+
+					//loop to find all search genders for the custom
 					const shelterValueArrayCustom = [];
 					for (let key in VARIABLES.userSettings.shelterSettings) {
 						let value = VARIABLES.userSettings.shelterSettings[key];
@@ -512,7 +616,7 @@
 							}
 						}
 					}
-					
+
 					//loop to find all the custom search parameters
 					let customSearchAmount = VARIABLES.shelterCustomArray.length;
 					let i;
@@ -525,7 +629,7 @@
 								if (shelterValueArrayCustom.indexOf("[M]") > -1) {
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
 										let searchResult = value;
-										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2]; 
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
@@ -540,7 +644,7 @@
 								if (shelterValueArrayCustom.indexOf("[F]") > -1) {
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
 										let searchResult = value;
-										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2]; 
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
@@ -555,7 +659,7 @@
 								if (shelterValueArrayCustom.indexOf("[N]") > -1) {
 									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
 										let searchResult = value;
-										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2]; 
+										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
@@ -569,7 +673,7 @@
 									//No genders
 								if (shelterValueArrayCustom.length === 0) {
 									if ($('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length) {
-										let searchResult = value; 
+										let searchResult = value;
 										let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
@@ -581,7 +685,7 @@
 									}
 								}
 							}
-							
+
 							//custom egg
 							if (VARIABLES.userSettings.shelterSettings.customEgg === true) {
 								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
@@ -596,23 +700,42 @@
 									}
 								}
 							}
-							
+
 							//imgSearch with Pokémon
 							if (VARIABLES.userSettings.shelterSettings.customPng === true) {
 								if ($('#shelterarea img[src*="'+value+'"]').length) {
 									let searchResult = $('#shelterarea img[src*="'+value+'"]').parent().next().text().split('(')[0]
 									let tooltipResult = $('#shelterarea img[src*="'+value+'"]').length+" "+searchResult+' (Custom img search)';
 									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
-							
+
 									if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
 									} else {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
 									}
 								}
-							} 
+							}
 						}
 					}
+				},
+				shelterRemoveEgg(element) {
+					fn.backwork.loadSettings();
+					VARIABLES.eggNoDuplicateArray = VARIABLES.userSettings.shelterSettings.NewEggDuplicate.split(',');
+					let eggList = VARIABLES.eggNoDuplicateArray.length;
+					let i;
+					for (i = 0; i < eggList; i++) {
+						let value = VARIABLES.eggNoDuplicateArray[i];
+						if (element === 'url("https://'+value+'")') {
+							let index = VARIABLES.eggNoDuplicateArray.indexOf(value);
+							if (index > -1) {
+								VARIABLES.eggNoDuplicateArray.splice(index, 1);
+								VARIABLES.userSettings.shelterSettings.NewEggDuplicate = VARIABLES.eggNoDuplicateArray.toString();
+
+								fn.backwork.saveSettings();
+							}
+						}
+					}
+					
 				},
 
 				releaseFieldSelectAll() {
@@ -628,7 +751,7 @@
 						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all</label>');
 						$('#movefieldselectallcheckbox').click(function() {
 							$('input:checkbox').not(this).prop('checked', this.checked);
-						});	
+						});
 					}
 				},
 				releaseFishSelectAll() {
@@ -641,7 +764,7 @@
 
 				fieldSorter() {
 					if (VARIABLES.userSettings.fieldSort === true) {
-						$('input.qolalone').on('change', function() {
+						$('input.qolalone').on('change', function() { //only 1 textbox may be true
 							$('input.qolalone').not(this).prop('checked', false);
 						});
 						let fieldOrderCssColor = $('#field_field').css('background-color');
@@ -739,6 +862,17 @@
 						}
 					}
 				},
+				
+				partyModification() {
+					if (VARIABLES.userSettings.partyMod === true) {
+						console.log('hello?');
+						$('input.qolalone').on('change', function() { //only 1 textbox may be true
+							$('input.qolalone').not(this).prop('checked', false);
+						});
+						
+						//lala
+					}
+				},
 			}, // end of API
 		}; // end of fn
 
@@ -771,6 +905,10 @@
 		PFQoL.shelterCustomSearch();
 	}));
 
+    $('*[data-hatch]').on('click', (function() {
+		PFQoL.shelterRemoveEgg($(this).parent().prev().prev().prev().children().css('background-image'));
+	}));
+
 	$(document).on('click', '#addShelterTextfield', (function() { //add shelter text field
 		PFQoL.shelterAddTextField();
 	}));
@@ -782,15 +920,15 @@
 	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
 		PFQoL.releaseFieldSelectAll();
     }));
-	
-	$(document).on('click', '*[data-menu="bulkmove"]', (function() {
+
+	$(document).on('click', '*[data-menu="bulkmove"]', (function() { // select all feature
 		PFQoL.moveFieldSelectAll();
 	}));
 
 	$(document).on('mouseover', '#caughtfishcontainer', (function() { //select all feature
 		PFQoL.releaseFishSelectAll();
 	}));
-	
+
 	if(window.location.href.indexOf("fields/") != -1) {
 		$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
 			PFQoL.fieldSorter();
@@ -804,5 +942,11 @@
 		document.addEventListener("keydown", function(event) {
 			PFQoL.fieldSorter();
 		});
+	}
+	
+	if(window.location.href.indexOf("users/") != -1) {
+		$(document).on('click input', '#qolpartymod', (function() { //field sort
+			PFQoL.partyModification();
+		}));
 	}
 })(jQuery); //end of userscript
