@@ -1062,17 +1062,20 @@
 				},
 				
 				easyEvolveList() {
-					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
+					try {
+						document.querySelector('.qolEvolveTypeList').remove();
+					}
+					catch(err){
+						console.log('lol');
+					}
+					
 					$('#farmnews-evolutions>.scrollable>ul>Li').each(function (index, value) {
-						
-						
-						
-						
 						let getEvolveString = $(this).html();
 						let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12)
 						
 						console.log(evolvePokemon);
-					});						
+					});		
+					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
 				},
 			}, // end of API
 		}; // end of fn
