@@ -1076,37 +1076,51 @@
 					// turn the saved dexData in an array to search pokemons out of the evolve list
 					let searchDexData = VARIABLES.userSettings.variData.dexData.split(',');
 					console.log(searchDexData);
+					$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
+					let typeBackground = $('.panel>h3').css('background-color');
+					let typeBorder = $('.panel>h3').css('border');
+					$(".expandlist").css("background-color", ""+typeBackground+"");
+					$(".expandlist").css("border", ""+typeBorder+"");
 					
-					$('#farmnews-evolutions>.scrollable>ul>Li').each(function (index, value) {
+					$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
+						// getting the <li> element from the pokemon & the pokemon evolved name
 						let getEvolveString = $(this).html();
-						let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12)
+						let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+						let pokemonEvolveHTML = '<li>'+getEvolveString+'</li>'
 						
+						// first looks if you know the type out of your dexdata, if it's there then the <li> will be moved in it's corresponding type
 						if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
 							let evolveTypeOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 1];
 							let evolveTypeTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 2];
 						
 							console.log(evolvePokemon);
-						
-							if (evolveTypeOne < 0) {
-								console.log('no first type');
-							} else {
-								console.log(evolveTypeOne);
-							}
+							console.log(evolveTypeOne);
 							
+							// type one
+							
+							console.log(pokemonEvolveHTML);
+							$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+							
+							// type two
 							if (evolveTypeTwo < 0) {
 								console.log('no second type');
 							} else {
 								console.log(evolveTypeTwo);
+								$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
 							}
 						} else {
 							console.log(evolvePokemon);
 							console.log('18');
+							$('.18').append(pokemonEvolveHTML);
 						}
+						
+						$(this).remove();
 						
 						
 						
 					});		
-					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
+					
 				},
 			}, // end of API
 		}; // end of fn
