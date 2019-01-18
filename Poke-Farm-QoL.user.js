@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.2.0
+// @version      1.2.1
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -328,8 +328,8 @@
 					}
 					
 					// evolve type list
-					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#tab=1") != -1) {
-						$('#farmnews-evolutions').ready(function() {
+					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#") != -1) {
+						$(document).ready(function() {
 							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label>');
 						});
 					}
