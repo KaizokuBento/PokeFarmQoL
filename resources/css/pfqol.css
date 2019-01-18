@@ -285,6 +285,9 @@
 	font-size: 16px;
 	text-align: center;
 	list-style-type: none;
+}
+
+.slidermenu {
 	cursor: pointer;
 }
 
