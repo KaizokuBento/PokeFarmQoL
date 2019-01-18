@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.2.1
+// @version      1.2.2
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -1114,20 +1114,50 @@
 							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
 								let evolveTypeOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 1];
 								let evolveTypeTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 2];
-					
-								// type one
-								$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
+								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								// type two
-								if (evolveTypeTwo < 0) {
-									let thisAlsoDoeSNothing = true;
-								} else {
-									$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
-								}
+								console.log(evolvePokemon+' '+evolveTypeOne+' '+evolveTypePrevOne+' ||| '+evolveTypeTwo+' '+evolveTypePrevTwo);
+								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
+									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
+										// normal type from eevee
+										$('.0').append(pokemonEvolveHTML);
+										// type one
+										$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+										// type two
+										if (evolveTypeTwo < 0) {
+											let thisAlsoDoeSNothing = true;
+										} else {
+											$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+										}	
+									}
+									if (evolvePokemon === 'Nidorino') {
+										// poison type from Nidoran
+										$('.7').append(pokemonEvolveHTML);
+									} 
+
+								} else { //no exceptions
+									// type one
+									$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+									// type two
+									if (evolveTypeTwo < 0) {
+										let thisAlsoDoeSNothing = true;
+									} else {
+										$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+									}	
+									// extra type from prev pokemon
+									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevOne) == -1){
+									   console.log('evolveTypeOne doesn"t exist');
+									   $('.'+evolveTypePrevOne+'').append(pokemonEvolveHTML);
+									}
+									
+									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevTwo) == -1){
+									   $('.'+evolveTypePrevTwo+'').append(pokemonEvolveHTML);
+									}
+								}	
 							} else {
 								$('.18').append(pokemonEvolveHTML);
 							}
-							
 							$(this).remove();
 						});		
 					}	
@@ -1148,8 +1178,8 @@
 		PFQoL.qolHubClose();
 	}));
 
-	$(document).on('click', '.expandlist', (function() { //show hidden li in change log
-		$(this).children('ul').slideToggle();
+	$(document).on('click', 'h3.slidermenu', (function() { //show hidden li in change log
+		$(this).next().slideToggle();
 	}));
 
 	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
