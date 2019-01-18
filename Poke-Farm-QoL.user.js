@@ -880,7 +880,15 @@
 						$('input.qolalone').on('change', function() { //only 1 textbox may be true
 							$('input.qolalone').not(this).prop('checked', false);
 						});
-						console.log('clickyparty');
+						
+						let menuBackground = $('.party>div').css('background-color');
+						$("#qolpartymod").css("background-color", ""+menuBackground+"");
+						let menuColor = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('color');
+						$("#qolpartymod").css("color", ""+menuColor+"");	
+							
+							
+						
+						
 						
 						if (VARIABLES.userSettings.partyModSettings.hideDislike === false && VARIABLES.userSettings.partyModSettings.hideAll === false && VARIABLES.userSettings.partyModSettings.niceTable === false) {
 							$('#trainerimage').removeClass('qolpartyclickhide');
@@ -1080,8 +1088,17 @@
 					document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', TEMPLATES.evolveFastHTML);
 					let typeBackground = $('.panel>h3').css('background-color');
 					let typeBorder = $('.panel>h3').css('border');
+					let typeColor = $('.panel>h3').css('color');
 					$(".expandlist").css("background-color", ""+typeBackground+"");
 					$(".expandlist").css("border", ""+typeBorder+"");
+					$(".expandlist").css("color", ""+typeColor+"");
+					
+					let typeListBackground = $('.tabbed_interface>div').css('background-color');
+					let typeListColor = $('.tabbed_interface>div').css('color');
+					$(".qolChangeLogContent").css("background-color", ""+typeListBackground+"");
+					$(".qolChangeLogContent").css("color", ""+typeListColor+"");
+					
+					
 					
 					$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
 						// getting the <li> element from the pokemon & the pokemon evolved name
