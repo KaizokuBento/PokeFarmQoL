@@ -1099,7 +1099,8 @@
 								console.log(evolveTypeTwo);
 							}
 						} else {
-							console.log(evolvePokemon+' is unknown type');
+							console.log(evolvePokemon);
+							console.log('18');
 						}
 						
 						
