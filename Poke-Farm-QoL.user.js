@@ -811,7 +811,7 @@
 					
 					//loop to find all the types
 					if (VARIABLES.shelterTypeArray.length == 1 && VARIABLES.shelterTypeArray[0] == "") {
-						console.log('empty yo');
+						let iDontWork = true;
 					} else {
 						let typesArrayNoEmptySpace = VARIABLES.shelterTypeArray.filter(v=>v!='');
 						let typeSearchAmount = typesArrayNoEmptySpace.length;
