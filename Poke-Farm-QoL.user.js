@@ -1502,7 +1502,6 @@
 						let value = VARIABLES.labSearchArray[i];
 							if ($("#egglist>div>h3:containsIN("+value+")").length) {
 								let searchResult = value;
-								
 
 								if ($("#egglist>div>h3:containsIN("+value+")").length > 1) {
 									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
@@ -1510,10 +1509,17 @@
 									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
 								}
 							}
+							
+							if ($('#egglist>div img[src*="'+value+'"]').length) {
+								let searchResult = $('#egglist>div img[src*="'+value+'"]').prev().text();
+								
+								if ($('#egglist>div img[src*="'+value+'"]').length > 1) {
+									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
+								} else {
+									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
+								}
+							}
 						}
-						
-						
-						
 					}
 				},
 				
