@@ -5,15 +5,15 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.2.2
+// @version      1.2.3
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
-// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/evolveFastHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
+// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/evolveFastHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -82,6 +82,8 @@
 
 		const VARIABLES = { // all the variables that are going to be used in fn
 			userSettings : DEFAULT_USER_SETTINGS,
+			
+			dexDataVar : "",
 
 			shelterCustomArray : [],
 			
@@ -93,7 +95,26 @@
 			
 			lengthEggs : 0,
 
-			//"findCustom", "", "custom search key", '<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">',
+			shelterTypeSearch : [
+				"0", "Normal", '<img src="//pfq-static.com/img/types/normal.png/t=1262702646">', 
+				"1", "Fire", '<img src="//pfq-static.com/img/types/fire.png/t=1262702645">', 
+				"2", "Water", '<img src="//pfq-static.com/img/types/water.png/t=1262702646">', 
+				"3", "Electric", '<img src="//pfq-static.com/img/types/electric.png/t=1262702645">', 
+				"4", "Grass", '<img src="//pfq-static.com/img/types/grass.png/t=1262702645">',
+				"5", "Ice", '<img src="//pfq-static.com/img/types/ice.png/t=1262702646">', 
+				"6", "fighting", '<img src="//pfq-static.com/img/types/fighting.png/t=1262702645">', 
+				"7", "Poison", '<img src="//pfq-static.com/img/types/poison.png/t=1262702646">', 
+				"8", "Ground", '<img src="//pfq-static.com/img/types/ground.png/t=1262702646">', 
+				"9", "Flying", '<img src="//pfq-static.com/img/types/flying.png/t=1262702645">', 
+				"10", "Psychic", '<img src="//pfq-static.com/img/types/psychic.png/t=1262702646">', 
+				"11", "Bug", '<img src="//pfq-static.com/img/types/bug.png/t=1262702645">', 
+				"12", "Rock", '<img src="//pfq-static.com/img/types/rock.png/t=1262702646">', 
+				"13", "Ghost", '<img src="//pfq-static.com/img/types/ghost.png/t=1262702645">',
+				"14", "Dragon", '<img src="//pfq-static.com/img/types/dragon.png/t=1263605747">',
+				"15", "Dark", '<img src="//pfq-static.com/img/types/dark.png/t=1262702645">',
+				"16", "Steel", '<img src="//pfq-static.com/img/types/steel.png/t=1262702646">',
+				"17", "Fairy", '<img src="//pfq-static.com/img/types/fairy.png/t=1374419124">',
+			],
 
 			shelterSearch : [
 				"findNewEgg", "Egg", "new egg", '<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">',
@@ -299,7 +320,7 @@
 
 						let i;
 						for (i = 0; i < numberOfValue; i++) {
-							let rightDiv = i + 1
+							let rightDiv = i + 1;
 							let rightValue = VARIABLES.shelterCustomArray[i];
 							$('#searchkeys').append(theField);
 							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
@@ -308,15 +329,17 @@
 						let theType = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeShelterTypeList'> </div>`; 
 						VARIABLES.shelterTypeArray = VARIABLES.userSettings.shelterSettings.findType.split(',');
 						let numberOfType = VARIABLES.shelterTypeArray.length;
-						console.log(numberOfType);
 						
 						let o;
 						for (o = 0; o < numberOfType; o++) {
+							let rightDiv = o + 1;
+							let rightValue = VARIABLES.shelterTypeArray[o];
 							$('#shelterTypes').append(theType);
-							$('.typeNumber').removeClass('typeNumber').addClass(""+numberOfType+"");
+							$('.typeNumber').removeClass('typeNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
 						}
 
 						fn.backwork.populateSettingsPage();
+						VARIABLES.dexDataVar = VARIABLES.userSettings.variData.dexData.split(',');
 					}
 
 					// fishing select all button on caught fishing
@@ -420,13 +443,7 @@
 					$('#core').removeClass('scrolllock');
 				},
 
-				settingsChange(element, textElement, customClass) {
-					console.log('element: '+element);
-					console.log('textElement: '+textElement);
-					console.log('type: '+typeof textElement);
-					console.log('customClass: '+customClass);
-					
-					
+				settingsChange(element, textElement, customClass, typeClass) {
 					if (JSON.stringify(VARIABLES.userSettings).indexOf(element) >= 0) { // userscript settings
 						if (VARIABLES.userSettings[element] === false ) {
 							VARIABLES.userSettings[element] = true;
@@ -443,9 +460,15 @@
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
 							if (element === 'findType') {
-								let tempIndex = 
-								VARIABLES.shelterTypeArray[tempIndex] = textElement;
-								VARIABLES.userSettings.shelterSettings.findType = VARIABLES.shelterCustomArray.toString();
+								if (textElement === 'none') {
+									let tempIndex = typeClass - 1;
+									VARIABLES.shelterTypeArray.splice(tempIndex, tempIndex);
+									VARIABLES.userSettings.shelterSettings.findType = VARIABLES.shelterTypeArray.toString();
+								} else {
+									let tempIndex = typeClass - 1;
+									VARIABLES.shelterTypeArray[tempIndex] = textElement;
+									VARIABLES.userSettings.shelterSettings.findType = VARIABLES.shelterTypeArray.toString();
+								}
 							}
 							if (element === 'findCustom') {
 								let tempIndex = customClass - 1;
@@ -494,9 +517,6 @@
 							VARIABLES.userSettings.partyModSettings[element] = textElement;
 						}
 					}
-					
-					
-					
 					fn.backwork.saveSettings();
 				},
 
@@ -505,6 +525,7 @@
 					let numberDiv = $('#searchkeys>div').length;
 					$('#searchkeys').append(theField);
 					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
+					
 				},
 				shelterRemoveTextfield(byebye, key) { //add a loop to change all the classes of divs (amount of divs) so it fits with the save keys
 					VARIABLES.shelterCustomArray = $.grep(VARIABLES.shelterCustomArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
@@ -532,9 +553,19 @@
 					console.log($('option').val());
 				},
 				shelterRemoveTypeList(byebye, key) {
-					console.log('remove list');
-					console.log(key);
+					VARIABLES.shelterTypeArray = $.grep(VARIABLES.shelterTypeArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.shelterSettings.findType = VARIABLES.shelterTypeArray.toString()
+
+					fn.backwork.saveSettings();
 					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#shelterTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
 				},
 				
 				shelterCustomSearch() { // search whatever you want to find in the shelter & grid
@@ -777,8 +808,45 @@
 					}
 					
 					//loop to find all the types
-					
-					
+					if (VARIABLES.shelterTypeArray.length == 1 && VARIABLES.shelterTypeArray[0] == "") {
+						console.log('empty yo');
+					} else {
+						let typesArrayNoEmptySpace = VARIABLES.shelterTypeArray.filter(v=>v!='');
+						let typeSearchAmount = typesArrayNoEmptySpace.length;
+						let i;
+						for (i = 0; i < typeSearchAmount; i++) {
+							let value = typesArrayNoEmptySpace[i];
+							let amountOfTypesFound = [];
+							let typePokemonNames = [];
+							
+							$('#shelterarea>.tooltip_content:contains("Egg")').each(function() {
+								let searchPokemon = ($(this).text().split(' ')[0]);
+								let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
+								let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
+								console.log(searchPokemon);
+								if (searchTypeOne === value) {
+									amountOfTypesFound.push('found');
+									typePokemonNames.push(searchPokemon);
+								}
+									
+								if (searchTypeTwo === value) {
+									amountOfTypesFound.push('found');
+									typePokemonNames.push(searchPokemon);
+								}
+							})
+							
+							let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+							let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+							
+							if (amountOfTypesFound.length < 1) {
+								let iDontDoAnything = true;
+							} else if (amountOfTypesFound.length > 1) {
+								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg types found! ('+typePokemonNames.toString()+')</div>');
+							} else {
+								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg type found! ('+typePokemonNames.toString()+')</div>');
+							}
+						}
+					}
 				},
 				shelterRemoveEgg(element) {
 					fn.backwork.loadSettings();
@@ -1111,8 +1179,11 @@
 			
 				savingDexData() {
 					fn.backwork.loadSettings();
-					if (VARIABLES.userSettings.variData.dexData != $('#dexdata').html()) {
-						VARIABLES.userSettings.variData.dexData = $('#dexdata').html();
+					let dexTempData = ($('#dexdata').html());
+					let dexTempArray = dexTempData.split(',');
+					let dexArray = dexTempArray.splice(0, 29);
+					if (VARIABLES.userSettings.variData.dexData != dexTempArray.toString()) {
+						VARIABLES.userSettings.variData.dexData = dexTempArray.toString();
 						fn.backwork.saveSettings();
 						console.log('your dexdata has been updated');
 					}
@@ -1226,7 +1297,7 @@
 	}));
 
 	$(document).on('input', '.qolsetting', (function() { //Changes QoL settings
-		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val(), $(this).parent().parent().attr('class'));
+		PFQoL.settingsChange(this.getAttribute('data-key'), $(this).val(), $(this).parent().parent().attr('class'), $(this).parent().attr('class'));
 	}));
 
 	$(document).on('change', '#shelteroptionsqol input', (function() { //shelter search
