@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.0
+// @version      1.3.1
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -188,7 +188,6 @@
 			labObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.labCustomSearch();
-					console.log(mutation);
 				});
 			}),
 				
@@ -640,12 +639,10 @@
 				},
 				
 				shelterAddTypeList() {
-					console.log('add list');
 					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeShelterTypeList'> </div>`; 
 					let numberTypes = $('#shelterTypes>div').length;
 					$('#shelterTypes').append(theList);
 					$('.typeNumber').removeClass('typeNumber').addClass(""+numberTypes+"");
-					console.log($('option').val());
 				},
 				shelterRemoveTypeList(byebye, key) {
 					VARIABLES.shelterTypeArray = $.grep(VARIABLES.shelterTypeArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
@@ -690,6 +687,7 @@
 					const shelterValueArray = [];
 					//emptying the sheltersuccess div to avoid duplicates
 					document.querySelector('#sheltersuccess').innerHTML="";
+					$('#shelterarea>div>img').removeClass('shelterfoundme');
 
 					//loop to find all search values for the top checkboxes
 					for (let key in VARIABLES.userSettings.shelterSettings) {
@@ -710,6 +708,9 @@
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];  //type of Pokémon found
 								let imgResult = $("img[title*='"+value+"']").length+" "+searchResult; //amount + type found
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2]; //image for type of Pokémon
+								let shelterImgSearch = $('img[title*="'+value+'"]');
+								let shelterBigImg = shelterImgSearch.parent().prev().children('img.big');
+								$(shelterBigImg).addClass('shelterfoundme');
 
 								if ($("img[title*='"+value+"']").length > 1) {
 									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+imgResult+'s found '+imgFitResult+'</div>');
@@ -724,6 +725,9 @@
 								let searchResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 1];
 								let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+")").length+" "+searchResult;
 								let imgFitResult = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf(value) + 2];
+								let shelterImgSearch = $("#shelterarea .tooltip_content:contains("+value+")")
+								let shelterBigImg = shelterImgSearch.prev().children('img.big');
+								$(shelterBigImg).addClass('shelterfoundme');
 
 								if ($("#shelterarea .tooltip_content:contains("+value+")").length > 1) {
 									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
@@ -761,6 +765,14 @@
 								if (newEggFinds <1) {
 									let thisDoesNothing = 0;
 								} else {
+
+									let shelterImgSearch = $("#shelterarea .tooltip_content:contains("+value+")");
+									let shelterBigImg = shelterImgSearch.prev().children('img.big');
+									$(shelterBigImg).addClass('shelterfoundme');
+									let shelterImgRemove = $("#shelterarea .tooltip_content:contains( "+value+")");
+									let shelterBigImgRemove = shelterImgRemove.prev().children('img.big');
+									$(shelterBigImgRemove).removeClass('shelterfoundme');
+									
 									if (newEggFinds > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+newEggResult+'s found '+imgFitResult+'</div>');
 									} else if (newEggFinds === 1) {
@@ -816,6 +828,9 @@
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+										let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']")
+										let shelterBigImg = shelterImgSearch.parent().prev().children('img.big');
+										$(shelterBigImg).addClass('shelterfoundme');
 
 										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
@@ -831,6 +846,9 @@
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+										let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']")
+										let shelterBigImg = shelterImgSearch.parent().prev().children('img.big');
+										$(shelterBigImg).addClass('shelterfoundme');
 
 										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
@@ -846,6 +864,9 @@
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
 										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+										let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']")
+										let shelterBigImg = shelterImgSearch.parent().prev().children('img.big');
+										$(shelterBigImg).addClass('shelterfoundme');
 
 										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
@@ -860,6 +881,9 @@
 										let searchResult = value;
 										let tooltipResult = $('#shelterarea .tooltip_content:containsIN('+value+'):not(:containsIN("Egg"))').length+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+										let shelterImgSearch = $('#shelterarea .tooltip_content:containsIN('+value+'):not(:containsIN("Egg"))')
+										let shelterBigImg = shelterImgSearch.parent().prev().children('img.big');
+										$(shelterBigImg).addClass('shelterfoundme');
 
 										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
@@ -876,6 +900,9 @@
 									let searchResult = value;
 									let tooltipResult = $('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")').length+" "+searchResult;
 									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">`;
+									let shelterImgSearch = $('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")')
+									let shelterBigImg = shelterImgSearch.prev().children('img.big');
+									$(shelterBigImg).addClass('shelterfoundme');
 
 									if ($('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")').length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' Eggs found '+imgFitResult+'</div>');
@@ -891,6 +918,8 @@
 									let searchResult = $('#shelterarea img[src*="'+value+'"]').parent().next().text().split('(')[0]
 									let tooltipResult = $('#shelterarea img[src*="'+value+'"]').length+" "+searchResult+' (Custom img search)';
 									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+									let shelterImgSearch = $('#shelterarea img[src*="'+value+'"]');
+									$(shelterImgSearch).addClass('shelterfoundme');
 
 									if ($('#shelterarea img[src*="'+value+'"]').length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
@@ -922,6 +951,7 @@
 									if (searchTypeOne === value) {
 										amountOfTypesFound.push('found');
 										typePokemonNames.push(searchPokemon);
+
 									}
 										
 									if (searchTypeTwo === value) {
@@ -932,6 +962,15 @@
 								
 								let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
 								let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								
+								let typeImgStandOutLength = typePokemonNames.length;
+								let o;
+								for (o = 0; o < typeImgStandOutLength; o++) {
+									let value = typePokemonNames[o];
+									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
+									let shelterBigImg = shelterImgSearch.prev().children('img.big');
+									$(shelterBigImg).addClass('shelterfoundme');
+								}
 								
 								if (amountOfTypesFound.length < 1) {
 									let iDontDoAnything = true;
@@ -950,7 +989,6 @@
 									let searchPokemon = ($(this).text().split(' ')[0]);
 									let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
 									let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
-									console.log(searchPokemon);
 									if (searchTypeOne === value) {
 										amountOfTypesFound.push('found');
 										typePokemonNames.push(searchPokemon);
@@ -964,6 +1002,15 @@
 								
 								let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
 								let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								
+								let typeImgStandOutLength = typePokemonNames.length;
+								let o;
+								for (o = 0; o < typeImgStandOutLength; o++) {
+									let value = typePokemonNames[o];
+									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
+									let shelterBigImg = shelterImgSearch.prev().children('img.big');
+									$(shelterBigImg).addClass('shelterfoundme');
+								}
 								
 								if (amountOfTypesFound.length < 1) {
 									let iDontDoAnything = true;
@@ -1359,7 +1406,6 @@
 								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
 								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								console.log(evolvePokemon+' '+evolveTypeOne+' '+evolveTypePrevOne+' ||| '+evolveTypeTwo+' '+evolveTypePrevTwo);
 								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
@@ -1389,7 +1435,6 @@
 									}	
 									// extra type from prev pokemon
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevOne) == -1){
-									   console.log('evolveTypeOne doesn"t exist');
 									   $('.'+evolveTypePrevOne+'').append(pokemonEvolveHTML);
 									}
 									
