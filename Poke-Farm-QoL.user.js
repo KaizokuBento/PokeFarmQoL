@@ -13,6 +13,7 @@
 // @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
 // @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/evolveFastHTML.html
+// @resource     labOptionsHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/labOptionsHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
@@ -89,6 +90,7 @@
 			},
 			labNotiferSettings : {
 				findLabEgg: "",
+				findLabType: "",
 			},
 		};
 
@@ -145,6 +147,10 @@
 				"findFemale", "[F]", "Female", '<img src="//pfq-static.com/img/pkmn/gender_f.png/t=1401213007">',
 				"findNoGender", "[N]", "No Gender", '<img src="//pfq-static.com/img/pkmn/gender_n.png/t=1401213004">',
 			],
+			
+			labSearchArray : [],
+			
+			labListArray : [],
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -157,6 +163,7 @@
 			qolHubHTML				: GM_getResourceText('QolHubHTML'),
 			partyModHTML			: `<div id='qolpartymod'><label><input type="checkbox" class="qolsetting qolalone" data-key="hideDislike"/>Hide disliked berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="niceTable"/>Show in table</label><label><input type="checkbox" class="qolsetting qolalone" data-key="hideAll"/>Hide all click fast</label></div>`,
 			evolveFastHTML			: GM_getResourceText('evolveFastHTML'),
+			labOptionsHTML          : GM_getResourceText('labOptionsHTML'),
 		}
 
 		const OBSERVERS = {
@@ -383,6 +390,37 @@
 							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label>');
 						});
 					}
+					
+					//lab notifier
+					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) {
+						document.querySelector('#eggsbox360>p.center').insertAdjacentHTML('afterend', TEMPLATES.labOptionsHTML);
+						
+						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findLabEgg"/></label><input type='button' value='Remove' id='removeLabSearch'></div>`;
+						VARIABLES.labSearchArray = VARIABLES.userSettings.labNotiferSettings.findLabEgg.split(',');
+						let numberOfValue = VARIABLES.labSearchArray.length;
+
+						let i;
+						for (i = 0; i < numberOfValue; i++) {
+							let rightDiv = i + 1;
+							let rightValue = VARIABLES.shelterCustomArray[i];
+							$('#labNotifierWrap').append(theField);
+							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
+						let theType = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findLabType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeLabTypeList'> </div>`; 
+						VARIABLES.labSearchArray = VARIABLES.userSettings.labNotiferSettings.findLabType.split(',');
+						let numberOfType = VARIABLES.labSearchArray.length;
+						
+						let o;
+						for (o = 0; o < numberOfType; o++) {
+							let rightDiv = o + 1;
+							let rightValue = VARIABLES.labSearchArray[o];
+							$('#shelterTypes').append(theType);
+							$('.typeNumber').removeClass('typeNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+
+						fn.backwork.populateSettingsPage();
+					}
 				},
 				setupCSS() { // All the CSS changes are added here
 					GM_addStyle(GM_getResourceText('QoLCSS'));
@@ -531,6 +569,19 @@
 							VARIABLES.userSettings.partyModSettings[element] = textElement;
 						}
 					}
+					
+					if (JSON.stringify(VARIABLES.userSettings.labNotiferSettings).indexOf(element) >= 0) { // lab notifier settings
+						if (element === 'findLabEgg') {
+							console.log(element);
+							console.log(textElement);
+							console.log(customClass);
+							console.log(typeClass);
+							let tempIndex = customClass - 1;
+							VARIABLES.labSearchArray[tempIndex] = textElement;
+							VARIABLES.userSettings.labNotiferSettings.findLabEgg = VARIABLES.labSearchArray.toString();
+						}
+					}
+					
 					fn.backwork.saveSettings();
 				},
 
@@ -1324,6 +1375,56 @@
 						});		
 					}	
 				},
+				
+				labAddTextField() {
+					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findLabEgg"/></label><input type='button' value='Remove' id='removeLabSearch'></div>`;
+					let numberDiv = $('#labNotifierWrap>div').length;
+					$('#labNotifierWrap').append(theField);
+					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
+					
+				},
+				labRemoveTextfield(byebye, key) { //add a loop to change all the classes of divs (amount of divs) so it fits with the save keys
+					VARIABLES.labSearchArray = $.grep(VARIABLES.labSearchArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.labNotiferSettings.findLabEgg = VARIABLES.labSearchArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#labNotifierWrap>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+
+				},
+				
+				labAddTypeList() {
+					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findLabType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeLabTypeList'> </div>`; 
+					let numberTypes = $('#labTypes>div').length;
+					$('#labTypes').append(theList);
+					$('.typeNumber').removeClass('typeNumber').addClass(""+numberTypes+"");
+				},
+				labRemoveTypeList(byebye, key) {
+					VARIABLES.labListArray = $.grep(VARIABLES.labListArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.labNotiferSettings.findLabType = VARIABLES.labListArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#shelterTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
+				
+				
+				
+				`<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findLabType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeLabTypeList'> </div>`;
 			}, // end of API
 		}; // end of fn
 
@@ -1426,6 +1527,22 @@
 	
 	$(document).on('click', '#qolchangesletype', (function() {
 		PFQoL.easyEvolveList();
+	}));
+	
+	$(document).on('click', '#addLabSearch', (function() { //add lab text field
+		PFQoL.labAddTextField();
+	}));
+
+	$(document).on('click', '#removeLabSearch', (function() { //remove lab text field
+		PFQoL.labRemoveTextfield(this, $(this).parent().find('input').val());
+	}));
+	
+	$(document).on('click', '#addLabTypeList', (function() { //add lab type list
+		PFQoL.labAddTypeList();
+	}));
+
+	$(document).on('click', '#removeLabTypeList', (function() { //remove lab type list
+		PFQoL.labRemoveTypeList(this, $(this).parent().find('select').val());
 	}));
 	
 })(jQuery); //end of userscript
