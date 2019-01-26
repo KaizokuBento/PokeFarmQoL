@@ -57,8 +57,8 @@
 }
 
 .shelterfoundme {
-	box-shadow: 0px 0px 50px 25px yellow;
-    background-color: yellow;
+	box-shadow: 0px 0px 25px 15px #d5e265;
+    background-color: #d5e265;
     border-radius: 100%;
 }
 
