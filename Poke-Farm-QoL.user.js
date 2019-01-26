@@ -46,6 +46,7 @@
 			//shelter settings
 			shelterSettings : {
 				findCustom: "",
+				findType: "",
 				findNewEgg: true,
 				NewEggDuplicate: "",
 				findNewPokemon: true,
@@ -83,6 +84,8 @@
 			userSettings : DEFAULT_USER_SETTINGS,
 
 			shelterCustomArray : [],
+			
+			shelterTypeArray : [],
 
 			newEggAdopt : "",
 			
@@ -501,12 +504,13 @@
 				
 				shelterAddTypeList() {
 					console.log('add list');
-					let theList = `<div><table> <tbody> <tr> <td> <label> <input type="checkbox" class="qolsetting" data-key="findType"/>Type Search </label> </td> <td> <select name="types"> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type="button" value="Remove" id="removeShelterTypeList"> </td> </tr> </tbody> </table></div>`; 
+					let theList = `<div><table> <tbody> <tr> <td> <select name="types"> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type="button" value="Remove" id="removeShelterTypeList"> </td> </tr> </tbody> </table></div>`; 
 					$('#shelterTypes').append(theList);
 				},
-				shelterRemoveTypeList(byebye) {
+				shelterRemoveTypeList(byebye, key) {
 					console.log('remove list');
-					$(byebye).parent().remove();
+					console.log(key);
+					$(byebye).parent().parent().parent().remove();
 				},
 				
 				shelterCustomSearch() { // search whatever you want to find in the shelter & grid
@@ -1221,12 +1225,12 @@
 		PFQoL.shelterRemoveTextfield(this, $(this).parent().find('input').val());
 	}));
 	
-	$(document).on('click', '#addShelterTypeList', (function() { //add shelter text field
+	$(document).on('click', '#addShelterTypeList', (function() { //add shelter type list
 		PFQoL.shelterAddTypeList();
 	}));
 
-	$(document).on('click', '#removeShelterTypeList', (function() { //remove shelter text field
-		PFQoL.shelterRemoveTypeList(this, $(this).parent().find('input').val());
+	$(document).on('click', '#removeShelterTypeList', (function() { //remove shelter type list
+		PFQoL.shelterRemoveTypeList(this, $(this).parent().find('select').val());
 	}));
 
 	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
