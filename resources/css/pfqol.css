@@ -56,6 +56,12 @@
 	padding-top: 20px;
 }
 
+.shelterfoundme {
+	box-shadow: 0px 0px 50px 25px yellow;
+    background-color: yellow;
+    border-radius: 100%;
+}
+
 	/*shelterSort */
 	/* shelter grid sort */
 .qolshelterareagrid {
