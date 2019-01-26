@@ -47,6 +47,8 @@
 			shelterSettings : {
 				findCustom: "",
 				findType: "",
+				findTypeEgg: true,
+				findTypePokemon: false,
 				findNewEgg: true,
 				NewEggDuplicate: "",
 				findNewPokemon: true,
