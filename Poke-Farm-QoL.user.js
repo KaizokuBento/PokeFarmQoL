@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.2.4
+// @version      1.2.5
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -29,6 +29,13 @@
     // Welcome to my first ever script!//
     // Let's hope everything works~    //
     /////////////////////////////////////
+
+	// :contains to case insensitive
+	$.extend($.expr[":"], {
+		"containsIN": function(elem, i, match, array) {
+		return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+		}
+	});
 
 	let PFQoL = (function PFQoL() {
 
@@ -718,13 +725,13 @@
 							if (VARIABLES.userSettings.shelterSettings.customPokemon === true) {
 									//Males
 								if (shelterValueArrayCustom.indexOf("[M]") > -1) {
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length) {
+									if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']").length) {
 										let searchResult = value;
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[M]") +2];
-										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
+										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']").length+" Male "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
-										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[M]']").length > 1) {
+										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[M]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
 										} else {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
@@ -733,13 +740,13 @@
 								}
 									//Females
 								if (shelterValueArrayCustom.indexOf("[F]") > -1) {
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length) {
+									if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']").length) {
 										let searchResult = value;
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[F]") +2];
-										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
+										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']").length+" Female "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
-										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[F]']").length > 1) {
+										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[F]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
 										} else {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
@@ -748,13 +755,13 @@
 								}
 									//Genderless
 								if (shelterValueArrayCustom.indexOf("[N]") > -1) {
-									if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length) {
+									if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length) {
 										let searchResult = value;
 										let imgGender = VARIABLES.shelterSearch[VARIABLES.shelterSearch.indexOf("[N]") +2];
-										let tooltipResult = $("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
+										let tooltipResult = $("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length+" Genderless "+imgGender+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
-										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
+										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
 										} else {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
@@ -763,12 +770,12 @@
 								}
 									//No genders
 								if (shelterValueArrayCustom.length === 0) {
-									if ($('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length) {
+									if ($('#shelterarea .tooltip_content:containsIN('+value+'):not(:containsIN("Egg"))').length) {
 										let searchResult = value;
-										let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):not(:contains("Egg"))').length+" "+searchResult;
+										let tooltipResult = $('#shelterarea .tooltip_content:containsIN('+value+'):not(:containsIN("Egg"))').length+" "+searchResult;
 										let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
 
-										if ($("#shelterarea .tooltip_content:contains("+value+") img[title*='[N]']").length > 1) {
+										if ($("#shelterarea .tooltip_content:containsIN("+value+") img[title*='[N]']").length > 1) {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
 										} else {
 											document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' found '+imgFitResult+'</div>');
@@ -779,12 +786,12 @@
 
 							//custom egg
 							if (VARIABLES.userSettings.shelterSettings.customEgg === true) {
-								if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length) {
+								if ($('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")').length) {
 									let searchResult = value;
-									let tooltipResult = $('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length+" "+searchResult;
+									let tooltipResult = $('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")').length+" "+searchResult;
 									let imgFitResult = `<img src="//pfq-static.com/img/pkmn/egg.png/t=1451852195">`;
 
-									if ($('#shelterarea .tooltip_content:contains('+value+'):contains("Egg")').length > 1) {
+									if ($('#shelterarea .tooltip_content:containsIN('+value+'):contains("Egg")').length > 1) {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' Eggs found '+imgFitResult+'</div>');
 									} else {
 										document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+tooltipResult+' egg found '+imgFitResult+'</div>');
