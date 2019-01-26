@@ -376,7 +376,15 @@
 }
 
 
+	/* labSuccess */
+#labsuccess {
+	text-align: center;
+	background: #e2ffcd;
+}
 
+#labfound {
+	padding-top: 20px;
+}
 
 
 
