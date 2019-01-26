@@ -185,6 +185,13 @@
 				});
 			}),
 			
+			labObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.labCustomSearch();
+					console.log(mutation);
+				});
+			}),
+				
 		}
 
 		const fn = { // all the functions for the script
@@ -394,7 +401,9 @@
 					//lab notifier
 					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) {
 						document.querySelector('#eggsbox360>p.center').insertAdjacentHTML('afterend', TEMPLATES.labOptionsHTML);
-						document.querySelector('#egglist').insertAdjacentHTML('afterend', '<div id="labsuccess"></div>');
+						
+						let labSuccessCss = $('#labpage>div').css('background-color');
+						document.querySelector('#egglist').insertAdjacentHTML('afterend', '<div id="labsuccess" style="background-color:'+labSuccessCss+';"></div>');
 						
 						
 						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="findLabEgg"/></label><input type='button' value='Remove' id='removeLabSearch'></div>`;
@@ -452,6 +461,17 @@
 					if (VARIABLES.userSettings.partyMod === true && window.location.href.indexOf("users/") != -1) { //observe party click changes on the users page
 						OBSERVERS.partyClickObserver.observe(document.querySelector('#multiuser'), {
 							childList: true,
+						});
+					}
+					
+					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) { //observe lab changes on the lab page
+						OBSERVERS.labObserver.observe(document.querySelector('#labpage>div>div>div'), {
+							childList: true,
+							attributes: true,
+							characterdata: true,
+							subtree: true,
+							attributeOldValue: true,
+							characterDataOldValue: true,
 						});
 					}
 				},
