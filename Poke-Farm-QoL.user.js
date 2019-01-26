@@ -5,16 +5,16 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.0
+// @version      1.3.1
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
-// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/evolveFastHTML.html
-// @resource     labOptionsHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/labOptionsHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
+// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/evolveFastHTML.html
+// @resource     labOptionsHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/labOptionsHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -188,7 +188,6 @@
 			labObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.labCustomSearch();
-					console.log(mutation);
 				});
 			}),
 				
@@ -640,12 +639,10 @@
 				},
 				
 				shelterAddTypeList() {
-					console.log('add list');
 					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeShelterTypeList'> </div>`; 
 					let numberTypes = $('#shelterTypes>div').length;
 					$('#shelterTypes').append(theList);
 					$('.typeNumber').removeClass('typeNumber').addClass(""+numberTypes+"");
-					console.log($('option').val());
 				},
 				shelterRemoveTypeList(byebye, key) {
 					VARIABLES.shelterTypeArray = $.grep(VARIABLES.shelterTypeArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
@@ -970,11 +967,8 @@
 								let o;
 								for (o = 0; o < typeImgStandOutLength; o++) {
 									let value = typePokemonNames[o];
-									console.log(value);
 									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
-									console.log(shelterImgSearch);
 									let shelterBigImg = shelterImgSearch.prev().children('img.big');
-									console.log(shelterBigImg);
 									$(shelterBigImg).addClass('shelterfoundme');
 								}
 								
@@ -1013,11 +1007,8 @@
 								let o;
 								for (o = 0; o < typeImgStandOutLength; o++) {
 									let value = typePokemonNames[o];
-									console.log(value);
 									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
-									console.log(shelterImgSearch);
 									let shelterBigImg = shelterImgSearch.prev().children('img.big');
-									console.log(shelterBigImg);
 									$(shelterBigImg).addClass('shelterfoundme');
 								}
 								
@@ -1415,7 +1406,6 @@
 								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
 								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								console.log(evolvePokemon+' '+evolveTypeOne+' '+evolveTypePrevOne+' ||| '+evolveTypeTwo+' '+evolveTypePrevTwo);
 								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
@@ -1445,7 +1435,6 @@
 									}	
 									// extra type from prev pokemon
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevOne) == -1){
-									   console.log('evolveTypeOne doesn"t exist');
 									   $('.'+evolveTypePrevOne+'').append(pokemonEvolveHTML);
 									}
 									
