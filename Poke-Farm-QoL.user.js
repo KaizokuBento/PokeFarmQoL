@@ -736,6 +736,10 @@
 							}
 						}
 					}
+					
+					//loop to find all the types
+					
+					
 				},
 				shelterRemoveEgg(element) {
 					fn.backwork.loadSettings();
