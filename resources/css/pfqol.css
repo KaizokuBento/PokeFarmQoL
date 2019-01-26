@@ -85,6 +85,7 @@
     align-items: center;
 }
 
+
 /* Field settings */
 #fieldorder {
     margin: 16px auto;
@@ -376,9 +377,18 @@
 }
 
 
+	/* labSuccess */
+#labsuccess {
+	text-align: center;
+}
 
+#labfound {
+	padding-top: 20px;
+}
 
-
+.boldp {
+	font-weight: bold;
+}
 
 
 
