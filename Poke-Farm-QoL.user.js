@@ -305,6 +305,17 @@
 							$('#searchkeys').append(theField);
 							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
 						}
+						
+						let theType = `<div> <select name="types" class="qolsetting" data-key="findType"> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeShelterTypeList'> </div>`; 
+						VARIABLES.shelterTypeArray = VARIABLES.userSettings.shelterSettings.findType.split(',');
+						let numberOfType = VARIABLES.shelterTypeArray.length;
+						console.log(numberOfType);
+						
+						let o;
+						for (o = 0; o < numberOfType; o++) {
+							$('#shelterTypes').append(theType);
+							
+						}
 
 						fn.backwork.populateSettingsPage();
 					}
@@ -413,6 +424,7 @@
 				settingsChange(element, textElement, customClass) {
 					console.log('element: '+element);
 					console.log('textElement: '+textElement);
+					console.log('type: '+typeof textElement);
 					console.log('customClass: '+customClass);
 					
 					
@@ -431,9 +443,14 @@
 						} else if (VARIABLES.userSettings.shelterSettings[element] === true ) {
 							VARIABLES.userSettings.shelterSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === 'string') {
+							if (element === 'findType') {
+								VARIABLES.shelterTypeArray
+							}
 							let tempIndex = customClass - 1;
 							VARIABLES.shelterCustomArray[tempIndex] = textElement;
 							VARIABLES.userSettings.shelterSettings.findCustom = VARIABLES.shelterCustomArray.toString();
+						} else if (typeof VARIABLES.userSettings.shelterSettings[element] === '') {
+							
 						}
 					}
 
