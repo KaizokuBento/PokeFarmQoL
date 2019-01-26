@@ -5,15 +5,15 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.2.3
+// @version      1.2.4
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
-// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/shelterOptionsHTML.html
-// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/evolveFastHTML.html
-// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/css/pfqol.css
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
+// @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
+// @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/evolveFastHTML.html
+// @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
 // @grant        GM_getResourceText
@@ -821,31 +821,65 @@
 							let amountOfTypesFound = [];
 							let typePokemonNames = [];
 							
-							$('#shelterarea>.tooltip_content:contains("Egg")').each(function() {
-								let searchPokemon = ($(this).text().split(' ')[0]);
-								let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
-								let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
-								console.log(searchPokemon);
-								if (searchTypeOne === value) {
-									amountOfTypesFound.push('found');
-									typePokemonNames.push(searchPokemon);
+							if (VARIABLES.userSettings.shelterSettings.findTypeEgg === true) {
+								$('#shelterarea>.tooltip_content:contains("Egg")').each(function() {
+									let searchPokemon = ($(this).text().split(' ')[0]);
+									let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
+									let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
+									console.log(searchPokemon);
+									if (searchTypeOne === value) {
+										amountOfTypesFound.push('found');
+										typePokemonNames.push(searchPokemon);
+									}
+										
+									if (searchTypeTwo === value) {
+										amountOfTypesFound.push('found');
+										typePokemonNames.push(searchPokemon);
+									}
+								})
+								
+								let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								
+								if (amountOfTypesFound.length < 1) {
+									let iDontDoAnything = true;
+								} else if (amountOfTypesFound.length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg types found! ('+typePokemonNames.toString()+')</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg type found! ('+typePokemonNames.toString()+')</div>');
 								}
-									
-								if (searchTypeTwo === value) {
-									amountOfTypesFound.push('found');
-									typePokemonNames.push(searchPokemon);
+							}
+							
+							if (VARIABLES.userSettings.shelterSettings.findTypePokemon === true) {
+								let amountOfTypesFound = [];
+								let typePokemonNames = [];
+								
+								$('#shelterarea>.tooltip_content').not(':contains("Egg")').each(function() {
+									let searchPokemon = ($(this).text().split(' ')[0]);
+									let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
+									let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
+									console.log(searchPokemon);
+									if (searchTypeOne === value) {
+										amountOfTypesFound.push('found');
+										typePokemonNames.push(searchPokemon);
+									}
+										
+									if (searchTypeTwo === value) {
+										amountOfTypesFound.push('found');
+										typePokemonNames.push(searchPokemon);
+									}
+								})
+								
+								let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
+								
+								if (amountOfTypesFound.length < 1) {
+									let iDontDoAnything = true;
+								} else if (amountOfTypesFound.length > 1) {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' Pokémon types found! ('+typePokemonNames.toString()+')</div>');
+								} else {
+									document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' Pokémon type found! ('+typePokemonNames.toString()+')</div>');
 								}
-							})
-							
-							let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
-							let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
-							
-							if (amountOfTypesFound.length < 1) {
-								let iDontDoAnything = true;
-							} else if (amountOfTypesFound.length > 1) {
-								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg types found! ('+typePokemonNames.toString()+')</div>');
-							} else {
-								document.querySelector('#sheltersuccess').insertAdjacentHTML('beforeend','<div id="shelterfound">'+amountOfTypesFound.length+' '+foundType+' egg type found! ('+typePokemonNames.toString()+')</div>');
 							}
 						}
 					}
