@@ -386,7 +386,9 @@
 	padding-top: 20px;
 }
 
-
+#labCustomSearch>p {
+	font-weight: bold;
+}
 
 
 

@@ -182,9 +182,9 @@
 			partyClickObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.partyModification();
-					console.log(mutation);
 				});
 			}),
+			
 		}
 
 		const fn = { // all the functions for the script
@@ -1474,19 +1474,20 @@
 					}
 					
 					if (VARIABLES.labSearchArray.length == 1 && VARIABLES.labSearchArray[0] == "") {
+						let iDontDoAnything = true;
+					} else {
 						let customSearchAmount = VARIABLES.labSearchArray.length;
 						let i;
 						for (i = 0; i < customSearchAmount; i++) {
 						let value = VARIABLES.labSearchArray[i];
 							if ($("#egglist>div>h3:containsIN("+value+")").length) {
 								let searchResult = value;
-								let tooltipResult = $("#egglist>div>h3:containsIN("+value+")").length+" Male "+imgGender+" "+searchResult;
-								let imgFitResult = `<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952">`;
+								
 
 								if ($("#egglist>div>h3:containsIN("+value+")").length > 1) {
-									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+tooltipResult+'s found '+imgFitResult+'</div>');
+									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
 								} else {
-									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+tooltipResult+' found '+imgFitResult+'</div>');
+									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!</div>');
 								}
 							}
 						}
@@ -1623,5 +1624,11 @@
 	$(document).on('click', '#labpage', (function() { //shelter search
 		PFQoL.labCustomSearch();
 	}));
+	
+	if(window.location.href.indexOf("lab") != -1) {
+		$(window).on('load', (function() {
+			PFQoL.labCustomSearch();
+		}));
+	}
 	
 })(jQuery); //end of userscript
