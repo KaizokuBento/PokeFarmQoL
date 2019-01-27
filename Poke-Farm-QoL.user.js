@@ -460,8 +460,6 @@
 					let customUserCssInject = '<style type="text/css">'+customUserCss+'</style>'
 					//document.querySelector('head').append();
 					$('head').append('<style type="text/css">'+customUserCss+'</style>');
-					
-					console.log(VARIABLES.userSettings.customCss);
 				},
 
 				setupObservers() { // all the Observers that needs to run
