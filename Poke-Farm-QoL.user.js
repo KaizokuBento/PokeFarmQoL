@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.1
+// @version      1.3.2
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -188,6 +188,7 @@
 			labObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.labCustomSearch();
+					console.log(mutation);
 				});
 			}),
 				
@@ -398,7 +399,7 @@
 					}
 					
 					//lab notifier
-					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) {
+					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("/lab") != -1) {
 						document.querySelector('#eggsbox360>p.center').insertAdjacentHTML('afterend', TEMPLATES.labOptionsHTML);
 						
 						let labSuccessCss = $('#labpage>div').css('background-color');
@@ -466,10 +467,8 @@
 					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) { //observe lab changes on the lab page
 						OBSERVERS.labObserver.observe(document.querySelector('#labpage>div>div>div'), {
 							childList: true,
-							attributes: true,
 							characterdata: true,
 							subtree: true,
-							attributeOldValue: true,
 							characterDataOldValue: true,
 						});
 					}
@@ -1045,17 +1044,78 @@
 
 				releaseFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massreleaselist label').insertAdjacentHTML('beforeend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all</label>');
-						$("#selectallfieldcheckbox").click(function(){
-							$('input:checkbox').not(this).prop('checked', this.checked);
+						document.querySelector('#massreleaselist label').insertAdjacentHTML('beforeend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all  </label><label id="selectallfieldany"><input id="selectallfieldanycheckbox" type="checkbox">Select Any  </label><label id="selectallfieldsour"><input id="selectallfieldsourcheckbox" type="checkbox">Select Sour  </label><label id="selectallfieldspicy"><input id="selectallfieldspicycheckbox" type="checkbox">Select Spicy</label><label id="selectallfielddry"><input id="selectallfielddrycheckbox" type="checkbox">Select Dry  </label><label id="selectallfieldsweet"><input id="selectallfieldsweetcheckbox" type="checkbox">Select Sweet  </label><label id="selectallfieldbitter"><input id="selectallfieldbittercheckbox" type="checkbox">Select Bitter  </label>');
+						$('#selectallfieldcheckbox').click(function() {
+							$('#massreleaselist>ul>li>label>input').not(this).prop('checked', this.checked);
 						});
+						
+						$('#selectallfieldanycheckbox').click(function() {
+							let selectAny = $('.icons:contains("Any")').prev().prev().prev('input');
+							$(selectAny).not(this).prop('checked', this.checked);
+						});
+						
+						$('#selectallfieldsourcheckbox').click(function() {
+							let selectSour = $('.icons:contains("Sour")').prev().prev().prev('input');
+							$(selectSour).not(this).prop('checked', this.checked);
+						});
+						
+						$('#selectallfieldspicycheckbox').click(function() {
+							let selectSpicy = $('.icons:contains("Spicy")').prev().prev().prev('input');
+							$(selectSpicy).not(this).prop('checked', this.checked);
+						});
+						
+						$('#selectallfielddrycheckbox').click(function() {
+							let selectDry = $('.icons:contains("Dry")').prev().prev().prev('input');
+							$(selectDry).not(this).prop('checked', this.checked);
+						});
+						
+						$('#selectallfieldsweetcheckbox').click(function() {
+							let selectSweet = $('.icons:contains("Sweet")').prev().prev().prev('input');
+							$(selectSweet).not(this).prop('checked', this.checked);
+						});
+						
+						$('#selectallfieldbittercheckbox').click(function() {
+							let selectBitter = $('.icons:contains("Bitter")').prev().prev().prev('input');
+							$(selectBitter).not(this).prop('checked', this.checked);
+						});
+						
 					}
 				},
 				moveFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all</label>');
+						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all  </label><label id="movefieldselectany"><input id="movefieldselectanycheckbox" type="checkbox">Select Any  </label><label id="movefieldselectsour"><input id="movefieldselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefieldselectspicy"><input id="movefieldselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefieldselectdry"><input id="movefieldselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefieldselectsweet"><input id="movefieldselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefieldselectbitter"><input id="movefieldselectbittercheckbox" type="checkbox">Select Bitter  </label>');
 						$('#movefieldselectallcheckbox').click(function() {
-							$('input:checkbox').not(this).prop('checked', this.checked);
+							$('#massmovelist>ul>li>label>input').not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectanycheckbox').click(function() {
+							let selectAny = $('.icons:contains("Any")').prev().prev().prev('input');
+							$(selectAny).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectsourcheckbox').click(function() {
+							let selectSour = $('.icons:contains("Sour")').prev().prev().prev('input');
+							$(selectSour).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectspicycheckbox').click(function() {
+							let selectSpicy = $('.icons:contains("Spicy")').prev().prev().prev('input');
+							$(selectSpicy).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectdrycheckbox').click(function() {
+							let selectDry = $('.icons:contains("Dry")').prev().prev().prev('input');
+							$(selectDry).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectsweetcheckbox').click(function() {
+							let selectSweet = $('.icons:contains("Sweet")').prev().prev().prev('input');
+							$(selectSweet).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefieldselectbittercheckbox').click(function() {
+							let selectBitter = $('.icons:contains("Bitter")').prev().prev().prev('input');
+							$(selectBitter).not(this).prop('checked', this.checked);
 						});
 					}
 				},
@@ -1498,6 +1558,7 @@
 				
 				labCustomSearch() {
 					document.querySelector('#labsuccess').innerHTML="";
+					$('#egglist>div>img').removeClass('shelterfoundme');
 					
 					if (VARIABLES.labListArray.length == 1 && VARIABLES.labListArray[0] == "") {
 						let iDontWork = true;
@@ -1528,6 +1589,16 @@
 							let foundType = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
 							let foundimg = VARIABLES.shelterTypeSearch[VARIABLES.shelterTypeSearch.indexOf(value) + 2];
 							
+							let typeImgStandOutLength = typePokemonNames.length;
+							let o;
+							for (o = 0; o < typeImgStandOutLength; o++) {
+								let value = typePokemonNames[o];
+								let shelterImgSearch = $("#egglist>div>h3:containsIN("+value+")")
+								let shelterBigImg = shelterImgSearch.next();
+								$(shelterBigImg).addClass('shelterfoundme');
+							}
+							
+							
 							if (amountOfTypesFound.length < 1) {
 								let iDontDoAnything = true;
 							} else if (amountOfTypesFound.length > 1) {
@@ -1547,6 +1618,10 @@
 						let value = VARIABLES.labSearchArray[i];
 							if ($("#egglist>div>h3:containsIN("+value+")").length) {
 								let searchResult = value;
+								
+								let shelterImgSearch = $("#egglist>div>h3:containsIN("+value+")")
+								let shelterBigImg = shelterImgSearch.next();
+								$(shelterBigImg).addClass('shelterfoundme');
 
 								if ($("#egglist>div>h3:containsIN("+value+")").length > 1) {
 									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952"></div>');
@@ -1557,6 +1632,9 @@
 							
 							if ($('#egglist>div img[src*="'+value+'"]').length) {
 								let searchResult = $('#egglist>div img[src*="'+value+'"]').prev().text();
+								
+								let shelterImgSearch = $('#egglist>div img[src*="'+value+'"]')
+								$(shelterImgSearch).addClass('shelterfoundme');
 								
 								if ($('#egglist>div img[src*="'+value+'"]').length > 1) {
 									document.querySelector('#labsuccess').insertAdjacentHTML('beforeend','<div id="labfound">'+searchResult+' found!<img src="//pfq-static.com/img/pkmn/heart_1.png/t=1427152952"></div>');
