@@ -173,6 +173,10 @@
 			labSearchArray : [],
 			
 			labListArray : [],
+			
+			fieldCustomArray : [],
+			
+			fieldTypeArray : [],
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -328,6 +332,21 @@
                             continue;
 					   }
                     }
+					for (let key in VARIABLES.userSettings.fieldSearchSettings) {
+                        if (!VARIABLES.userSettings.fieldSearchSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings.fieldSearchSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+
+                       if (typeof value === 'string') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+					   }
+                    }
 					for (let key in VARIABLES.userSettings.partyModSettings) {
                         if (!VARIABLES.userSettings.partyModSettings.hasOwnProperty(key)) {
                             continue;
@@ -399,6 +418,30 @@
 					//fields search
 					if (VARIABLES.userSettings.fieldSearch === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSearchHTML);
+						
+						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="fieldCustom"/></label><input type='button' value='Remove' id='removeFieldTextField'></div>`;
+						VARIABLES.fieldCustomArray = VARIABLES.userSettings.fieldSearchSettings.fieldCustom.split(',');
+						let numberOfValue = VARIABLES.fieldCustomArray.length;
+
+						let i;
+						for (i = 0; i < numberOfValue; i++) {
+							let rightDiv = i + 1;
+							let rightValue = VARIABLES.fieldCustomArray[i];
+							$('#searchkeys').append(theField);
+							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
+						let theType = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="fieldType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeFieldTypeList'> </div>`; 
+						VARIABLES.fieldTypeArray = VARIABLES.userSettings.fieldSearchSettings.fieldType.split(',');
+						let numberOfType = VARIABLES.fieldTypeArray.length;
+						
+						let o;
+						for (o = 0; o < numberOfType; o++) {
+							let rightDiv = o + 1;
+							let rightValue = VARIABLES.fieldTypeArray[o];
+							$('#fieldTypes').append(theType);
+							$('.typeNumber').removeClass('typeNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
 						
 						fn.backwork.populateSettingsPage();
 					}
@@ -652,6 +695,31 @@ happycssing {
 							VARIABLES.userSettings.fieldSortSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.fieldSortSettings[element] === 'string') {
 							VARIABLES.userSettings.fieldSortSettings[element] = textElement;
+						}
+					}
+					
+					if (JSON.stringify(VARIABLES.userSettings.fieldSearchSettings).indexOf(element) >= 0) { // field search settings
+						if (VARIABLES.userSettings.fieldSearchSettings[element] === false ) {
+							VARIABLES.userSettings.fieldSearchSettings[element] = true;
+						} else if (VARIABLES.userSettings.fieldSearchSettings[element] === true ) {
+							VARIABLES.userSettings.fieldSearchSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.fieldSearchSettings[element] === 'string') {
+							if (element === 'fieldType') {
+								if (textElement === 'none') {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldTypeArray.splice(tempIndex, tempIndex);
+									VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString();
+								} else {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldTypeArray[tempIndex] = textElement;
+									VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString();
+								}
+							}
+							if (element === 'fieldCustom') {
+								let tempIndex = customClass - 1;
+								VARIABLES.fieldCustomArray[tempIndex] = textElement;
+								VARIABLES.userSettings.fieldSearchSettings.fieldCustom = VARIABLES.fieldCustomArray.toString();
+							}
 						}
 					}
 					
@@ -1719,7 +1787,54 @@ happycssing {
 						}
 					}
 				},
+			
+				fieldAddTypeList() {
+					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="fieldType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeFieldTypeList'> </div>`; 
+					let numberTypes = $('#fieldTypes>div').length;
+					$('#fieldTypes').append(theList);
+					$('.typeNumber').removeClass('typeNumber').addClass(""+numberTypes+"");
+				},
+				fieldRemoveTypeList(byebye, key) {
+					VARIABLES.fieldTypeArray = $.grep(VARIABLES.fieldTypeArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#fieldTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
 				
+				fieldAddTextField() {
+					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="fieldCustom"/></label><input type='button' value='Remove' id='removeFieldSearch'></div>`;
+					let numberDiv = $('#searchkeys>div').length;
+					$('#searchkeys').append(theField);
+					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
+				},
+				fieldRemoveTextField(byebye, key) {
+					VARIABLES.fieldCustomArray = $.grep(VARIABLES.fieldCustomArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldCustom = VARIABLES.fieldCustomArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#searchkeys>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
+				
+				fieldCustomSearch() {
+					
+				},
 			}, // end of API
 		}; // end of fn
 
@@ -1853,5 +1968,21 @@ happycssing {
 			PFQoL.labCustomSearch();
 		}));
 	}
+	
+	$(document).on('click', '#addFieldSearch', (function() { //add field text field
+		PFQoL.fieldAddTextField();
+	}));
+
+	$(document).on('click', '#removeFieldSearch', (function() { //remove field text field
+		PFQoL.fieldRemoveTextfield(this, $(this).parent().find('input').val());
+	}));
+	
+	$(document).on('click', '#addFieldTypeList', (function() { //add field type list
+		PFQoL.fieldAddTypeList();
+	}));
+
+	$(document).on('click', '#removeFieldTypeList', (function() { //remove field type list
+		PFQoL.fieldRemoveTypeList(this, $(this).parent().find('select').val());
+	}));
 	
 })(jQuery); //end of userscript
