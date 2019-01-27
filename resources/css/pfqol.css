@@ -1,12 +1,15 @@
+	/* Pokéfarm QoL style sheet */
+
+	/* Shelter Page */
+
 /* tooltip */
-    /* Tooltip container */
+
 .tooltip {
 	position: relative;
 	display: inline-block;
 	border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
-    /* Tooltip text */
 .tooltip .tooltiptext {
 	visibility: hidden;
 	width: 500px;
@@ -16,19 +19,16 @@
 	padding: 5px 0;
 	border-radius: 6px;
 
-    /* Position the tooltip text */
 	position: absolute;
 	z-index: 1;
 	bottom: 125%;
 	left: 50%;
 	margin-left: 0px;
 
-    /* Fade in tooltip */
 	opacity: 0;
 	transition: opacity 0.3s;
 }
 
-	/* Tooltip arrow */
 .tooltip .tooltiptext::after {
 	content: "";
 	position: absolute;
@@ -40,30 +40,32 @@
 	border-color: #555 transparent transparent transparent;
 }
 
-	/* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
 	visibility: visible;
 	opacity: 1;
 }
 
-	/* shelterSuccess */
+/* shelter notification wrap */
 #sheltersuccess {
 	text-align: center;
-	background: #e2ffcd;
 }
 
+/* shelter notification */
 #shelterfound {
 	padding-top: 20px;
 }
 
+/* shelter Pokémon/egg found background */
 .shelterfoundme {
 	box-shadow: 0px 0px 25px 15px #d5e265;
     background-color: #d5e265;
     border-radius: 100%;
 }
 
+
 	/*shelterSort */
-	/* shelter grid sort */
+	
+/* shelter grid sort */
 .qolshelterareagrid {
     min-height: 350px;
     display: flex!important;
@@ -91,31 +93,15 @@
     align-items: center;
 }
 
-
-/* Field settings */
+	/* fields */
+/* Field settings div */
 #fieldorder {
     margin: 16px auto;
     padding: 4px;
     border: 1px solid #9ec690;
-    background-color: #e2ffcd;
     border-radius: 4px;
     max-width: 600px;
     position: relative;
-}
-
-/* field sort color fix */
-#field_field>div.field>.fieldmon.cormyr>img {
-    background-color: rgba(102,204,102,0.8)!important;
-    border-radius: 4px;
-    animation: cormyr 2s infinite;
-    animation-delay: inherit;
-}
-
-#field_field>div.field>.fieldmon.goaway>img {
-    background-color: rgba(204,102,102,0.8)!important;
-    border-radius: 4px;
-    animation: goaway 2s infinite;
-    animation-delay: inherit;
 }
 
 /* sort by berry */
@@ -232,16 +218,14 @@
 	animation: none!important;
 }
 
-/* Settings Hub */
+/* QoL Settings Hub */
 .qolHubSuperHead:first-child {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 } 
 
 .qolHubHead {
-    background-color: #d2e8af;
     border-bottom: 1px solid #9ec690;
-    color: #004000;
     text-align: center;
     padding: 4px;
     margin: 0;
@@ -283,7 +267,6 @@
 }
 
 .qolChangeLogContent {
-	background-color: #e2ffcd;
 	list-style-type: disc;
 	display: none;
 }
@@ -303,7 +286,14 @@
 	margin: 0px;
 }
 
-/* qol party mod */
+.closeHub {
+	text-align: right;
+	margin: 0px 10px 0px 0px;
+	font-size: 20px;
+}
+
+	/* qol party clicking mod */
+/* settings menu */
 #qolpartymod {
     text-align: center;
 }
@@ -382,16 +372,18 @@
 	text-align: center!important;
 }
 
-
-	/* labSuccess */
+	/* lab */
+/* lab notification wrap */
 #labsuccess {
 	text-align: center;
 }
 
+/* lab notification div */
 #labfound {
 	padding-top: 20px;
 }
 
+/* lab <p> bold */
 .boldp {
 	font-weight: bold;
 }
