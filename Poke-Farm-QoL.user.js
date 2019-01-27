@@ -1974,7 +1974,7 @@ happycssing {
 	}));
 
 	$(document).on('click', '#removeFieldSearch', (function() { //remove field text field
-		PFQoL.fieldRemoveTextfield(this, $(this).parent().find('input').val());
+		PFQoL.fieldRemoveTextField(this, $(this).parent().find('input').val());
 	}));
 	
 	$(document).on('click', '#addFieldTypeList', (function() { //add field type list
