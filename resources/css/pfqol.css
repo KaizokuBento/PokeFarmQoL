@@ -104,6 +104,15 @@
     position: relative;
 }
 
+#fieldsearch {
+    margin: 16px auto;
+    padding: 4px;
+    border: 1px solid #9ec690;
+    border-radius: 4px;
+    max-width: 600px;
+    position: relative;
+}
+
 /* sort by berry */
 .qolAnyBerry {
 	left: 0%!important;
