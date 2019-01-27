@@ -449,10 +449,8 @@
 					
 					//mass party click css
 					let menuBackground = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('background-color');
-					console.log(menuBackground);
 					$("#qolpartymod").css("background-color", ""+menuBackground+"");
 					let menuColor = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('color');
-					console.log(menuColor);
 					$("#qolpartymod").css("color", ""+menuColor+"");
 					
 					//custom user css
