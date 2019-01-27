@@ -241,9 +241,7 @@
 } 
 
 .qolHubHead {
-    background-color: #d2e8af;
     border-bottom: 1px solid #9ec690;
-    color: #004000;
     text-align: center;
     padding: 4px;
     margin: 0;
@@ -285,7 +283,6 @@
 }
 
 .qolChangeLogContent {
-	background-color: #e2ffcd;
 	list-style-type: disc;
 	display: none;
 }
