@@ -396,10 +396,16 @@
 						document.querySelector('#caughtfishcontainer label').insertAdjacentHTML('beforeend', TEMPLATES.massReleaseSelectHTML);
 					}
 
+					//fields search
+					if (VARIABLES.userSettings.fieldSearch === true && window.location.href.indexOf("fields/") != -1) {
+						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSearchHTML);
+						
+						fn.backwork.populateSettingsPage();
+					}
+						
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
-						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSearchHTML);
 
 						fn.backwork.populateSettingsPage();
 					}
@@ -469,6 +475,9 @@
 					let fieldOrderCssBorder = $('#field_field').css('border');
 					$("#fieldorder").css("background-color", ""+fieldOrderCssColor+"");
 					$("#fieldorder").css("border", ""+fieldOrderCssBorder+"");
+					
+					$("#fieldsearch").css("background-color", ""+fieldOrderCssColor+"");
+					$("#fieldsearch").css("border", ""+fieldOrderCssBorder+"");
 					
 					//mass party click css
 					let menuBackground = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('background-color');

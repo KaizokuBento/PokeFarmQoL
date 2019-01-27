@@ -1,89 +1,74 @@
 <div id ="fieldsearch">
-	<p> Check the boxes of Pokémon you wish to find in the shelter! You can select multiple checkboxes at once and it will notify you whenever it will find the types of Pokémons you selected!</p>
+	<h4>Advanced Field search</h4>
+	<p> Check the boxes of Pokémon you wish to find in this field! You can select multiple checkboxes at once and it will notify you whenever it will find the types of Pokémons you selected!</p>
 	<table>
 		<tbody>
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findNewEgg"/>New Egg
+						<input type="checkbox" class="qolsetting" data-key="fieldNewPokemon"/>New Pokémon
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findNewPokemon"/>New Pokémon
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findShiny"/>Shiny
-					</label>
-				</td>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findAlbino"/>Albino
+						<input type="checkbox" class="qolsetting" data-key="fieldShiny"/>Shiny
 					</label>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findMelanistic"/>Melanistic
+						<input type="checkbox" class="qolsetting" data-key="fieldAlbino"/>Albino
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findPrehistoric"/>Prehistoric
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findDelta"/>Delta
-					</label>
-				</td>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findMega"/>Mega
+						<input type="checkbox" class="qolsetting" data-key="fieldMelanistic"/>Melanistic
 					</label>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findStarter"/>Starter
+						<input type="checkbox" class="qolsetting" data-key="fieldPrehistoric"/>Prehistoric
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findCustomSprite"/>Custom Sprite
+						<input type="checkbox" class="qolsetting" data-key="fieldDelta"/>Delta
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="checkbox" class="qolsetting" data-key="fieldMega"/>Mega
+					</label>
+				</td>
+				<td>
+					<label>
+						<input type="checkbox" class="qolsetting" data-key="fieldStarter"/>Starter
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="checkbox" class="qolsetting" data-key="fieldCustomSprite"/>Custom Sprite
+					</label>
+				</td>
+				<td>
+					<label>
+						<input type="checkbox" class="qolsetting" data-key="fieldItem"/>Holds Item
 					</label>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	<h4>Search on type</h4>
-	<p>Select which types of Pokémon and/or eggs you wish to find</p>
-	<table>
-		<tbody>
-			<tr>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findTypeEgg"/>Egg types
-					</label>
-				</td>
-				<td>
-					<label>
-						<input type="checkbox" class="qolsetting" data-key="findTypePokemon"/>Pokemon types
-					</label>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<input type='button' value='Add typesearch' id='addShelterTypeList'>
-	<div id="shelterTypes">
+	<p>Select which types of Pokémon you wish to find</p>
+	<input type='button' value='Add typesearch' id='addFieldTypeList'>
+	<div id="fieldTypes">
 	<div class='0'></div>
 	</div>
 	<h4>Custom Search</h4>
@@ -93,20 +78,17 @@
 			Custom search by Pokémon name
 			<br>
 			<br>
-			Select Custom Egg and/or Custom Pokémon and type the name of the Pokémon you wish to find to find that Pokémon or the egg of that Pokémon. It's case sensitive so use a capital letter. If you want to find a Pokémon with a specific gender, select the gender you wish to find.
+			Select Search on items and/or Custom Pokémon and type the name of the Pokémon/item you wish to find to find that Pokémon or the item. If you want to find a Pokémon with a specific gender, select the gender you wish to find.
 			<br>
 			<br>
 			Custom search by image code
 			<br>
 			<br>
-			Select By img code (and de-select Custom Egg & Custom Pokemon checkboxes) to find a Pokémon or egg by img code. For example you wish to find a Bulbasaur. You paste it's Img code in the search bar:
+			Select By img code to find a Pokémon by img code. For example you wish to find a Bulbasaur. You paste it's Img code in the search bar:
 			<br>
 			//pfq-static.com/img/pkmn/1/g/g.png/t=1474027727
 			<br>
 			and now it will show you when a Bulbasaur is found! Copy paste the complete link (starting from //) or you won't find anything.
-			<br>
-			<br>
-			<a href="https://docs.google.com/spreadsheets/d/1rD1VZNTQRYXMOVKvGasjmMdMJu-iheE-ajsFkfs4QXA/edit?usp=sharing">List of Eggs Image Codes</a>
 			<br>
 			<br>
 			More info on finding Pokémon with their img code:
@@ -121,19 +103,19 @@
 	        <tr>
 	            <td>
 	                <label>
-	                    <input type="checkbox" class="qolsetting" data-key="customEgg"/>Custom Egg
+	                    <input type="checkbox" class="qolsetting" data-key="fieldCustomPokemon"/>Custom Pokémon
 	                </label>
 	            </td>
-	            <td>
+				<td>
 	                <label>
-	                    <input type="checkbox" class="qolsetting" data-key="customPokemon"/>Custom Pokémon
+	                    <input type="checkbox" class="qolsetting" data-key="fieldCustomPng"/>By img code
 	                </label>
 	            </td>
 	        </tr>
 	        <tr>
 	            <td>
 	                <label>
-	                    <input type="checkbox" class="qolsetting" data-key="customPng"/>By img code
+	                    <input type="checkbox" class="qolsetting" data-key="customItem"/>Search on items
 	                </label>
 	            </td>
 	        </tr>
@@ -145,19 +127,19 @@
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findMale"/>Male
+						<input type="checkbox" class="qolsetting" data-key="fieldMale"/>Male
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findFemale"/>Female
+						<input type="checkbox" class="qolsetting" data-key="fieldFemale"/>Female
 					</label>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label>
-						<input type="checkbox" class="qolsetting" data-key="findNoGender"/>Genderless
+						<input type="checkbox" class="qolsetting" data-key="fieldNoGender"/>Genderless
 					</label>
 				</td>
 			</tr>
@@ -165,7 +147,7 @@
 	</table>
 	
     <p>Search Keys</p>
-	<input type='button' value='Add searchfield' id='addShelterTextfield'>
+	<input type='button' value='Add searchfield' id='addFieldTextfield'>
     <div id="searchkeys">
 		<div class='0'></div>
 	</div>
