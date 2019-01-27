@@ -104,22 +104,6 @@
     position: relative;
 }
 
-/* field sort color fix. This was needed before, now not anymore? Idk */
-/*
-#field_field>div.field>.fieldmon.cormyr>img {
-    background-color: rgba(102,204,102,0.8)!important;
-    border-radius: 4px;
-    animation: cormyr 2s infinite;
-    animation-delay: inherit;
-}
-
-#field_field>div.field>.fieldmon.goaway>img {
-    background-color: rgba(204,102,102,0.8)!important;
-    border-radius: 4px;
-    animation: goaway 2s infinite;
-    animation-delay: inherit;
-} */
-
 /* sort by berry */
 .qolAnyBerry {
 	left: 0%!important;

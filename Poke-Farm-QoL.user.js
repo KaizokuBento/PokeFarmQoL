@@ -456,6 +456,12 @@
 					let menuColor = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('color');
 					console.log(menuColor);
 					$("#qolpartymod").css("color", ""+menuColor+"");
+					
+					//custom user css
+					let customUserCss = VARIABLES.userSettings.customCss;
+					let customUserCssInject = '<style type="text/css">'+customUserCss+'</style>'
+					//document.querySelector('head').append();
+					$('head').append('<style type="text/css">'+customUserCss+'</style>');
 				},
 
 				setupObservers() { // all the Observers that needs to run
@@ -532,8 +538,19 @@
 					fn.backwork.populateSettingsPage();
 					let customCss = VARIABLES.userSettings.customCss;
 
-					$('.textareahub').append('<textarea rows="15" cols="60" class="qolsetting" data-key="customCss"/></textarea>');
+					$('.textareahub').append('<textarea id="qolcustomcss" rows="15" cols="60" class="qolsetting" data-key="customCss"/></textarea>');
 					$('.textareahub textarea').val(customCss);
+					
+					$('#qolcustomcss').on('keydown', function(e) {
+						if (e.keyCode == 9 || e.which == 9) {
+							e.preventDefault();
+							var s = this.selectionStart;
+							$(this).val(function(i, v) {
+							return v.substring(0, s) + "\t" + v.substring(this.selectionEnd)
+							});
+							this.selectionEnd = s + 1;
+						}
+					 });
 
 				},
 				qolHubClose() {
