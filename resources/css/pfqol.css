@@ -48,7 +48,6 @@
 /* shelter notification wrap */
 #sheltersuccess {
 	text-align: center;
-	background: #e2ffcd;
 }
 
 /* shelter notification */
@@ -100,13 +99,12 @@
     margin: 16px auto;
     padding: 4px;
     border: 1px solid #9ec690;
-    background-color: #e2ffcd;
     border-radius: 4px;
     max-width: 600px;
     position: relative;
 }
 
-/* field sort color fix */
+/* field sort color fix. This was needed before, now not anymore? Idk */
 /*
 #field_field>div.field>.fieldmon.cormyr>img {
     background-color: rgba(102,204,102,0.8)!important;
