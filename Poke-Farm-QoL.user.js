@@ -232,8 +232,6 @@
 				},
 
 				loadSettings() { // initial settings on first run and setting the variable settings key
-
-
 					if (localStorage.getItem(SETTINGS_SAVE_KEY) === null) {
 						fn.backwork.saveSettings();
 					} else {
@@ -462,6 +460,8 @@
 					let customUserCssInject = '<style type="text/css">'+customUserCss+'</style>'
 					//document.querySelector('head').append();
 					$('head').append('<style type="text/css">'+customUserCss+'</style>');
+					
+					console.log(VARIABLES.userSettings.customCss);
 				},
 
 				setupObservers() { // all the Observers that needs to run
@@ -539,7 +539,21 @@
 					let customCss = VARIABLES.userSettings.customCss;
 
 					$('.textareahub').append('<textarea id="qolcustomcss" rows="15" cols="60" class="qolsetting" data-key="customCss"/></textarea>');
-					$('.textareahub textarea').val(customCss);
+					if (VARIABLES.userSettings.customCss === "") {
+						$('.textareahub textarea').val(`#thisisanexample {
+	color: yellow;
+}
+
+.thisisalsoanexample {
+	background-color: blue!important;
+}
+
+happycssing {
+	display: absolute;
+}`);
+					} else {
+						$('.textareahub textarea').val(customCss);
+					}
 					
 					$('#qolcustomcss').on('keydown', function(e) {
 						if (e.keyCode == 9 || e.which == 9) {
