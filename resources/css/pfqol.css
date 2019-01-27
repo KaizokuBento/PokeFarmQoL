@@ -1,12 +1,15 @@
+	/* Pokéfarm QoL style sheet */
+
+	/* Shelter Page */
+
 /* tooltip */
-    /* Tooltip container */
+
 .tooltip {
 	position: relative;
 	display: inline-block;
 	border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
-    /* Tooltip text */
 .tooltip .tooltiptext {
 	visibility: hidden;
 	width: 500px;
@@ -16,19 +19,16 @@
 	padding: 5px 0;
 	border-radius: 6px;
 
-    /* Position the tooltip text */
 	position: absolute;
 	z-index: 1;
 	bottom: 125%;
 	left: 50%;
 	margin-left: 0px;
 
-    /* Fade in tooltip */
 	opacity: 0;
 	transition: opacity 0.3s;
 }
 
-	/* Tooltip arrow */
 .tooltip .tooltiptext::after {
 	content: "";
 	position: absolute;
@@ -40,30 +40,33 @@
 	border-color: #555 transparent transparent transparent;
 }
 
-	/* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
 	visibility: visible;
 	opacity: 1;
 }
 
-	/* shelterSuccess */
+/* shelter notification wrap */
 #sheltersuccess {
 	text-align: center;
 	background: #e2ffcd;
 }
 
+/* shelter notification */
 #shelterfound {
 	padding-top: 20px;
 }
 
+/* shelter Pokémon/egg found background */
 .shelterfoundme {
 	box-shadow: 0px 0px 25px 15px #d5e265;
     background-color: #d5e265;
     border-radius: 100%;
 }
 
+
 	/*shelterSort */
-	/* shelter grid sort */
+	
+/* shelter grid sort */
 .qolshelterareagrid {
     min-height: 350px;
     display: flex!important;
@@ -91,8 +94,8 @@
     align-items: center;
 }
 
-
-/* Field settings */
+	/* fields */
+/* Field settings div */
 #fieldorder {
     margin: 16px auto;
     padding: 4px;
@@ -104,6 +107,7 @@
 }
 
 /* field sort color fix */
+/*
 #field_field>div.field>.fieldmon.cormyr>img {
     background-color: rgba(102,204,102,0.8)!important;
     border-radius: 4px;
@@ -116,7 +120,7 @@
     border-radius: 4px;
     animation: goaway 2s infinite;
     animation-delay: inherit;
-}
+} */
 
 /* sort by berry */
 .qolAnyBerry {
@@ -232,7 +236,7 @@
 	animation: none!important;
 }
 
-/* Settings Hub */
+/* QoL Settings Hub */
 .qolHubSuperHead:first-child {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -303,7 +307,8 @@
 	margin: 0px;
 }
 
-/* qol party mod */
+	/* qol party clicking mod */
+/* settings menu */
 #qolpartymod {
     text-align: center;
 }
@@ -382,16 +387,18 @@
 	text-align: center!important;
 }
 
-
-	/* labSuccess */
+	/* lab */
+/* lab notification wrap */
 #labsuccess {
 	text-align: center;
 }
 
+/* lab notification div */
 #labfound {
 	padding-top: 20px;
 }
 
+/* lab <p> bold */
 .boldp {
 	font-weight: bold;
 }
