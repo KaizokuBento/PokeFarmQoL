@@ -10,7 +10,7 @@
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
 // @require      https://cdn.rawgit.com/omichelsen/compare-versions/v3.1.0/index.js
-// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/qolHubHTML.html
+// @resource     QolHubHTML	            https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/dev/resources/templates/qolHubHTML.html
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/evolveFastHTML.html
 // @resource     labOptionsHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/labOptionsHTML.html
@@ -90,6 +90,7 @@
 			fieldSearchSettings : {
 				fieldCustom: "",
 				fieldType: "",
+				fieldNature: "",
 				fieldNewPokemon: true,
 				fieldShiny: true,
 				fieldAlbino: true,
@@ -105,6 +106,7 @@
 				fieldCustomPokemon: true,
 				fieldCustomPng: false,
 				fieldItem: true,
+				customItem: true,
 			},
 			partyModSettings : {
 				hideDislike: false,
@@ -177,6 +179,8 @@
 			fieldCustomArray : [],
 			
 			fieldTypeArray : [],
+			
+			fieldNatureArray : [],
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -341,11 +345,6 @@
                             fn.helpers.toggleSetting(key, value, false);
                             continue;
                         }
-
-                       if (typeof value === 'string') {
-                            fn.helpers.toggleSetting(key, value, false);
-                            continue;
-					   }
                     }
 					for (let key in VARIABLES.userSettings.partyModSettings) {
                         if (!VARIABLES.userSettings.partyModSettings.hasOwnProperty(key)) {
@@ -443,7 +442,20 @@
 							$('.typeNumber').removeClass('typeNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
 						}
 						
+						let theNature = `<div class='natureNumber'> <select name="natures" class="qolsetting" data-key="fieldNature"> <option value="none">None</option> <option value="Lonely">Lonely</option> <option value="Mild">Mild</option> <option value="Hasty">Hasty</option> <option value="Gentle">Gentle</option> <option value="Bold">Bold</option> <option value="Modest">Modest</option> <option value="Timid">Timid</option> <option value="Calm">Calm</option> <option value="Impish">Impish</option> <option value="Adamant">Adamant</option> <option value="Jolly">Jolly</option> <option value="Careful">Careful</option> <option value="Relaxed">Relaxed</option> <option value="Brave">Brave</option> <option value="Quiet">Quiet</option> <option value="Sassy">Sassy</option> <option value="Lax">Lax</option> <option value="Naughty">Naughty</option> <option value="Rash">Rash</option> <option value="Näive">Näive</option> <option value="Hardy">Hardy</option> <option value="Docile">Docile</option> <option value="Serious">Serious</option> <option value="Bashful">Bashful</option> <option value="Quirky ">Quirky </option> </select> <input type='button' value='Remove' id='removeFieldNature'> </div>`;
+						VARIABLES.fieldNatureArray = VARIABLES.userSettings.fieldSearchSettings.fieldNature.split(',');
+						let numberOfNature = VARIABLES.fieldNatureArray.length;
+
+						let n;
+						for (n = 0; n < numberOfNature; n++) {
+							let rightDiv = n + 1;
+							let rightValue = VARIABLES.fieldNatureArray[n];
+							$('#natureTypes').append(theNature);
+							$('.natureNumber').removeClass('natureNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
 						fn.backwork.populateSettingsPage();
+						VARIABLES.dexDataVar = VARIABLES.userSettings.variData.dexData.split(',');
 					}
 						
 					// fields sorter
@@ -713,6 +725,17 @@ happycssing {
 									let tempIndex = typeClass - 1;
 									VARIABLES.fieldTypeArray[tempIndex] = textElement;
 									VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString();
+								}
+							}
+							if (element === 'fieldNature') {
+								if (textElement === 'none') {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldNatureArray.splice(tempIndex, tempIndex);
+									VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString();
+								} else {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldNatureArray[tempIndex] = textElement;
+									VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString();
 								}
 							}
 							if (element === 'fieldCustom') {
@@ -1195,7 +1218,7 @@ happycssing {
 
 				releaseFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massreleaselist label').insertAdjacentHTML('beforeend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all  </label><label id="selectallfieldany"><input id="selectallfieldanycheckbox" type="checkbox">Select Any  </label><label id="selectallfieldsour"><input id="selectallfieldsourcheckbox" type="checkbox">Select Sour  </label><label id="selectallfieldspicy"><input id="selectallfieldspicycheckbox" type="checkbox">Select Spicy</label><label id="selectallfielddry"><input id="selectallfielddrycheckbox" type="checkbox">Select Dry  </label><label id="selectallfieldsweet"><input id="selectallfieldsweetcheckbox" type="checkbox">Select Sweet  </label><label id="selectallfieldbitter"><input id="selectallfieldbittercheckbox" type="checkbox">Select Bitter  </label>');
+						document.querySelector('.dialog>div>div>div>div>button').insertAdjacentHTML('afterend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all  </label><label id="selectallfieldany"><input id="selectallfieldanycheckbox" type="checkbox">Select Any  </label><label id="selectallfieldsour"><input id="selectallfieldsourcheckbox" type="checkbox">Select Sour  </label><label id="selectallfieldspicy"><input id="selectallfieldspicycheckbox" type="checkbox">Select Spicy</label><label id="selectallfielddry"><input id="selectallfielddrycheckbox" type="checkbox">Select Dry  </label><label id="selectallfieldsweet"><input id="selectallfieldsweetcheckbox" type="checkbox">Select Sweet  </label><label id="selectallfieldbitter"><input id="selectallfieldbittercheckbox" type="checkbox">Select Bitter  </label>');
 						$('#selectallfieldcheckbox').click(function() {
 							$('#massreleaselist>ul>li>label>input').not(this).prop('checked', this.checked);
 						});
@@ -1234,7 +1257,7 @@ happycssing {
 				},
 				moveFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all  </label><label id="movefieldselectany"><input id="movefieldselectanycheckbox" type="checkbox">Select Any  </label><label id="movefieldselectsour"><input id="movefieldselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefieldselectspicy"><input id="movefieldselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefieldselectdry"><input id="movefieldselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefieldselectsweet"><input id="movefieldselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefieldselectbitter"><input id="movefieldselectbittercheckbox" type="checkbox">Select Bitter  </label>');
+						document.querySelector('.dialog>div>div>div>div>button').insertAdjacentHTML('afterend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all  </label><label id="movefieldselectany"><input id="movefieldselectanycheckbox" type="checkbox">Select Any  </label><label id="movefieldselectsour"><input id="movefieldselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefieldselectspicy"><input id="movefieldselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefieldselectdry"><input id="movefieldselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefieldselectsweet"><input id="movefieldselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefieldselectbitter"><input id="movefieldselectbittercheckbox" type="checkbox">Select Bitter  </label>');
 						$('#movefieldselectallcheckbox').click(function() {
 							$('#massmovelist>ul>li>label>input').not(this).prop('checked', this.checked);
 						});
@@ -1832,8 +1855,32 @@ happycssing {
 					}
 				},
 				
+				fieldAddNatureSearch() {
+					let theList = `<div class='natureNumber'> <select name="natures" class="qolsetting" data-key="fieldNature"> <option value="none">None</option> <option value="Lonely">Lonely</option> <option value="Mild">Mild</option> <option value="Hasty">Hasty</option> <option value="Gentle">Gentle</option> <option value="Bold">Bold</option> <option value="Modest">Modest</option> <option value="Timid">Timid</option> <option value="Calm">Calm</option> <option value="Impish">Impish</option> <option value="Adamant">Adamant</option> <option value="Jolly">Jolly</option> <option value="Careful">Careful</option> <option value="Relaxed">Relaxed</option> <option value="Brave">Brave</option> <option value="Quiet">Quiet</option> <option value="Sassy">Sassy</option> <option value="Lax">Lax</option> <option value="Naughty">Naughty</option> <option value="Rash">Rash</option> <option value="Näive">Näive</option> <option value="Hardy">Hardy</option> <option value="Docile">Docile</option> <option value="Serious">Serious</option> <option value="Bashful">Bashful</option> <option value="Quirky ">Quirky </option> </select> <input type='button' value='Remove' id='removeFieldNature'> </div>`;
+					let numberTypes = $('#natureTypes>div').length;
+					$('#natureTypes').append(theList);
+					$('.natureNumber').removeClass('natureNumber').addClass(""+numberTypes+"");
+				},
+				fieldRemoveNatureSearch(byebye, key) {
+					VARIABLES.fieldNatureArray = $.grep(VARIABLES.fieldNatureArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#natureTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
+				
 				fieldCustomSearch() {
-					
+					if (VARIABLES.userSettings.fieldSearch === true) {
+						console.log('search activated');
+					}
 				},
 			}, // end of API
 		}; // end of fn
@@ -1902,15 +1949,18 @@ happycssing {
 	if(window.location.href.indexOf("fields/") != -1) {
 		$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
 			PFQoL.fieldSorter();
+			PFQoL.fieldCustomSearch();
 		}));
 	}
 
 	if(window.location.href.indexOf("fields/") != -1) { //field sort
 		$(window).on('load', (function() {
 			PFQoL.fieldSorter();
+			PFQoL.fieldCustomSearch();
 		}));
 		document.addEventListener("keydown", function(event) {
 			PFQoL.fieldSorter();
+			PFQoL.fieldCustomSearch();
 		});
 	}
 	
@@ -1975,6 +2025,14 @@ happycssing {
 
 	$(document).on('click', '#removeFieldSearch', (function() { //remove field text field
 		PFQoL.fieldRemoveTextField(this, $(this).parent().find('input').val());
+	}));
+	
+	$(document).on('click', '#addFieldNatureSearch', (function() { //add field nature search
+		PFQoL.fieldAddNatureSearch();
+	}));
+
+	$(document).on('click', '#removeFieldNature', (function() { //remove field nature search
+		PFQoL.fieldRemoveNatureSearch(this, $(this).parent().find('select').val());
 	}));
 	
 	$(document).on('click', '#addFieldTypeList', (function() { //add field type list
