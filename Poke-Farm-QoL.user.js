@@ -134,6 +134,8 @@
 			eggNoDuplicateArray : [],
 			
 			lengthEggs : 0,
+			
+			evolveListCache : "",
 
 			shelterTypeSearch : [
 				"0", "Normal", '<img src="//pfq-static.com/img/types/normal.png/t=1262702646">', 
@@ -188,7 +190,7 @@
 			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
-			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
+			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label><label id="movefishselectany"><input id="movefishdselectanycheckbox" type="checkbox">Select Any  </label><label id="movefishselectsour"><input id="movefishselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefishselectspicy"><input id="movefishselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefishselectdry"><input id="movefishselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefishselectsweet"><input id="movefishselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefishselectbitter"><input id="movefishselectbittercheckbox" type="checkbox">Select Bitter  </label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
 			fieldSearchHTML			: GM_getResourceText('fieldSearchHTML'),
 			qolHubHTML				: GM_getResourceText('QolHubHTML'),
@@ -219,7 +221,12 @@
 			labObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.labCustomSearch();
-					console.log(mutation);
+				});
+			}),
+			
+			evolveObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.easyQuickEvolve();
 				});
 			}),
 				
@@ -415,7 +422,7 @@
 					}
 
 					//fields search
-					if (VARIABLES.userSettings.fieldSearch === true && window.location.href.indexOf("fields/") != -1) {
+					/* if (VARIABLES.userSettings.fieldSearch === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSearchHTML);
 						
 						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="fieldCustom"/></label><input type='button' value='Remove' id='removeFieldSearch'></div>`;
@@ -456,7 +463,7 @@
 						
 						fn.backwork.populateSettingsPage();
 						VARIABLES.dexDataVar = VARIABLES.userSettings.variData.dexData.split(',');
-					}
+					} */
 						
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
@@ -472,10 +479,11 @@
 							fn.backwork.populateSettingsPage();
 					}
 					
-					// evolve type list
+					// fast evolve list
 					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#") != -1) {
 						$(document).ready(function() {
-							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label>');
+							$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolevolvenormal"><input type="button" class="qolsortnormal" value="Normal list"/></label><label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label><label id="qolsortevolvename"><input type="button" class="qolsortname" value="Sort on name"/></label><label id="qolevolvenew"><input type="button" class="qolsortnew" value="New dex entry"/>');
 						});
 					}
 					
@@ -575,6 +583,15 @@
 					
 					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) { //observe lab changes on the lab page
 						OBSERVERS.labObserver.observe(document.querySelector('#labpage>div>div>div'), {
+							childList: true,
+							characterdata: true,
+							subtree: true,
+							characterDataOldValue: true,
+						});
+					}
+					
+					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#tab=1") != -1) {
+						OBSERVERS.evolveObserver.observe(document.querySelector('#farmnews-evolutions'), {
 							childList: true,
 							characterdata: true,
 							subtree: true,
@@ -1298,6 +1315,36 @@ happycssing {
 						$("#selectallfishcheckbox").click(function(){
 							$('input:checkbox').not(this).prop('checked', this.checked);
 						});
+						
+						$('#movefishselectanycheckbox').click(function() {
+							let selectAny = $('.icons:contains("Any")').prev().prev('input');
+							$(selectAny).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectsourcheckbox').click(function() {
+							let selectSour = $('.icons:contains("Sour")').prev().prev('input');
+							$(selectSour).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectspicycheckbox').click(function() {
+							let selectSpicy = $('.icons:contains("Spicy")').prev().prev('input');
+							$(selectSpicy).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectdrycheckbox').click(function() {
+							let selectDry = $('.icons:contains("Dry")').prev().prev('input');
+							$(selectDry).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectsweetcheckbox').click(function() {
+							let selectSweet = $('.icons:contains("Sweet")').prev().prev('input');
+							$(selectSweet).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectbittercheckbox').click(function() {
+							let selectBitter = $('.icons:contains("Bitter")').prev().prev('input');
+							$(selectBitter).not(this).prop('checked', this.checked);
+						});
 					}
 				},
 
@@ -1589,11 +1636,48 @@ happycssing {
 					}
 				},
 				
-				easyEvolveList() {
+				easyEvolveNormalList() {
 					if (VARIABLES.userSettings.easyEvolve === true) {
 						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
 						try {
 							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					}
+				},
+				easyEvolveTypeList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
 						}
 						catch(err){
 							let thisdoesnothing = true;
@@ -1622,7 +1706,6 @@ happycssing {
 							// getting the <li> element from the pokemon & the pokemon evolved name
 							let getEvolveString = $(this).html();
 							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
-							let pokemonEvolveHTML = '<li>'+getEvolveString+'</li>'
 							
 							// first looks if you know the type out of your dexdata, if it's there then the <li> will be moved in it's corresponding type
 							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
@@ -1634,47 +1717,200 @@ happycssing {
 								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
-										$('.0').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.0');
 										// type one
-										$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.'+evolveTypeOne+'');
 										// type two
 										if (evolveTypeTwo < 0) {
 											let thisAlsoDoeSNothing = true;
 										} else {
-											$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+											$(this).clone().appendTo('.'+evolveTypeTwo+'');
 										}	
 									}
 									if (evolvePokemon === 'Nidorino') {
 										// poison type from Nidoran
-										$('.7').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.7');
 									} 
 
 								} else { //no exceptions
 									// type one
-									$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+									$(this).clone().appendTo('.'+evolveTypeOne+'');
 									// type two
 									if (evolveTypeTwo < 0) {
 										let thisAlsoDoeSNothing = true;
 									} else {
-										$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.'+evolveTypeTwo+'');
 									}	
 									// extra type from prev pokemon
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevOne) == -1){
-									   $('.'+evolveTypePrevOne+'').append(pokemonEvolveHTML);
+									   $(this).clone().appendTo('.'+evolveTypePrevOne+'');
 									}
 									
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevTwo) == -1){
-									   $('.'+evolveTypePrevTwo+'').append(pokemonEvolveHTML);
+									   $(this).clone().appendTo('.'+evolveTypePrevTwo+'');
 									}
 								}	
 							} else {
-								$('.18').append(pokemonEvolveHTML);
+								$(this).clone().appendTo('.18');
 							}
-							$(this).remove();
-						});		
+						});	
+						
+						$('#farmnews-evolutions>.scrollable>.qolEvolveTypeList>Li').each(function (index, value) {
+							let amountOfEvolves = $(this).children().children().length;
+							if (amountOfEvolves === 0) {
+								$(this).prev().remove();
+								$(this).remove();
+							} else {
+								let evolveTypeName = $(this).children('.slidermenu').html();
+								$(this).children('.slidermenu').html(evolveTypeName+' ('+amountOfEvolves+')')
+							}
+						});
+
+						$('.evolvepkmnlist').hide();
 					}	
 				},
+				easyEvolveNameList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					
+						// turn the saved dexData in an array to search pokemons out of the evolve list
+						let searchDexData = VARIABLES.userSettings.variData.dexData.split(',');
+						
+						$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+						document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', '<ul class="qolEvolveNameList">');
+						
+						
+						$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
+							// getting the <li> element from the pokemon & the pokemon evolved name
+							let getEvolveString = $(this).html();
+							let beforeEvolvePokemon = $(this).children().children().text().slice(0,-6);
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							let evolvePokemonChange = evolvePokemon.split(' ').join('').replace('[','').replace(']','');
+							
+							if ($('#farmnews-evolutions>.scrollable>.qolEvolveNameList>Li>Ul').hasClass(evolvePokemon.split(' ').join('')) === false) {
+								document.querySelector('.qolEvolveNameList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">'+beforeEvolvePokemon+' > '+evolvePokemon+'</h3><ul class="'+evolvePokemonChange+' qolChangeLogContent"></ul></li><br>');
+							}
+							$(this).clone().appendTo('.'+evolvePokemonChange+'');
+						});
+						
+						$('#farmnews-evolutions>.scrollable>.qolEvolveNameList>Li').each(function (index, value) {
+							let amountOfEvolves = $(this).children().children().length;
+							let getEvolveString = $(this).children().children().html();
+							let beforeEvolvePokemon = $(this).children().children().children().children().first().text().split(' ').join('');
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							
+							$(this).children('.slidermenu').html(beforeEvolvePokemon+' > '+evolvePokemon+' ('+amountOfEvolves+')')
+						});
+
+						$('.evolvepkmnlist').hide();
+						
+						//layout of the created html
+						let typeBackground = $('.panel>h3').css('background-color');
+						let typeBorder = $('.panel>h3').css('border');
+						let typeColor = $('.panel>h3').css('color');
+						$(".expandlist").css("background-color", ""+typeBackground+"");
+						$(".expandlist").css("border", ""+typeBorder+"");
+						$(".expandlist").css("color", ""+typeColor+"");
+						
+						let typeListBackground = $('.tabbed_interface>div').css('background-color');
+						let typeListColor = $('.tabbed_interface>div').css('color');
+						$(".qolChangeLogContent").css("background-color", ""+typeListBackground+"");
+						$(".qolChangeLogContent").css("color", ""+typeListColor+"");
+					}
+				},
+				easyEvolveNewList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					
+						// turn the saved dexData in an array to search pokemons out of the evolve list
+						let searchDexData = VARIABLES.userSettings.variData.dexData.split(',');
+						
+						$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+						document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', '<ul class="qolEvolveNewList">');
+						
+						$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
+							// getting the <li> element from the pokemon & the pokemon evolved name
+							let getEvolveString = $(this).html();
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							
+							// first looks if you have the pokedex entry, if not then the <li> will be moved in it's corresponding type
+							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
+								let evolveNewCheck = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 6];
+								
+								if (evolveNewCheck == 0) {
+									let evolvePokemonChange = evolvePokemon.split(' ').join('').replace('[','').replace(']','');
+							
+									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass(evolvePokemon.split(' ').join('')) === false) {
+										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">'+evolvePokemon+'</h3><ul class="'+evolvePokemonChange+' qolChangeLogContent"></ul></li><br>');
+									}
+								
+								$(this).clone().appendTo('.'+evolvePokemonChange+'');
+								}
+							}
+						});	
+						
+						$('.evolvepkmnlist').hide();
+						
+						//layout
+						let typeBackground = $('.panel>h3').css('background-color');
+						let typeBorder = $('.panel>h3').css('border');
+						let typeColor = $('.panel>h3').css('color');
+						$(".expandlist").css("background-color", ""+typeBackground+"");
+						$(".expandlist").css("border", ""+typeBorder+"");
+						$(".expandlist").css("color", ""+typeColor+"");
+						
+						let typeListBackground = $('.tabbed_interface>div').css('background-color');
+						let typeListColor = $('.tabbed_interface>div').css('color');
+						$(".qolChangeLogContent").css("background-color", ""+typeListBackground+"");
+						$(".qolChangeLogContent").css("color", ""+typeListColor+"");
+					}
+				},
 				
+				easyQuickEvolve() {
+					if ($('.canevolve:contains("evolved into")').parent().length != 0) {
+						$('.canevolve:contains("evolved into")').parent().remove();
+					}
+				},
 				labAddTypeList() {
 					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findLabType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeLabTypeList'> </div>`; 
 					let numberTypes = $('#labTypes>div').length;
@@ -1811,7 +2047,7 @@ happycssing {
 					}
 				},
 			
-				fieldAddTypeList() {
+				/* fieldAddTypeList() {
 					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="fieldType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeFieldTypeList'> </div>`; 
 					let numberTypes = $('#fieldTypes>div').length;
 					$('#fieldTypes').append(theList);
@@ -1881,7 +2117,7 @@ happycssing {
 					if (VARIABLES.userSettings.fieldSearch === true) {
 						console.log('search activated');
 					}
-				},
+				}, */
 			}, // end of API
 		}; // end of fn
 
@@ -1949,18 +2185,18 @@ happycssing {
 	if(window.location.href.indexOf("fields/") != -1) {
 		$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
 			PFQoL.fieldSorter();
-			PFQoL.fieldCustomSearch();
+			//PFQoL.fieldCustomSearch();
 		}));
 	}
 
 	if(window.location.href.indexOf("fields/") != -1) { //field sort
 		$(window).on('load', (function() {
 			PFQoL.fieldSorter();
-			PFQoL.fieldCustomSearch();
+			//PFQoL.fieldCustomSearch();
 		}));
 		document.addEventListener("keydown", function(event) {
 			PFQoL.fieldSorter();
-			PFQoL.fieldCustomSearch();
+			//PFQoL.fieldCustomSearch();
 		});
 	}
 	
@@ -1985,8 +2221,20 @@ happycssing {
 		}));
 	}
 	
+	$(document).on('click', '#qolevolvenormal', (function() {
+		PFQoL.easyEvolveNormalList();
+	}));
+	
 	$(document).on('click', '#qolchangesletype', (function() {
-		PFQoL.easyEvolveList();
+		PFQoL.easyEvolveTypeList();
+	}));
+	
+	$(document).on('click', '#qolsortevolvename', (function() {
+		PFQoL.easyEvolveNameList();
+	}));
+	
+	$(document).on('click', '#qolevolvenew', (function() {
+		PFQoL.easyEvolveNewList();
 	}));
 	
 	$(document).on('click', '#addLabSearch', (function() { //add lab text field
