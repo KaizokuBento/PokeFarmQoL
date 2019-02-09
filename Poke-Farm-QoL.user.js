@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.3
+// @version      1.3.4
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -14,6 +14,7 @@
 // @resource     shelterSettingsHTML    https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/shelterOptionsHTML.html
 // @resource     evolveFastHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/evolveFastHTML.html
 // @resource     labOptionsHTML         https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/labOptionsHTML.html
+// @resource     fieldSearchHTML        https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/templates/fieldSearchHTML.html
 // @resource     QoLCSS                 https://raw.githubusercontent.com/KaizokuBento/PokeFarmQoL/master/resources/css/pfqol.css
 // @updateURL    https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js
 // @connect      github.com
@@ -51,6 +52,7 @@
 			shelterEnable: true,
 			releaseSelectAll: true,
 			fieldSort: true,
+			fieldSearch: true,
 			partyMod: true,
 			easyEvolve: true,
 			labNotifier: true,
@@ -85,6 +87,27 @@
 				fieldByGrid: false,
 				fieldClickCount: true,
 			},
+			fieldSearchSettings : {
+				fieldCustom: "",
+				fieldType: "",
+				fieldNature: "",
+				fieldNewPokemon: true,
+				fieldShiny: true,
+				fieldAlbino: true,
+				fieldMelanistic: true,
+				fieldPrehistoric: true,
+				fieldDelta: true,
+				fieldMega: true,
+				fieldStarter: true,
+				fieldCustomSprite: true,
+				fieldMale: true,
+				fieldFemale: true,
+				fieldNoGender: true,
+				fieldCustomPokemon: true,
+				fieldCustomPng: false,
+				fieldItem: true,
+				customItem: true,
+			},
 			partyModSettings : {
 				hideDislike: false,
 				hideAll: false,
@@ -111,6 +134,8 @@
 			eggNoDuplicateArray : [],
 			
 			lengthEggs : 0,
+			
+			evolveListCache : "",
 
 			shelterTypeSearch : [
 				"0", "Normal", '<img src="//pfq-static.com/img/types/normal.png/t=1262702646">', 
@@ -152,6 +177,12 @@
 			labSearchArray : [],
 			
 			labListArray : [],
+			
+			fieldCustomArray : [],
+			
+			fieldTypeArray : [],
+			
+			fieldNatureArray : [],
 		}
 
 		const TEMPLATES = { // all the new/changed HTML for the userscript
@@ -159,8 +190,9 @@
 			qolHubUpdateLinkHTML	: `<li data-name="QoLupdate"><a href=\"https://github.com/KaizokuBento/PokeFarmQoL/raw/master/Poke-Farm-QoL.user.js\" target=\"_blank\"><img src="https://i.imgur.com/SJhgsU8.png" alt="QoL Update">QoL Update Available!</a></li>`,
 			qolSettingsMenuHTML		: GM_getResourceText('QoLSettingsMenuHTML'),
 			shelterSettingsHTML		: GM_getResourceText('shelterSettingsHTML'),
-			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label>`,
+			massReleaseSelectHTML	: `<label id="selectallfish"><input id="selectallfishcheckbox" type="checkbox">Select all</label><label id="movefishselectany"><input id="movefishdselectanycheckbox" type="checkbox">Select Any  </label><label id="movefishselectsour"><input id="movefishselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefishselectspicy"><input id="movefishselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefishselectdry"><input id="movefishselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefishselectsweet"><input id="movefishselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefishselectbitter"><input id="movefishselectbittercheckbox" type="checkbox">Select Bitter  </label>`,
 			fieldSortHTML			: `<div id="fieldorder"><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByBerry"/>Sort by berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByMiddle"/>Sort in the middle</label><label><input type="checkbox" class="qolsetting qolalone" data-key="fieldByGrid"/>Align to grid</label><label><input type="checkbox" class="qolsetting" data-key="fieldClickCount"/>Click counter</label></div>`,
+			fieldSearchHTML			: GM_getResourceText('fieldSearchHTML'),
 			qolHubHTML				: GM_getResourceText('QolHubHTML'),
 			partyModHTML			: `<div id='qolpartymod'><label><input type="checkbox" class="qolsetting qolalone" data-key="hideDislike"/>Hide disliked berries</label><label><input type="checkbox" class="qolsetting qolalone" data-key="niceTable"/>Show in table</label><label><input type="checkbox" class="qolsetting qolalone" data-key="hideAll"/>Hide all click fast</label></div>`,
 			evolveFastHTML			: GM_getResourceText('evolveFastHTML'),
@@ -189,7 +221,12 @@
 			labObserver: new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {
 					fn.API.labCustomSearch();
-					console.log(mutation);
+				});
+			}),
+			
+			evolveObserver: new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					fn.API.easyQuickEvolve();
 				});
 			}),
 				
@@ -306,6 +343,16 @@
                             continue;
 					   }
                     }
+					for (let key in VARIABLES.userSettings.fieldSearchSettings) {
+                        if (!VARIABLES.userSettings.fieldSearchSettings.hasOwnProperty(key)) {
+                            continue;
+                        }
+                        let value = VARIABLES.userSettings.fieldSearchSettings[key];
+                        if (typeof value === 'boolean') {
+                            fn.helpers.toggleSetting(key, value, false);
+                            continue;
+                        }
+                    }
 					for (let key in VARIABLES.userSettings.partyModSettings) {
                         if (!VARIABLES.userSettings.partyModSettings.hasOwnProperty(key)) {
                             continue;
@@ -374,6 +421,50 @@
 						document.querySelector('#caughtfishcontainer label').insertAdjacentHTML('beforeend', TEMPLATES.massReleaseSelectHTML);
 					}
 
+					//fields search
+					/* if (VARIABLES.userSettings.fieldSearch === true && window.location.href.indexOf("fields/") != -1) {
+						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSearchHTML);
+						
+						let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="fieldCustom"/></label><input type='button' value='Remove' id='removeFieldSearch'></div>`;
+						VARIABLES.fieldCustomArray = VARIABLES.userSettings.fieldSearchSettings.fieldCustom.split(',');
+						let numberOfValue = VARIABLES.fieldCustomArray.length;
+
+						let i;
+						for (i = 0; i < numberOfValue; i++) {
+							let rightDiv = i + 1;
+							let rightValue = VARIABLES.fieldCustomArray[i];
+							$('#searchkeys').append(theField);
+							$('.numberDiv').removeClass('numberDiv').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
+						let theType = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="fieldType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeFieldTypeList'> </div>`; 
+						VARIABLES.fieldTypeArray = VARIABLES.userSettings.fieldSearchSettings.fieldType.split(',');
+						let numberOfType = VARIABLES.fieldTypeArray.length;
+						
+						let o;
+						for (o = 0; o < numberOfType; o++) {
+							let rightDiv = o + 1;
+							let rightValue = VARIABLES.fieldTypeArray[o];
+							$('#fieldTypes').append(theType);
+							$('.typeNumber').removeClass('typeNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
+						let theNature = `<div class='natureNumber'> <select name="natures" class="qolsetting" data-key="fieldNature"> <option value="none">None</option> <option value="Lonely">Lonely</option> <option value="Mild">Mild</option> <option value="Hasty">Hasty</option> <option value="Gentle">Gentle</option> <option value="Bold">Bold</option> <option value="Modest">Modest</option> <option value="Timid">Timid</option> <option value="Calm">Calm</option> <option value="Impish">Impish</option> <option value="Adamant">Adamant</option> <option value="Jolly">Jolly</option> <option value="Careful">Careful</option> <option value="Relaxed">Relaxed</option> <option value="Brave">Brave</option> <option value="Quiet">Quiet</option> <option value="Sassy">Sassy</option> <option value="Lax">Lax</option> <option value="Naughty">Naughty</option> <option value="Rash">Rash</option> <option value="Näive">Näive</option> <option value="Hardy">Hardy</option> <option value="Docile">Docile</option> <option value="Serious">Serious</option> <option value="Bashful">Bashful</option> <option value="Quirky ">Quirky </option> </select> <input type='button' value='Remove' id='removeFieldNature'> </div>`;
+						VARIABLES.fieldNatureArray = VARIABLES.userSettings.fieldSearchSettings.fieldNature.split(',');
+						let numberOfNature = VARIABLES.fieldNatureArray.length;
+
+						let n;
+						for (n = 0; n < numberOfNature; n++) {
+							let rightDiv = n + 1;
+							let rightValue = VARIABLES.fieldNatureArray[n];
+							$('#natureTypes').append(theNature);
+							$('.natureNumber').removeClass('natureNumber').addClass(""+rightDiv+"").find('.qolsetting').val(rightValue);
+						}
+						
+						fn.backwork.populateSettingsPage();
+						VARIABLES.dexDataVar = VARIABLES.userSettings.variData.dexData.split(',');
+					} */
+						
 					// fields sorter
 					if (VARIABLES.userSettings.fieldSort === true && window.location.href.indexOf("fields/") != -1) {
 						document.querySelector('#field_field').insertAdjacentHTML('afterend', TEMPLATES.fieldSortHTML);
@@ -388,10 +479,11 @@
 							fn.backwork.populateSettingsPage();
 					}
 					
-					// evolve type list
+					// fast evolve list
 					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#") != -1) {
 						$(document).ready(function() {
-							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label>');
+							$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+							document.querySelector('#farm-evolve>h3').insertAdjacentHTML('afterend', '<label id="qolevolvenormal"><input type="button" class="qolsortnormal" value="Normal list"/></label><label id="qolchangesletype"><input type="button" class="qolsorttype" value="Sort on types"/></label><label id="qolsortevolvename"><input type="button" class="qolsortname" value="Sort on name"/></label><label id="qolevolvenew"><input type="button" class="qolsortnew" value="New dex entry"/>');
 						});
 					}
 					
@@ -447,12 +539,13 @@
 					$("#fieldorder").css("background-color", ""+fieldOrderCssColor+"");
 					$("#fieldorder").css("border", ""+fieldOrderCssBorder+"");
 					
+					$("#fieldsearch").css("background-color", ""+fieldOrderCssColor+"");
+					$("#fieldsearch").css("border", ""+fieldOrderCssBorder+"");
+					
 					//mass party click css
 					let menuBackground = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('background-color');
-					console.log(menuBackground);
 					$("#qolpartymod").css("background-color", ""+menuBackground+"");
 					let menuColor = $('#navigation>#navbtns>li>a, #navigation #navbookmark>li>a').css('color');
-					console.log(menuColor);
 					$("#qolpartymod").css("color", ""+menuColor+"");
 					
 					//custom user css
@@ -490,6 +583,15 @@
 					
 					if (VARIABLES.userSettings.labNotifier === true && window.location.href.indexOf("lab") != -1) { //observe lab changes on the lab page
 						OBSERVERS.labObserver.observe(document.querySelector('#labpage>div>div>div'), {
+							childList: true,
+							characterdata: true,
+							subtree: true,
+							characterDataOldValue: true,
+						});
+					}
+					
+					if (VARIABLES.userSettings.easyEvolve === true && window.location.href.indexOf("farm#tab=1") != -1) {
+						OBSERVERS.evolveObserver.observe(document.querySelector('#farmnews-evolutions'), {
 							childList: true,
 							characterdata: true,
 							subtree: true,
@@ -622,6 +724,42 @@ happycssing {
 							VARIABLES.userSettings.fieldSortSettings[element] = false;
 						} else if (typeof VARIABLES.userSettings.fieldSortSettings[element] === 'string') {
 							VARIABLES.userSettings.fieldSortSettings[element] = textElement;
+						}
+					}
+					
+					if (JSON.stringify(VARIABLES.userSettings.fieldSearchSettings).indexOf(element) >= 0) { // field search settings
+						if (VARIABLES.userSettings.fieldSearchSettings[element] === false ) {
+							VARIABLES.userSettings.fieldSearchSettings[element] = true;
+						} else if (VARIABLES.userSettings.fieldSearchSettings[element] === true ) {
+							VARIABLES.userSettings.fieldSearchSettings[element] = false;
+						} else if (typeof VARIABLES.userSettings.fieldSearchSettings[element] === 'string') {
+							if (element === 'fieldType') {
+								if (textElement === 'none') {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldTypeArray.splice(tempIndex, tempIndex);
+									VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString();
+								} else {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldTypeArray[tempIndex] = textElement;
+									VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString();
+								}
+							}
+							if (element === 'fieldNature') {
+								if (textElement === 'none') {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldNatureArray.splice(tempIndex, tempIndex);
+									VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString();
+								} else {
+									let tempIndex = typeClass - 1;
+									VARIABLES.fieldNatureArray[tempIndex] = textElement;
+									VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString();
+								}
+							}
+							if (element === 'fieldCustom') {
+								let tempIndex = customClass - 1;
+								VARIABLES.fieldCustomArray[tempIndex] = textElement;
+								VARIABLES.userSettings.fieldSearchSettings.fieldCustom = VARIABLES.fieldCustomArray.toString();
+							}
 						}
 					}
 					
@@ -1097,7 +1235,7 @@ happycssing {
 
 				releaseFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massreleaselist label').insertAdjacentHTML('beforeend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all  </label><label id="selectallfieldany"><input id="selectallfieldanycheckbox" type="checkbox">Select Any  </label><label id="selectallfieldsour"><input id="selectallfieldsourcheckbox" type="checkbox">Select Sour  </label><label id="selectallfieldspicy"><input id="selectallfieldspicycheckbox" type="checkbox">Select Spicy</label><label id="selectallfielddry"><input id="selectallfielddrycheckbox" type="checkbox">Select Dry  </label><label id="selectallfieldsweet"><input id="selectallfieldsweetcheckbox" type="checkbox">Select Sweet  </label><label id="selectallfieldbitter"><input id="selectallfieldbittercheckbox" type="checkbox">Select Bitter  </label>');
+						document.querySelector('.dialog>div>div>div>div>button').insertAdjacentHTML('afterend', '<label id="selectallfield"><input id="selectallfieldcheckbox" type="checkbox">Select all  </label><label id="selectallfieldany"><input id="selectallfieldanycheckbox" type="checkbox">Select Any  </label><label id="selectallfieldsour"><input id="selectallfieldsourcheckbox" type="checkbox">Select Sour  </label><label id="selectallfieldspicy"><input id="selectallfieldspicycheckbox" type="checkbox">Select Spicy</label><label id="selectallfielddry"><input id="selectallfielddrycheckbox" type="checkbox">Select Dry  </label><label id="selectallfieldsweet"><input id="selectallfieldsweetcheckbox" type="checkbox">Select Sweet  </label><label id="selectallfieldbitter"><input id="selectallfieldbittercheckbox" type="checkbox">Select Bitter  </label>');
 						$('#selectallfieldcheckbox').click(function() {
 							$('#massreleaselist>ul>li>label>input').not(this).prop('checked', this.checked);
 						});
@@ -1136,7 +1274,7 @@ happycssing {
 				},
 				moveFieldSelectAll() {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
-						document.querySelector('#massmovelist label').insertAdjacentHTML('beforeend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all  </label><label id="movefieldselectany"><input id="movefieldselectanycheckbox" type="checkbox">Select Any  </label><label id="movefieldselectsour"><input id="movefieldselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefieldselectspicy"><input id="movefieldselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefieldselectdry"><input id="movefieldselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefieldselectsweet"><input id="movefieldselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefieldselectbitter"><input id="movefieldselectbittercheckbox" type="checkbox">Select Bitter  </label>');
+						document.querySelector('.dialog>div>div>div>div>button').insertAdjacentHTML('afterend', '<label id="movefieldselectall"><input id="movefieldselectallcheckbox" type="checkbox">Select all  </label><label id="movefieldselectany"><input id="movefieldselectanycheckbox" type="checkbox">Select Any  </label><label id="movefieldselectsour"><input id="movefieldselectsourcheckbox" type="checkbox">Select Sour  </label><label id="movefieldselectspicy"><input id="movefieldselectspicycheckbox" type="checkbox">Select Spicy</label><label id="movefieldselectdry"><input id="movefieldselectdrycheckbox" type="checkbox">Select Dry  </label><label id="movefieldselectsweet"><input id="movefieldselectsweetcheckbox" type="checkbox">Select Sweet  </label><label id="movefieldselectbitter"><input id="movefieldselectbittercheckbox" type="checkbox">Select Bitter  </label>');
 						$('#movefieldselectallcheckbox').click(function() {
 							$('#massmovelist>ul>li>label>input').not(this).prop('checked', this.checked);
 						});
@@ -1176,6 +1314,36 @@ happycssing {
 					if (VARIABLES.userSettings.releaseSelectAll === true) {
 						$("#selectallfishcheckbox").click(function(){
 							$('input:checkbox').not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectanycheckbox').click(function() {
+							let selectAny = $('.icons:contains("Any")').prev().prev('input');
+							$(selectAny).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectsourcheckbox').click(function() {
+							let selectSour = $('.icons:contains("Sour")').prev().prev('input');
+							$(selectSour).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectspicycheckbox').click(function() {
+							let selectSpicy = $('.icons:contains("Spicy")').prev().prev('input');
+							$(selectSpicy).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectdrycheckbox').click(function() {
+							let selectDry = $('.icons:contains("Dry")').prev().prev('input');
+							$(selectDry).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectsweetcheckbox').click(function() {
+							let selectSweet = $('.icons:contains("Sweet")').prev().prev('input');
+							$(selectSweet).not(this).prop('checked', this.checked);
+						});
+						
+						$('#movefishselectbittercheckbox').click(function() {
+							let selectBitter = $('.icons:contains("Bitter")').prev().prev('input');
+							$(selectBitter).not(this).prop('checked', this.checked);
 						});
 					}
 				},
@@ -1468,11 +1636,48 @@ happycssing {
 					}
 				},
 				
-				easyEvolveList() {
+				easyEvolveNormalList() {
 					if (VARIABLES.userSettings.easyEvolve === true) {
 						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
 						try {
 							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					}
+				},
+				easyEvolveTypeList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
 						}
 						catch(err){
 							let thisdoesnothing = true;
@@ -1501,7 +1706,6 @@ happycssing {
 							// getting the <li> element from the pokemon & the pokemon evolved name
 							let getEvolveString = $(this).html();
 							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
-							let pokemonEvolveHTML = '<li>'+getEvolveString+'</li>'
 							
 							// first looks if you know the type out of your dexdata, if it's there then the <li> will be moved in it's corresponding type
 							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
@@ -1513,47 +1717,200 @@ happycssing {
 								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
-										$('.0').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.0');
 										// type one
-										$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.'+evolveTypeOne+'');
 										// type two
 										if (evolveTypeTwo < 0) {
 											let thisAlsoDoeSNothing = true;
 										} else {
-											$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+											$(this).clone().appendTo('.'+evolveTypeTwo+'');
 										}	
 									}
 									if (evolvePokemon === 'Nidorino') {
 										// poison type from Nidoran
-										$('.7').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.7');
 									} 
 
 								} else { //no exceptions
 									// type one
-									$('.'+evolveTypeOne+'').append(pokemonEvolveHTML);
+									$(this).clone().appendTo('.'+evolveTypeOne+'');
 									// type two
 									if (evolveTypeTwo < 0) {
 										let thisAlsoDoeSNothing = true;
 									} else {
-										$('.'+evolveTypeTwo+'').append(pokemonEvolveHTML);
+										$(this).clone().appendTo('.'+evolveTypeTwo+'');
 									}	
 									// extra type from prev pokemon
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevOne) == -1){
-									   $('.'+evolveTypePrevOne+'').append(pokemonEvolveHTML);
+									   $(this).clone().appendTo('.'+evolveTypePrevOne+'');
 									}
 									
 									if([evolveTypeOne, evolveTypeTwo].indexOf(evolveTypePrevTwo) == -1){
-									   $('.'+evolveTypePrevTwo+'').append(pokemonEvolveHTML);
+									   $(this).clone().appendTo('.'+evolveTypePrevTwo+'');
 									}
 								}	
 							} else {
-								$('.18').append(pokemonEvolveHTML);
+								$(this).clone().appendTo('.18');
 							}
-							$(this).remove();
-						});		
+						});	
+						
+						$('#farmnews-evolutions>.scrollable>.qolEvolveTypeList>Li').each(function (index, value) {
+							let amountOfEvolves = $(this).children().children().length;
+							if (amountOfEvolves === 0) {
+								$(this).prev().remove();
+								$(this).remove();
+							} else {
+								let evolveTypeName = $(this).children('.slidermenu').html();
+								$(this).children('.slidermenu').html(evolveTypeName+' ('+amountOfEvolves+')')
+							}
+						});
+
+						$('.evolvepkmnlist').hide();
 					}	
 				},
+				easyEvolveNameList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					
+						// turn the saved dexData in an array to search pokemons out of the evolve list
+						let searchDexData = VARIABLES.userSettings.variData.dexData.split(',');
+						
+						$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+						document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', '<ul class="qolEvolveNameList">');
+						
+						
+						$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
+							// getting the <li> element from the pokemon & the pokemon evolved name
+							let getEvolveString = $(this).html();
+							let beforeEvolvePokemon = $(this).children().children().text().slice(0,-6);
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							let evolvePokemonChange = evolvePokemon.split(' ').join('').replace('[','').replace(']','');
+							
+							if ($('#farmnews-evolutions>.scrollable>.qolEvolveNameList>Li>Ul').hasClass(evolvePokemon.split(' ').join('')) === false) {
+								document.querySelector('.qolEvolveNameList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">'+beforeEvolvePokemon+' > '+evolvePokemon+'</h3><ul class="'+evolvePokemonChange+' qolChangeLogContent"></ul></li><br>');
+							}
+							$(this).clone().appendTo('.'+evolvePokemonChange+'');
+						});
+						
+						$('#farmnews-evolutions>.scrollable>.qolEvolveNameList>Li').each(function (index, value) {
+							let amountOfEvolves = $(this).children().children().length;
+							let getEvolveString = $(this).children().children().html();
+							let beforeEvolvePokemon = $(this).children().children().children().children().first().text().split(' ').join('');
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							
+							$(this).children('.slidermenu').html(beforeEvolvePokemon+' > '+evolvePokemon+' ('+amountOfEvolves+')')
+						});
+
+						$('.evolvepkmnlist').hide();
+						
+						//layout of the created html
+						let typeBackground = $('.panel>h3').css('background-color');
+						let typeBorder = $('.panel>h3').css('border');
+						let typeColor = $('.panel>h3').css('color');
+						$(".expandlist").css("background-color", ""+typeBackground+"");
+						$(".expandlist").css("border", ""+typeBorder+"");
+						$(".expandlist").css("color", ""+typeColor+"");
+						
+						let typeListBackground = $('.tabbed_interface>div').css('background-color');
+						let typeListColor = $('.tabbed_interface>div').css('color');
+						$(".qolChangeLogContent").css("background-color", ""+typeListBackground+"");
+						$(".qolChangeLogContent").css("color", ""+typeListColor+"");
+					}
+				},
+				easyEvolveNewList() {
+					if (VARIABLES.userSettings.easyEvolve === true) {
+						// first remove the sorted pokemon type list to avoid duplicates
+						$('.evolvepkmnlist').show();
+						
+						try {
+							document.querySelector('.qolEvolveTypeList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNameList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+						try {
+							document.querySelector('.qolEvolveNewList').remove();
+						}
+						catch(err){
+							let thisdoesnothing = true;
+						}
+					
+						// turn the saved dexData in an array to search pokemons out of the evolve list
+						let searchDexData = VARIABLES.userSettings.variData.dexData.split(',');
+						
+						$('#farmnews-evolutions>.scrollable>ul').addClass('evolvepkmnlist');
+						document.querySelector('#farmnews-evolutions>.scrollable').insertAdjacentHTML('afterbegin', '<ul class="qolEvolveNewList">');
+						
+						$('#farmnews-evolutions>.scrollable>.evolvepkmnlist>Li').each(function (index, value) {
+							// getting the <li> element from the pokemon & the pokemon evolved name
+							let getEvolveString = $(this).html();
+							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
+							
+							// first looks if you have the pokedex entry, if not then the <li> will be moved in it's corresponding type
+							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
+								let evolveNewCheck = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 6];
+								
+								if (evolveNewCheck == 0) {
+									let evolvePokemonChange = evolvePokemon.split(' ').join('').replace('[','').replace(']','');
+							
+									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass(evolvePokemon.split(' ').join('')) === false) {
+										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">'+evolvePokemon+'</h3><ul class="'+evolvePokemonChange+' qolChangeLogContent"></ul></li><br>');
+									}
+								
+								$(this).clone().appendTo('.'+evolvePokemonChange+'');
+								}
+							}
+						});	
+						
+						$('.evolvepkmnlist').hide();
+						
+						//layout
+						let typeBackground = $('.panel>h3').css('background-color');
+						let typeBorder = $('.panel>h3').css('border');
+						let typeColor = $('.panel>h3').css('color');
+						$(".expandlist").css("background-color", ""+typeBackground+"");
+						$(".expandlist").css("border", ""+typeBorder+"");
+						$(".expandlist").css("color", ""+typeColor+"");
+						
+						let typeListBackground = $('.tabbed_interface>div').css('background-color');
+						let typeListColor = $('.tabbed_interface>div').css('color');
+						$(".qolChangeLogContent").css("background-color", ""+typeListBackground+"");
+						$(".qolChangeLogContent").css("color", ""+typeListColor+"");
+					}
+				},
 				
+				easyQuickEvolve() {
+					if ($('.canevolve:contains("evolved into")').parent().length != 0) {
+						$('.canevolve:contains("evolved into")').parent().remove();
+					}
+				},
 				labAddTypeList() {
 					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="findLabType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeLabTypeList'> </div>`; 
 					let numberTypes = $('#labTypes>div').length;
@@ -1689,7 +2046,78 @@ happycssing {
 						}
 					}
 				},
+			
+				/* fieldAddTypeList() {
+					let theList = `<div class='typeNumber'> <select name="types" class="qolsetting" data-key="fieldType"> <option value="none">None</option> <option value="0">Normal</option> <option value="1">Fire</option> <option value="2">Water</option> <option value="3">Electric</option> <option value="4">Grass</option> <option value="5">Ice</option> <option value="6">Fighting</option> <option value="7">Poison</option> <option value="8">Ground</option> <option value="9">Flying</option> <option value="10">Psychic</option> <option value="11">Bug</option> <option value="12">Rock</option> <option value="13">Ghost</option> <option value="14">Dragon</option> <option value="15">Dark</option> <option value="16">Steel</option> <option value="17">Fairy</option> </select> <input type='button' value='Remove' id='removeFieldTypeList'> </div>`; 
+					let numberTypes = $('#fieldTypes>div').length;
+					$('#fieldTypes').append(theList);
+					$('.typeNumber').removeClass('typeNumber').addClass(""+numberTypes+"");
+				},
+				fieldRemoveTypeList(byebye, key) {
+					VARIABLES.fieldTypeArray = $.grep(VARIABLES.fieldTypeArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldType = VARIABLES.fieldTypeArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#fieldTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
 				
+				fieldAddTextField() {
+					let theField = `<div class='numberDiv'><label><input type="text" class="qolsetting" data-key="fieldCustom"/></label><input type='button' value='Remove' id='removeFieldSearch'></div>`;
+					let numberDiv = $('#searchkeys>div').length;
+					$('#searchkeys').append(theField);
+					$('.numberDiv').removeClass('numberDiv').addClass(""+numberDiv+"");
+				},
+				fieldRemoveTextField(byebye, key) {
+					VARIABLES.fieldCustomArray = $.grep(VARIABLES.fieldCustomArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldCustom = VARIABLES.fieldCustomArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#searchkeys>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
+				
+				fieldAddNatureSearch() {
+					let theList = `<div class='natureNumber'> <select name="natures" class="qolsetting" data-key="fieldNature"> <option value="none">None</option> <option value="Lonely">Lonely</option> <option value="Mild">Mild</option> <option value="Hasty">Hasty</option> <option value="Gentle">Gentle</option> <option value="Bold">Bold</option> <option value="Modest">Modest</option> <option value="Timid">Timid</option> <option value="Calm">Calm</option> <option value="Impish">Impish</option> <option value="Adamant">Adamant</option> <option value="Jolly">Jolly</option> <option value="Careful">Careful</option> <option value="Relaxed">Relaxed</option> <option value="Brave">Brave</option> <option value="Quiet">Quiet</option> <option value="Sassy">Sassy</option> <option value="Lax">Lax</option> <option value="Naughty">Naughty</option> <option value="Rash">Rash</option> <option value="Näive">Näive</option> <option value="Hardy">Hardy</option> <option value="Docile">Docile</option> <option value="Serious">Serious</option> <option value="Bashful">Bashful</option> <option value="Quirky ">Quirky </option> </select> <input type='button' value='Remove' id='removeFieldNature'> </div>`;
+					let numberTypes = $('#natureTypes>div').length;
+					$('#natureTypes').append(theList);
+					$('.natureNumber').removeClass('natureNumber').addClass(""+numberTypes+"");
+				},
+				fieldRemoveNatureSearch(byebye, key) {
+					VARIABLES.fieldNatureArray = $.grep(VARIABLES.fieldNatureArray, function(value) { //when textfield is removed, the value will be deleted from the localstorage
+						return value != key;
+					});
+					VARIABLES.userSettings.fieldSearchSettings.fieldNature = VARIABLES.fieldNatureArray.toString()
+
+					fn.backwork.saveSettings();
+					$(byebye).parent().remove();
+
+					let i;
+					for(i = 0; i < $('#natureTypes>div').length; i++) {
+						let rightDiv = i + 1;
+						$('.'+i+'').next().removeClass().addClass(''+rightDiv+'');
+					}
+				},
+				
+				fieldCustomSearch() {
+					if (VARIABLES.userSettings.fieldSearch === true) {
+						console.log('search activated');
+					}
+				}, */
 			}, // end of API
 		}; // end of fn
 
@@ -1757,15 +2185,18 @@ happycssing {
 	if(window.location.href.indexOf("fields/") != -1) {
 		$(document).on('click input', '#fieldorder, #field_field, #field_berries, #field_nav', (function() { //field sort
 			PFQoL.fieldSorter();
+			//PFQoL.fieldCustomSearch();
 		}));
 	}
 
 	if(window.location.href.indexOf("fields/") != -1) { //field sort
 		$(window).on('load', (function() {
 			PFQoL.fieldSorter();
+			//PFQoL.fieldCustomSearch();
 		}));
 		document.addEventListener("keydown", function(event) {
 			PFQoL.fieldSorter();
+			//PFQoL.fieldCustomSearch();
 		});
 	}
 	
@@ -1790,8 +2221,20 @@ happycssing {
 		}));
 	}
 	
+	$(document).on('click', '#qolevolvenormal', (function() {
+		PFQoL.easyEvolveNormalList();
+	}));
+	
 	$(document).on('click', '#qolchangesletype', (function() {
-		PFQoL.easyEvolveList();
+		PFQoL.easyEvolveTypeList();
+	}));
+	
+	$(document).on('click', '#qolsortevolvename', (function() {
+		PFQoL.easyEvolveNameList();
+	}));
+	
+	$(document).on('click', '#qolevolvenew', (function() {
+		PFQoL.easyEvolveNewList();
 	}));
 	
 	$(document).on('click', '#addLabSearch', (function() { //add lab text field
@@ -1823,5 +2266,29 @@ happycssing {
 			PFQoL.labCustomSearch();
 		}));
 	}
+	
+	$(document).on('click', '#addFieldSearch', (function() { //add field text field
+		PFQoL.fieldAddTextField();
+	}));
+
+	$(document).on('click', '#removeFieldSearch', (function() { //remove field text field
+		PFQoL.fieldRemoveTextField(this, $(this).parent().find('input').val());
+	}));
+	
+	$(document).on('click', '#addFieldNatureSearch', (function() { //add field nature search
+		PFQoL.fieldAddNatureSearch();
+	}));
+
+	$(document).on('click', '#removeFieldNature', (function() { //remove field nature search
+		PFQoL.fieldRemoveNatureSearch(this, $(this).parent().find('select').val());
+	}));
+	
+	$(document).on('click', '#addFieldTypeList', (function() { //add field type list
+		PFQoL.fieldAddTypeList();
+	}));
+
+	$(document).on('click', '#removeFieldTypeList', (function() { //remove field type list
+		PFQoL.fieldRemoveTypeList(this, $(this).parent().find('select').val());
+	}));
 	
 })(jQuery); //end of userscript
