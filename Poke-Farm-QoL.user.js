@@ -1708,13 +1708,14 @@ happycssing {
 							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
 							
 							// first looks if you know the type out of your dexdata, if it's there then the <li> will be moved in it's corresponding type
-							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
+							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1 || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]')) {
 								let evolveTypeOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 1];
 								let evolveTypeTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 2];
 								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
 								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
+								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon' || evolvePokemon === 'Nidorino' || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]')) {
+									console.log(evolvePokemon);
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
 										$(this).clone().appendTo('.0');
@@ -1731,6 +1732,103 @@ happycssing {
 										// poison type from Nidoran
 										$(this).clone().appendTo('.7');
 									} 
+									
+									if (evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]') {
+										// water type
+										$(this).clone().appendTo('.2');
+										// ground type
+										$(this).clone().appendTo('.8');
+									}
+									
+									if (evolvePokemon === 'Wormadam [Plant Cloak]') {
+										// bug type
+										$(this).clone().appendTo('.11');
+										// grass type
+										$(this).clone().appendTo('.4');
+									}
+									
+									if (evolvePokemon === 'Wormadam [Trash Cloak]') {
+										// bug type (burmy)
+										$(this).clone().appendTo('.11');
+										// steel type
+										$(this).clone().appendTo('.16');
+										// grass type
+										$(this).clone().appendTo('.4');
+									}
+									
+									if (evolvePokemon.includes('[Alolan Forme]')) { //alolan formes
+										// raticate
+										if (evolvePokemon.includes('Raticate')) {
+											// dark type
+											$(this).clone().appendTo('.15');
+											// normal type
+											$(this).clone().appendTo('.0');
+										}
+										
+										// ninetales
+										if (evolvePokemon.includes('Ninetales')) {
+											// ice type
+											$(this).clone().appendTo('.5');
+											// fairy type
+											$(this).clone().appendTo('.17');
+										}
+										
+										// exeggutor
+										if (evolvePokemon.includes('Exeggutor')) {
+											// grass type
+											$(this).clone().appendTo('.4');
+											// dragon type
+											$(this).clone().appendTo('.14');
+										}
+										
+										// marowak
+										if (evolvePokemon.includes('Marowak')) {
+											// fire type
+											$(this).clone().appendTo('.1');
+											// ghost type
+											$(this).clone().appendTo('.13');
+										}
+										
+										// dugtrio
+										if (evolvePokemon.includes('Dugtrio')) {
+											// ground type
+											$(this).clone().appendTo('.8');
+											// steel type
+											$(this).clone().appendTo('.16');
+										}
+										
+										// graveler
+										if (evolvePokemon.includes('Graveler')) {
+											// rock type
+											$(this).clone().appendTo('.12');
+											// electric type
+											$(this).clone().appendTo('.3');
+										}
+										
+										// golem
+										if (evolvePokemon.includes('Golem')) {
+											// rock type
+											$(this).clone().appendTo('.12');
+											// electric type
+											$(this).clone().appendTo('.3');
+										}
+										
+										// muk
+										if (evolvePokemon.includes('Muk')) {
+											// poison type
+											$(this).clone().appendTo('.7');
+											// dark type
+											$(this).clone().appendTo('.15');
+										}
+										
+										// raichu
+										if (evolvePokemon.includes('Raichu')) {
+											// electric type
+											$(this).clone().appendTo('.3');
+											// psychic type
+											$(this).clone().appendTo('.10');
+										}
+									}
 
 								} else { //no exceptions
 									// type one
@@ -1757,13 +1855,9 @@ happycssing {
 						
 						$('#farmnews-evolutions>.scrollable>.qolEvolveTypeList>Li').each(function (index, value) {
 							let amountOfEvolves = $(this).children().children().length;
-							if (amountOfEvolves === 0) {
-								$(this).prev().remove();
-								$(this).remove();
-							} else {
-								let evolveTypeName = $(this).children('.slidermenu').html();
-								$(this).children('.slidermenu').html(evolveTypeName+' ('+amountOfEvolves+')')
-							}
+							let evolveTypeName = $(this).children('.slidermenu').html();
+							
+							$(this).children('.slidermenu').html(evolveTypeName+' ('+amountOfEvolves+')')
 						});
 
 						$('.evolvepkmnlist').hide();
@@ -1873,19 +1967,47 @@ happycssing {
 							let getEvolveString = $(this).html();
 							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
 							
+							if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('alltest') === false) {
+								document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">All poke test</h3><ul class="alltest qolChangeLogContent"></ul></li><br>');
+							}
+							$(this).clone().appendTo('.alltest');
+							
 							// first looks if you have the pokedex entry, if not then the <li> will be moved in it's corresponding type
 							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1) {
 								let evolveNewCheck = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 6];
+								let evolveNewTotal = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 5];
 								
-								if (evolveNewCheck == 0) {
-									let evolvePokemonChange = evolvePokemon.split(' ').join('').replace('[','').replace(']','');
-							
-									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass(evolvePokemon.split(' ').join('')) === false) {
-										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">'+evolvePokemon+'</h3><ul class="'+evolvePokemonChange+' qolChangeLogContent"></ul></li><br>');
+								if (evolveNewCheck == 0) { // you have 0 of those normal pokemon in your dex
+									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('newpokedexentry') === false) {
+										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">New Pokédex entry</h3><ul class="newpokedexentry qolChangeLogContent"></ul></li><br>');
 									}
 								
-								$(this).clone().appendTo('.'+evolvePokemonChange+'');
+								$(this).clone().appendTo('.newpokedexentry');
 								}
+								
+								if (evolveNewTotal > evolveNewCheck && evolveNewCheck > 0) {
+									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('newpossiblepokedexentry') === false) {
+										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">Possible Mega/Totem forme</h3><ul class="newpossiblepokedexentry qolChangeLogContent"></ul></li><br>');
+									}
+								
+								$(this).clone().appendTo('.newpossiblepokedexentry');
+								}
+							}
+							// looks if you have the pokemon name in your dex
+							if (searchDexData.indexOf('"'+evolvePokemon+'"') == -1) {
+								let pokemonDexKeepFirstName = evolvePokemon.split(' ')[0];
+								let evolveNewCheck = searchDexData[searchDexData.indexOf('"'+pokemonDexKeepFirstName+'"') + 6];
+								let evolveNewTotal = searchDexData[searchDexData.indexOf('"'+pokemonDexKeepFirstName+'"') + 5];
+								
+								if (evolveNewTotal > evolveNewCheck && evolveNewCheck > 0) {
+									if (evolvePokemon.includes('[Alolan Forme]')) { // for alolans
+										if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('possiblealolan') === false) {
+											document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">Possible new Alolan entry</h3><ul class="possiblealolan qolChangeLogContent"></ul></li><br>');
+										}
+									
+									$(this).clone().appendTo('.possiblealolan');
+									} 
+								}	
 							}
 						});	
 						
@@ -2170,9 +2292,11 @@ happycssing {
 		PFQoL.shelterRemoveTypeList(this, $(this).parent().find('select').val());
 	}));
 
-	$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
-		PFQoL.releaseFieldSelectAll();
-    }));
+	if(window.location.href.indexOf("fields") != -1) {
+		$(document).on('click', '*[data-menu="release"]', (function() { //select all feature
+			PFQoL.releaseFieldSelectAll();
+		}));
+	}
 
 	$(document).on('click', '*[data-menu="bulkmove"]', (function() { // select all feature
 		PFQoL.moveFieldSelectAll();
