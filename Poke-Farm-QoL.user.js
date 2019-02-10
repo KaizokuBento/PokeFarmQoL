@@ -2006,9 +2006,27 @@ happycssing {
 										}
 									
 									$(this).clone().appendTo('.possiblealolan');
-									} 
-								}	
+									
+									} else if (evolvePokemon.includes('[')) {
+										if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('possibledifferent') === false) {
+											document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">Possible new forme/cloak entry</h3><ul class="possibledifferent qolChangeLogContent"></ul></li><br>');
+										}
+										
+									$(this).clone().appendTo('.possibledifferent');
+										
+									}
+								} else if (searchDexData.indexOf('"'+pokemonDexKeepFirstName+'"') == -1) {
+									if ($('#farmnews-evolutions>.scrollable>.qolEvolveNewList>Li>Ul').hasClass('possiblenew') === false) {
+										document.querySelector('.qolEvolveNewList').insertAdjacentHTML('beforeend', '<li class="expandlist"><h3 class="slidermenu">Possible new dex entry</h3><ul class="possiblenew qolChangeLogContent"></ul></li><br>');
+									}
+									
+									$(this).clone().appendTo('.possiblenew');
+								}
 							}
+							
+							
+							
+							
 						});	
 						
 						$('.evolvepkmnlist').hide();
