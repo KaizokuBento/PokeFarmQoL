@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.5
+// @version      1.3.51
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -1157,7 +1157,7 @@ happycssing {
 								let o;
 								for (o = 0; o < typeImgStandOutLength; o++) {
 									let value = typePokemonNames[o];
-									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
+									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN('"+value+" Egg')");
 									let shelterBigImg = shelterImgSearch.prev().children('img.big');
 									$(shelterBigImg).addClass('shelterfoundme');
 								}
@@ -1197,7 +1197,7 @@ happycssing {
 								let o;
 								for (o = 0; o < typeImgStandOutLength; o++) {
 									let value = typePokemonNames[o];
-									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN("+value+")")
+									let shelterImgSearch = $("#shelterarea .tooltip_content:containsIN('"+value+" (')")
 									let shelterBigImg = shelterImgSearch.prev().children('img.big');
 									$(shelterBigImg).addClass('shelterfoundme');
 								}
