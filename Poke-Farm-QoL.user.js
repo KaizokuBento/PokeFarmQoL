@@ -124,6 +124,8 @@
 			userSettings : DEFAULT_USER_SETTINGS,
 			
 			dexDataVar : "",
+			
+			dexIsGettingReady : false,
 
 			shelterCustomArray : [],
 			
@@ -521,6 +523,13 @@
 						fn.backwork.populateSettingsPage();
 						VARIABLES.dexDataVar = VARIABLES.userSettings.variData.dexData.split(',');
 					}
+					
+					if(window.location.href.indexOf("dex") != -1) {
+						document.querySelector('#content').insertAdjacentHTML('afterbegin', '<div id="savedexdata">Save me</div>');
+						
+
+					}
+					
 				},
 				setupCSS() { // All the CSS changes are added here
 					GM_addStyle(GM_getResourceText('QoLCSS'));
@@ -598,6 +607,7 @@
 							characterDataOldValue: true,
 						});
 					}
+				
 				},
 
 				startup() { // All the functions that are run to start the script on Pokéfarm
@@ -1177,6 +1187,9 @@ happycssing {
 								
 								$('#shelterarea>.tooltip_content').not(':contains("Egg")').each(function() {
 									let searchPokemon = ($(this).text().split(' ')[0]);
+									//if (searchPokemon == 'm') { (Failed test to find Mr. Mimes)
+									//	searchPokemon = 'Mr. Mime'
+									//}
 									let searchTypeOne = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 1];
 									let searchTypeTwo = VARIABLES.dexDataVar[VARIABLES.dexDataVar.indexOf('"'+searchPokemon+'"') + 2];
 									if (searchTypeOne === value) {
@@ -1624,25 +1637,50 @@ happycssing {
 					}
 				},
 			
-				savingDexData() {
+				savingDexDataOld() {
 					fn.backwork.loadSettings();
 					let dexTempData = ($('#dexdata').html());
 					let dexTempArray = dexTempData.split(',');
-					
-					//Experiment with Flabebe (It's better to just make the new data dex save function)
-					//let dexTempArrayFlabebe = dexTempArray.indexOf(Flab\u00e9b\u00e9)
-					//Flab\u00e9b\u00e9 > Flabébé
-					
-					//let dexArray = dexTempArray.splice(0, 29);
-					
-					
-					
 					
 					if (VARIABLES.userSettings.variData.dexData != dexTempArray.toString()) {
 						VARIABLES.userSettings.variData.dexData = dexTempArray.toString();
 						fn.backwork.saveSettings();
 						console.log('your dexdata has been updated');
 					}
+				},
+				
+				savingDexDataStart() {
+					fn.backwork.loadSettings();
+				
+					let amountOfRegions = $('#regionslist>li:contains(region)>h3').length;
+					let amountOfLoadedRegions = $('.loaded').length;
+					
+					if (VARIABLES.dexIsGettingReady == false) { //savingDexDataStart will get called a few times until the Pokédex has loaded all it's entries. This ensures that not everytime the regions get clicked and open up.
+						$('#regionslist>li:contains(region)>h3').click(); //open all the dex regions
+						VARIABLES.dexIsGettingReady = true; //ensuring that next time before all the Dex data is saved that the regions won't get opened.
+					}
+					
+					if (amountOfRegions == amountOfLoadedRegions) { //if they are the same then all the Pokédex entries have been loaded.
+						$('.region-entries>li').each(function (index, value) { 
+						// not so sure how to go about it yet. 
+						//1. check if the li class (entry t-grass t-poison egg-complete pkmn-complete) is different then what gets saved.
+						//2. the dialog needs to get opened and finish loading. 
+						//3. all the info needs to get extracted and the dialog needs to get closed.
+						//4. next li starts the same routine till all li's are checked.
+							fn.API.savingDexDataGetInfo(index, value);
+						});
+						
+						VARIABLES.dexIsGettingReady = false;
+					} else {
+						setTimeout(fn.API.savingDexDataStart, 50);
+						console.log('not ready yet!');
+					}
+					
+				},
+				
+				savingDexDataGetInfo(index, value) {
+					console.log(index);
+					console.log(value);
 				},
 				
 				easyEvolveNormalList() {
@@ -1717,13 +1755,13 @@ happycssing {
 							let evolvePokemon = getEvolveString.substr(getEvolveString.indexOf("into</span> ") + 12);
 							
 							// first looks if you know the type out of your dexdata, if it's there then the <li> will be moved in it's corresponding type
-							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1 || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]')) {
+							if (searchDexData.indexOf('"'+evolvePokemon+'"') != -1 || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon === 'Wormadam [Sandy Cloak]' || evolvePokemon.includes('[Alolan Forme]')) {
 								let evolveTypeOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 1];
 								let evolveTypeTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') + 2];
 								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
 								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								if (getEvolveString.includes('title="[DELTA') || evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon' || evolvePokemon === 'Nidorino' || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]') || evolvePokemon.includes('Chilldoom')) {
+								if (getEvolveString.includes('title="[DELTA') || evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon' || evolvePokemon === 'Nidorino' || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon === 'Wormadam [Sandy Cloak]' || evolvePokemon.includes('[Alolan Forme]') || evolvePokemon.includes('Chilldoom')) {
 									if (getEvolveString.includes('title="[DELTA')) {
 										console.log(getEvolveString);
 										let deltaType = getEvolveString.match('DELTA-(.*)]">');
@@ -1840,6 +1878,13 @@ happycssing {
 										$(this).clone().appendTo('.16');
 										// grass type
 										$(this).clone().appendTo('.4');
+									}
+									
+									if (evolvePokemon === 'Wormadam [Sandy Cloak]') {
+										// bug type (burmy)
+										$(this).clone().appendTo('.11');
+										// ground type
+										$(this).clone().appendTo('.8');
 									}
 									
 									if (evolvePokemon === 'Chilldoom') {
@@ -2816,11 +2861,15 @@ happycssing {
 	}
 	
 	
-	if(window.location.href.indexOf("dex") != -1) {
-		$(window).on('load', (function() {
-			PFQoL.savingDexData();
-		}));
-	}
+	//if(window.location.href.indexOf("dex") != -1) {
+	//	$(window).on('load', (function() {
+	//		PFQoL.savingDexData();
+	//	}));
+	//}
+	
+	$(document).on('click', '#savedexdata', (function() {
+		PFQoL.savingDexDataStart();
+	}));
 	
 	$(document).on('click', '#qolevolvenormal', (function() {
 		PFQoL.easyEvolveNormalList();
