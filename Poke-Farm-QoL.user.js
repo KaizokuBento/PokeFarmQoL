@@ -5,7 +5,7 @@
 // @homepage	 https://github.com/KaizokuBento/PokeFarmShelter
 // @downloadURL  https://github.com/KaizokuBento/PokeFarmShelter/raw/master/Poke-Farm-QoL.user.js
 // @description  Quality of Life changes to Pokéfarm!
-// @version      1.3.51
+// @version      1.3.52
 // @match        https://pokefarm.com/*
 // @require      http://code.jquery.com/jquery-3.3.1.min.js
 // @require      https://raw.githubusercontent.com/lodash/lodash/4.17.4/dist/lodash.min.js
@@ -1628,7 +1628,16 @@ happycssing {
 					fn.backwork.loadSettings();
 					let dexTempData = ($('#dexdata').html());
 					let dexTempArray = dexTempData.split(',');
-					let dexArray = dexTempArray.splice(0, 29);
+					
+					//Experiment with Flabebe (It's better to just make the new data dex save function)
+					//let dexTempArrayFlabebe = dexTempArray.indexOf(Flab\u00e9b\u00e9)
+					//Flab\u00e9b\u00e9 > Flabébé
+					
+					//let dexArray = dexTempArray.splice(0, 29);
+					
+					
+					
+					
 					if (VARIABLES.userSettings.variData.dexData != dexTempArray.toString()) {
 						VARIABLES.userSettings.variData.dexData = dexTempArray.toString();
 						fn.backwork.saveSettings();
@@ -1714,8 +1723,85 @@ happycssing {
 								let evolveTypePrevOne = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 10];
 								let evolveTypePrevTwo = searchDexData[searchDexData.indexOf('"'+evolvePokemon+'"') - 9];
 								
-								if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon' || evolvePokemon === 'Nidorino' || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]')) {
-									console.log(evolvePokemon);
+								if (getEvolveString.includes('title="[DELTA') || evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon' || evolvePokemon === 'Nidorino' || evolvePokemon === 'Gastrodon [Orient]' || evolvePokemon === 'Gastrodon [Occident]' || evolvePokemon === 'Wormadam [Plant Cloak]' || evolvePokemon === 'Wormadam [Trash Cloak]' || evolvePokemon.includes('[Alolan Forme]') || evolvePokemon.includes('Chilldoom')) {
+									if (getEvolveString.includes('title="[DELTA')) {
+										console.log(getEvolveString);
+										let deltaType = getEvolveString.match('DELTA-(.*)]">');
+										console.log(deltaType[1]);
+										
+										if (deltaType[1] === 'NORMAL') {
+											$(this).clone().appendTo('.0');
+										}
+										
+										if (deltaType[1] === 'FIRE') {
+											$(this).clone().appendTo('.1');
+										}
+										
+										if (deltaType[1] === 'WATER') {
+											$(this).clone().appendTo('.2');
+										}
+										
+										if (deltaType[1] === 'ELECTRIC') {
+											$(this).clone().appendTo('.3');
+										}
+										
+										if (deltaType[1] === 'GRASS') {
+											$(this).clone().appendTo('.4');
+										}
+										
+										if (deltaType[1] === 'ICE') {
+											$(this).clone().appendTo('.5');
+										}
+										
+										if (deltaType[1] === 'FIGHTING') {
+											$(this).clone().appendTo('.6');
+										}
+										
+										if (deltaType[1] === 'POISON') {
+											$(this).clone().appendTo('.7');
+										}
+										
+										if (deltaType[1] === 'GROUND') {
+											$(this).clone().appendTo('.8');
+										}
+										
+										if (deltaType[1] === 'FLYING') {
+											$(this).clone().appendTo('.9');
+										}
+										
+										if (deltaType[1] === 'PSYCHIC') {
+											$(this).clone().appendTo('.10');
+										}
+										
+										if (deltaType[1] === 'BUG') {
+											$(this).clone().appendTo('.11');
+										}
+										
+										if (deltaType[1] === 'ROCK') {
+											$(this).clone().appendTo('.12');
+										}
+										
+										if (deltaType[1] === 'GHOST') {
+											$(this).clone().appendTo('.13');
+										}
+										
+										if (deltaType[1] === 'DRAGON') {
+											$(this).clone().appendTo('.14');
+										}
+										
+										if (deltaType[1] === 'DARK') {
+											$(this).clone().appendTo('.15');
+										}
+										
+										if (deltaType[1] === 'STEEL') {
+											$(this).clone().appendTo('.16');
+										}
+										
+										if (deltaType[1] === 'FAIRY') {
+											$(this).clone().appendTo('.17');
+										}
+									}
+									
 									if (evolvePokemon === 'Vaporeon' || evolvePokemon === 'Jolteon' || evolvePokemon === 'Flareon' || evolvePokemon === 'Espeon' || evolvePokemon === 'Umbreon' || evolvePokemon === 'Leafeon' || evolvePokemon === 'Glaceon' || evolvePokemon === 'Sylveon') {
 										// normal type from eevee
 										$(this).clone().appendTo('.0');
@@ -1754,6 +1840,13 @@ happycssing {
 										$(this).clone().appendTo('.16');
 										// grass type
 										$(this).clone().appendTo('.4');
+									}
+									
+									if (evolvePokemon === 'Chilldoom') {
+										// dark type
+										$(this).clone().appendTo('.15');
+										// ice type
+										$(this).clone().appendTo('.5');
 									}
 									
 									if (evolvePokemon.includes('[Alolan Forme]')) { //alolan formes
